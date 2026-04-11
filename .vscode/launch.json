@@ -1,0 +1,30 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "Debug (tsx)",
+            "type": "node",
+            "request": "launch",
+            "program": "${workspaceFolder}/src/main.ts",
+            "runtimeExecutable": "pnpm",
+            "runtimeArgs": [
+                "exec",
+                "tsx"
+            ],
+            "sourceMaps": true,
+            "console": "integratedTerminal",
+        },
+        {
+            "name": "Build (tsc)",
+            "type": "node",
+            "request": "launch",
+            "program": "${workspaceFolder}/dist/main.js",
+            "sourceMaps": true,
+            "console": "integratedTerminal",
+            "skipFiles": [
+                "${workspaceFolder}/node_modules/**/*.js"
+            ],
+            "preLaunchTask": "tsc: build - tsconfig.josn",
+        }
+    ]
+}
