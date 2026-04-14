@@ -27,12 +27,14 @@ export function listSuite(): void {
         it("有序列表样式 notSequential：所有项使用相同编号", async () => {
             const input = "1. first\n2. second\n3. third";
             const result = await fmt(input, makeConfig({ orderedStyle: "notSequential" }));
+            // 紧凑列表使用标准单空格
             expect(result).toBe("1. first\n1. second\n1. third");
         });
 
         it("有序列表样式 sequential：编号依次递增", async () => {
             const input = "1. first\n1. second\n1. third";
             const result = await fmt(input, makeConfig({ orderedStyle: "sequential" }));
+            // 紧凑列表使用标准单空格
             expect(result).toBe("1. first\n2. second\n3. third");
         });
 

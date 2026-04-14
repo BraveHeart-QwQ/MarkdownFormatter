@@ -7,7 +7,7 @@
 // TODO Formatter 需求：
 // - [x] 文本矫正（文本基础正则替换）
 // - [x] 块缩进处理（普通缩进当作代码块处理，其他时候无序列表块缩进为 2，有序列表块缩进为 4）
-// - [ ] 列表规范化：`- xxx`、`1. xxx`
+// - [x] 列表规范化：`- xxx`、`1. xxx`
 // - [ ] 列表、Table 的行结尾去除 `。` 号
 // - [ ] 标题不含序号
 // - [ ] Table 格式化（对齐、宽度有限、标题行、消除左右两端竖边）
@@ -19,7 +19,7 @@ export interface TextCorrectionConfig {
     replacements: Array<{ pattern: string; replacement: string }>; // 自定义替换规则，按顺序应用。这里 pattern 是正则
 }
 
-/* TODO 块缩进处理 */
+/* 块缩进处理 */
 export interface BlockIndentConfig {
     parseIndentAsCodeBlock: boolean; // 普通缩进（4 空格/Tab）当作代码块处理（会退缩进，并用代码块 fence 包裹）
     unorderedListIndent: number; // 无序列表块缩进空格数
