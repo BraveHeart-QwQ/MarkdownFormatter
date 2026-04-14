@@ -6,19 +6,78 @@
 
 import { readFileSync, writeFileSync } from "fs";
 import { format } from "./pipeline.js";
-import { k_defaultFormatterConfig } from "./config.js";
+import { k_defaultFormatterConfig, FormatterConfig } from "./config.js";
+
+// ── Config merging ────────────────────────────────────────────────────────────
+
+type PartialConfig = {
+    [K in keyof FormatterConfig]?: Partial<FormatterConfig[K]>;
+};
+
+function mergeConfig(base: FormatterConfig, ...overrides: PartialConfig[]): FormatterConfig {
+    let result = { ...base };
+    for (const override of overrides) {
+        for (const key of Object.keys(override) as Array<keyof FormatterConfig>) {
+            if (override[key] !== undefined) {
+                result = { ...result, [key]: { ...result[key], ...(override[key] as object) } };
+            }
+        }
+    }
+    return result;
+}
 
 // ── Arg parsing ───────────────────────────────────────────────────────────────
 
-function printUsage(): void {
-    console.error("Usage: markdown-formatter <input.md> [output.md]");
-    console.error("  If output is omitted, the result is written to stdout.");
+interface ParsedArgs {
+    input: string;
+    output: string | null; // -o <file>：指定输出文件
+    inPlace: boolean;      // -w：写回输入文件
+    configPaths: string[]; // -c <file>：可多次指定
 }
 
-function parseArgs(argv: string[]): { input: string; output: string | null } | null {
-    const args = argv.slice(2); // strip node + script path
-    if (args.length < 1 || args.length > 2) return null;
-    return { input: args[0], output: args[1] ?? null };
+function printUsage(): void {
+    console.error("Usage: markdown-formatter [options] <input.md>");
+    console.error("");
+    console.error("Options:");
+    console.error("  -o, --output <file>   Write output to specified file (default: stdout)");
+    console.error("  -w, --write           Write output back to the input file (in-place)");
+    console.error("  -c, --config <file>   Config JSON file to merge; may be specified multiple times");
+    console.error("  -h, --help            Show this help message");
+}
+
+function parseArgs(argv: string[]): ParsedArgs | null {
+    const args = argv.slice(2);
+    const configPaths: string[] = [];
+    let output: string | null = null;
+    let inPlace = false;
+    let input: string | null = null;
+
+    for (let i = 0; i < args.length; i++) {
+        const arg = args[i];
+        if (arg === "-h" || arg === "--help") {
+            printUsage();
+            process.exit(0);
+        } else if (arg === "-o" || arg === "--output") {
+            output = args[++i] ?? null;
+            if (!output) return null;
+        } else if (arg === "-w" || arg === "--write") {
+            inPlace = true;
+        } else if (arg === "-c" || arg === "--config") {
+            const val = args[++i] ?? null;
+            if (!val) return null;
+            configPaths.push(val);
+        } else if (!arg.startsWith("-")) {
+            if (input !== null) return null; // 不支持多个位置参数
+            input = arg;
+        } else {
+            return null; // 未知 flag
+        }
+    }
+
+    if (!input) return null;
+    if (inPlace && output) return null; // -w 与 -o 互斥
+
+    return { input, output, inPlace, configPaths };
 }
 
 // ── Entry point ───────────────────────────────────────────────────────────────
@@ -30,10 +89,28 @@ async function main(): Promise<void> {
         process.exit(1);
     }
 
-    // TODO 支持通过 --config <path> 从 JSON 文件读取自定义配置
-    //      支持读取多个配置，然后覆盖叠加得到最终配置
-    const config = k_defaultFormatterConfig;
+    // 依次加载并叠加配置
+    const overrides: PartialConfig[] = [];
+    for (const configPath of parsed.configPaths) {
+        let raw: string;
+        try {
+            raw = readFileSync(configPath, "utf-8");
+        } catch (err) {
+            console.error(`Error: cannot read config "${configPath}": ${(err as Error).message}`);
+            process.exit(1);
+        }
+        let partialCfg: PartialConfig;
+        try {
+            partialCfg = JSON.parse(raw) as PartialConfig;
+        } catch (err) {
+            console.error(`Error: invalid JSON in config "${configPath}": ${(err as Error).message}`);
+            process.exit(1);
+        }
+        overrides.push(partialCfg);
+    }
+    const config = mergeConfig(k_defaultFormatterConfig, ...overrides);
 
+    // 读取输入文件
     let input: string;
     try {
         input = readFileSync(parsed.input, "utf-8");
@@ -42,17 +119,19 @@ async function main(): Promise<void> {
         process.exit(1);
     }
 
-    const output = await format(input, config);
+    const result = await format(input, config);
 
-    if (parsed.output) {
+    // 写出结果
+    const outputPath = parsed.inPlace ? parsed.input : parsed.output;
+    if (outputPath) {
         try {
-            writeFileSync(parsed.output, output, "utf-8");
+            writeFileSync(outputPath, result, "utf-8");
         } catch (err) {
-            console.error(`Error: cannot write "${parsed.output}": ${(err as Error).message}`);
+            console.error(`Error: cannot write "${outputPath}": ${(err as Error).message}`);
             process.exit(1);
         }
     } else {
-        process.stdout.write(output);
+        process.stdout.write(result);
     }
 }
 
