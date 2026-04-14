@@ -21,11 +21,7 @@ import { remarkFormatter } from "./plugins/index.js";
  *   将 4 空格 / Tab 缩进块识别为代码，转为 fenced code block
  */
 export function preprocess(input: string, config: FormatterConfig): string {
-    let text = input.replace(/\r\n/g, "\n").replace(/\r/g, "\n");
-
-    for (const { pattern, replacement } of config.textCorrection.replacements) {
-        text = text.replace(new RegExp(pattern, "gu"), replacement);
-    }
+    const text = input.replace(/\r\n/g, "\n").replace(/\r/g, "\n");
 
     return text;
 }

@@ -4,18 +4,84 @@
 //
 //===----------------------------------------------------------------------===//
 
-import type { Root } from "mdast";
+import type { Heading, InlineCode, List, ListItem, Root, Strong, Table, TableCell, TableRow, Text } from "mdast";
+import { visit } from "unist-util-visit";
 import type { FormatterConfig } from "../config.js";
 
+// ── Visitor Registry ──────────────────────────────────────────────────────────
+
+/**
+ * 各 sub-transform 向此 registry 注册回调，而不是各自调用 visit()。
+ * runSinglePass 在唯一一次 DFS 里按节点类型分发给所有已注册的回调。
+ */
+interface VisitorRegistry {
+    text: Array<(node: Text) => void>;
+    heading: Array<(node: Heading) => void>;
+    list: Array<(node: List) => void>;
+    listItem: Array<(node: ListItem) => void>;
+    table: Array<(node: Table) => void>;
+    tableRow: Array<(node: TableRow) => void>;
+    tableCell: Array<(node: TableCell) => void>;
+    inlineCode: Array<(node: InlineCode) => void>;
+    strong: Array<(node: Strong) => void>;
+}
+
+function createRegistry(): VisitorRegistry {
+    return {
+        text: [],
+        heading: [],
+        list: [],
+        listItem: [],
+        table: [],
+        tableRow: [],
+        tableCell: [],
+        inlineCode: [],
+        strong: [],
+    };
+}
+
+/**
+ * 对 tree 执行唯一一次 DFS，每个节点按其类型分发给 registry 中已注册的回调。
+ */
+function runSinglePass(tree: Root, registry: VisitorRegistry): void {
+    visit(tree, (node) => {
+        switch (node.type) {
+            case "text": for (const h of registry.text) h(node as Text); break;
+            case "heading": for (const h of registry.heading) h(node as Heading); break;
+            case "list": for (const h of registry.list) h(node as List); break;
+            case "listItem": for (const h of registry.listItem) h(node as ListItem); break;
+            case "table": for (const h of registry.table) h(node as Table); break;
+            case "tableRow": for (const h of registry.tableRow) h(node as TableRow); break;
+            case "tableCell": for (const h of registry.tableCell) h(node as TableCell); break;
+            case "inlineCode": for (const h of registry.inlineCode) h(node as InlineCode); break;
+            case "strong": for (const h of registry.strong) h(node as Strong); break;
+        }
+    });
+}
+
 // ── Sub-transforms ────────────────────────────────────────────────────────────
-// 每个 sub-transform 接受 AST root 和配置，原地修改节点（可写入 ExtraData）。
+// 每个 sub-transform 向 registry 注册所需节点类型的回调（原地修改节点 / 写入 ExtraData）。
+
+/**
+ * 对 AST 中所有 Text 节点按序应用 config.textCorrection.replacements 正则替换。
+ */
+function registerTextReplacement(registry: VisitorRegistry, config: FormatterConfig): void {
+    const replacements = config.textCorrection.replacements;
+    if (replacements.length === 0) return;
+
+    registry.text.push((node: Text) => {
+        for (const { pattern, replacement } of replacements) {
+            node.value = node.value.replace(new RegExp(pattern, "gu"), replacement);
+        }
+    });
+}
 
 /**
  * 根据 config.lineSpacing 对 Heading 节点写入 blankLinesBefore / blankLinesAfter。
  * TODO 实现
  */
-function applyLineSpacing(tree: Root, config: FormatterConfig): void {
-    void tree;
+function registerLineSpacing(registry: VisitorRegistry, config: FormatterConfig): void {
+    void registry;
     void config;
 }
 
@@ -23,8 +89,8 @@ function applyLineSpacing(tree: Root, config: FormatterConfig): void {
  * 根据 config.wordSpacing 在 Text 节点中插入空格（中英文、数字、行内元素边界）。
  * TODO 实现
  */
-function applyWordSpacing(tree: Root, config: FormatterConfig): void {
-    void tree;
+function registerWordSpacing(registry: VisitorRegistry, config: FormatterConfig): void {
+    void registry;
     void config;
 }
 
@@ -32,8 +98,8 @@ function applyWordSpacing(tree: Root, config: FormatterConfig): void {
  * 根据 config.list 规范化 List / ListItem：标记符、缩进、尾部字符。
  * TODO 实现
  */
-function applyListFormatting(tree: Root, config: FormatterConfig): void {
-    void tree;
+function registerListFormatting(registry: VisitorRegistry, config: FormatterConfig): void {
+    void registry;
     void config;
 }
 
@@ -41,8 +107,8 @@ function applyListFormatting(tree: Root, config: FormatterConfig): void {
  * 根据 config.table 计算列宽、写入 TableExtraData / TableRowExtraData。
  * TODO 实现
  */
-function applyTableFormatting(tree: Root, config: FormatterConfig): void {
-    void tree;
+function registerTableFormatting(registry: VisitorRegistry, config: FormatterConfig): void {
+    void registry;
     void config;
 }
 
@@ -50,8 +116,8 @@ function applyTableFormatting(tree: Root, config: FormatterConfig): void {
  * 根据 config.inline 处理 InlineCode / Strong / Math 节点。
  * TODO 实现
  */
-function applyInlineFormatting(tree: Root, config: FormatterConfig): void {
-    void tree;
+function registerInlineFormatting(registry: VisitorRegistry, config: FormatterConfig): void {
+    void registry;
     void config;
 }
 
@@ -59,8 +125,8 @@ function applyInlineFormatting(tree: Root, config: FormatterConfig): void {
  * 处理 config.other 中的杂项规则：移除标题序号、singleCharTableHead 等。
  * TODO 实现
  */
-function applyOtherFormatting(tree: Root, config: FormatterConfig): void {
-    void tree;
+function registerOtherFormatting(registry: VisitorRegistry, config: FormatterConfig): void {
+    void registry;
     void config;
 }
 
@@ -76,11 +142,16 @@ function applyOtherFormatting(tree: Root, config: FormatterConfig): void {
  */
 export function remarkFormatter(config: FormatterConfig): (tree: Root) => void {
     return function (tree: Root): void {
-        applyLineSpacing(tree, config);
-        applyWordSpacing(tree, config);
-        applyListFormatting(tree, config);
-        applyTableFormatting(tree, config);
-        applyInlineFormatting(tree, config);
-        applyOtherFormatting(tree, config);
+        const registry = createRegistry();
+
+        registerTextReplacement(registry, config);
+        registerLineSpacing(registry, config);
+        registerWordSpacing(registry, config);
+        registerListFormatting(registry, config);
+        registerTableFormatting(registry, config);
+        registerInlineFormatting(registry, config);
+        registerOtherFormatting(registry, config);
+
+        runSinglePass(tree, registry);
     };
 }
