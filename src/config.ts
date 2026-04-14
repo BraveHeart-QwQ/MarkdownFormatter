@@ -5,8 +5,8 @@
 //===----------------------------------------------------------------------===//
 
 // TODO Formatter 需求：
-// - [ ] 文本矫正（预处理，保护代码块，文本基础正则替换）
-// - [ ] 块缩进处理（普通缩进当作代码块处理，其他时候无序列表块缩进为 2，有序列表块缩进为 4）
+// - [x] 文本矫正（文本基础正则替换）
+// - [x] 块缩进处理（普通缩进当作代码块处理，其他时候无序列表块缩进为 2，有序列表块缩进为 4）
 // - [ ] 列表规范化：`- xxx`、`1. xxx`
 // - [ ] 列表、Table 的行结尾去除 `。` 号
 // - [ ] 标题不含序号
@@ -14,7 +14,7 @@
 // - [ ] inline 格式化与去格式化（code、math、strong）
 // - [ ] 行间距（特别是标题）
 
-/* TODO 文本规范化：预处理与基础正则替换 */
+/* 文本规范化：预处理与基础正则替换 */
 export interface TextCorrectionConfig {
     replacements: Array<{ pattern: string; replacement: string }>; // 自定义替换规则，按顺序应用。这里 pattern 是正则
 }
@@ -47,7 +47,7 @@ export interface WordSpacingConfig {
     spaceBetweenInlineElements: boolean; // 是否在行内元素（如代码、数学公式）与其他文本之间添加空格
 }
 
-/* TODO 列表格式化 */
+/* 列表格式化 */
 export interface ListConfig {
     enabled: boolean; // 是否启用文本矫正
     unorderedMarker: "-" | "*" | "+"; // 无序列表标记符

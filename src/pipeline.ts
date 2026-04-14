@@ -48,10 +48,17 @@ export function postprocess(output: string, _config: FormatterConfig): string {
  * ExtraData 实现精细化格式化输出。
  */
 function buildProcessor(config: FormatterConfig) {
+    const settings: Record<string, unknown> = { handlers: buildHandlers(config) };
+
+    if (config.list.enabled) {
+        settings.bullet = config.list.unorderedMarker;
+        settings.incrementListMarker = config.list.orderedStyle === "sequential";
+    }
+
     return remark()
         .use(remarkGfm)
         .use(remarkFormatter, config)
-        .data("settings", { handlers: buildHandlers(config) });
+        .data("settings", settings);
 }
 
 // ── 公开入口 ───────────────────────────────────────────────────────────────────
