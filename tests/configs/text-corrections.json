@@ -1,0 +1,22 @@
+{
+  "textCorrection": {
+    "replacements": [
+      {
+        "pattern": "\\.{3}",
+        "replacement": "……"
+      },
+      {
+        "pattern": "->",
+        "replacement": "→"
+      },
+      {
+        "pattern": "注意:",
+        "replacement": "注意："
+      },
+      {
+        "pattern": "(?<=\\d)x(?=\\d)",
+        "replacement": "×"
+      }
+    ]
+  }
+}

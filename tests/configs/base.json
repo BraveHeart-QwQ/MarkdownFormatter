@@ -1,0 +1,20 @@
+{
+  "list": {
+    "unorderedMarker": "-",
+    "orderedStyle": "notSequential",
+    "trimTrailingChars": [
+      "。",
+      "，"
+    ]
+  },
+  "table": {
+    "enabled": true,
+    "removeOuterBorders": true,
+    "trimTrailingChars": [
+      "。"
+    ]
+  },
+  "other": {
+    "removeHeaderNumber": true
+  }
+}
