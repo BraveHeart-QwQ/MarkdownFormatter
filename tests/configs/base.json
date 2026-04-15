@@ -15,6 +15,7 @@
     ]
   },
   "other": {
-    "removeHeaderNumber": true
+    "removeHeaderNumber": true,
+    "singleCharTableHead": true
   }
 }

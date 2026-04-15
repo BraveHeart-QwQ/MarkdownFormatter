@@ -4,7 +4,7 @@
 //
 //===----------------------------------------------------------------------===//
 
-// TODO Formatter 需求：
+// Formatter 需求：
 // - [x] 文本矫正（文本基础正则替换）
 // - [x] 块缩进处理（普通缩进当作代码块处理，其他时候无序列表块缩进为 2，有序列表块缩进为 4）
 // - [x] 列表规范化：`- xxx`、`1. xxx`
@@ -12,8 +12,8 @@
 // - [x] 列表、Table 的行结尾去除 `。` 号
 // - [x] 词间距
 // - [x] inline 格式化与去格式化（code、math、strong）
-// - [ ] 特殊：标题不含序号
-// - [ ] 特殊：Table 格式化（对齐、宽度有限、标题行、消除左右两端竖边）
+// - [x] 特殊：标题不含序号
+// - [x] 特殊：Table 格式化（对齐、宽度有限、标题行、消除左右两端竖边）
 
 /* 文本规范化：预处理与基础正则替换 */
 export interface TextCorrectionConfig {
@@ -77,7 +77,7 @@ export interface InlineConfig {
     handleInlineStrong: "normal" | "allEnglishWord" | "removeAll"; // 正常处理 | 所有相邻英文（包括英文符号）单词都格式化为 inline strong | 移除所有 inline strong
 }
 
-/* TODO 特殊格式化需求 */
+/* 特殊格式化需求 */
 export interface OtherConfig {
     removeHeaderNumber: boolean; // 移除标题中的序号（如 `1.`、`2.3`、`一、`），这在 AI 产生的 MD 中比较常见
     singleCharTableHead: boolean; // 将表格 Header 行格式化为 a | b | c... 这样的单字符，因为大部分 Table 是不显示 Header 行
