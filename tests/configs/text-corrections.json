@@ -10,10 +10,6 @@
         "replacement": "→"
       },
       {
-        "pattern": "注意:",
-        "replacement": "注意："
-      },
-      {
         "pattern": "(?<=\\d)x(?=\\d)",
         "replacement": "×"
       }

@@ -7,6 +7,8 @@ function makeConfig(replacements: Array<{ pattern: string; replacement: string }
     return {
         ...k_defaultFormatterConfig,
         textCorrection: { replacements },
+        // 关闭词间距，避免影响文本矫正测试的预期输出
+        wordSpacing: { spaceBetweenChineseAndEnglish: false, spaceBetweenChineseAndNumber: false, spaceBetweenInlineElements: false },
     };
 }
 

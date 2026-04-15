@@ -6,6 +6,7 @@
 
 import { remark } from "remark";
 import remarkGfm from "remark-gfm";
+import remarkMath from "remark-math";
 import type { FormatterConfig } from "./config.js";
 import { buildHandlers, buildJoinFunctions } from "./handlers/index.js";
 import { remarkFormatter } from "./plugins/index.js";
@@ -63,6 +64,7 @@ function buildProcessor(config: FormatterConfig) {
 
     return remark()
         .use(remarkGfm)
+        .use(remarkMath)
         .use(remarkFormatter, config)
         .data("settings", settings);
 }

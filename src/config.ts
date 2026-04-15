@@ -10,6 +10,7 @@
 // - [x] 列表规范化：`- xxx`、`1. xxx`
 // - [x] 行间距（特别是标题）
 // - [x] 列表、Table 的行结尾去除 `。` 号
+// - [x] 词间距
 // - [ ] 标题不含序号
 // - [ ] Table 格式化（对齐、宽度有限、标题行、消除左右两端竖边）
 // - [ ] inline 格式化与去格式化（code、math、strong）
@@ -39,12 +40,14 @@ export interface LineSpacingConfig {
     blankLinesAfterH4: number; // H4 标题后空行数
 }
 
-/* TODO 词间距处理 */
+/* 词间距处理 */
 export interface WordSpacingConfig {
     // 注意，中英符号并不会产生词间距
     spaceBetweenChineseAndEnglish: boolean; // 是否在中文和英文之间添加空格
-    spaceBetweenWordAndNumber: boolean; // 是否在中英和数字之间添加空格
-    spaceBetweenInlineElements: boolean; // 是否在行内元素（如代码、数学公式）与其他文本之间添加空格
+    spaceBetweenChineseAndNumber: boolean; // 是否在中文和数字之间添加空格
+    spaceBetweenWordAndInlineCode: boolean; // 是否在中英文和行内代码之间添加空格
+    spaceBetweenWordAndInlineEquation: boolean; // 是否在中英文和行内公式之间添加空格
+    spaceBetweenInlineElements: boolean; // 产生空格的规则，是否适用于其他行内元素（如加粗、Mark）。若为 true，则其产生空格的方式，类似于没有该标记时产生空格的结果（空格添加在 inline 标记外）
 }
 
 /* 列表格式化 */
@@ -75,7 +78,7 @@ export interface InlineConfig {
 
 /* TODO 特殊格式化需求 */
 export interface OtherConfig {
-    removeHeaderNumber: boolean; // 移除标题中的序号（如 `1.`、`一、`），这在 AI 产生的 MD 中比较常见
+    removeHeaderNumber: boolean; // 移除标题中的序号（如 `1.`、`2.3`、`一、`），这在 AI 产生的 MD 中比较常见
     singleCharTableHead: boolean; // 将表格 Header 行格式化为 a | b | c... 这样的单字符，因为大部分 Table 是不显示 Header 行
 }
 
@@ -121,7 +124,9 @@ export const k_defaultFormatterConfig: FormatterConfig = {
     wordSpacing: {
         // 注意，中英符号并不会产生词间距
         spaceBetweenChineseAndEnglish: true,
-        spaceBetweenWordAndNumber: true,
+        spaceBetweenChineseAndNumber: true,
+        spaceBetweenWordAndInlineCode: true,
+        spaceBetweenWordAndInlineEquation: true,
         spaceBetweenInlineElements: true,
     },
 
