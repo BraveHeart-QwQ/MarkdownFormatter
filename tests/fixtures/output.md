@@ -11,11 +11,23 @@
 - 半监督学习（Semi-supervised Learning）：仅有少量数据有标签
 - 强化学习（Reinforcement Learning）：通过与环境交互获得奖励信号来学习
 
+a                                      | b
+--------------------------------------|--------------------------
+监督学习（Supervised Learning） | 训练数据含有标签。训练数据含有标签。训练数据含有标签。训练数据含有标签
+无监督学习（Unsupervised Learning）    | 训练数据不含标签
+半监督学习（Semi-supervised Learning） | 仅有少量数据有标签
+强化学习（Reinforcement Learning） | 通过与环境交互获得奖励信号来学习
+
 
 
 ## 1.2 常见算法对比
 
-
+算法                        | 准确率 | 训练速度 | 可解释性
+---------------------------|------|--------|--------
+线性回归(Linear Regression) | 中等   | 快速     | 高
+决策树(Decision Tree)       | 中等   | 中等     | 高
+随机森林(Random Forest)     | 高     | 慢       | 中等
+神经网络(Neural Network)    | 很高   | 很慢     | 低
 
 
 

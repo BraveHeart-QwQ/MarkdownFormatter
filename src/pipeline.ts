@@ -16,13 +16,11 @@ import { remarkFormatter } from "./plugins/index.js";
  * 在解析前对 Markdown 原始文本进行预处理（文本层面）。
  *
  * - 统一换行符（CRLF / CR → LF）
- * - 按序应用 config.textCorrection.replacements 自定义正则替换
  * - TODO 块缩进处理（config.blockIndent.parseIndentAsCodeBlock）
  *   将 4 空格 / Tab 缩进块识别为代码，转为 fenced code block
  */
 export function preprocess(input: string, config: FormatterConfig): string {
     const text = input.replace(/\r\n/g, "\n").replace(/\r/g, "\n");
-
     return text;
 }
 

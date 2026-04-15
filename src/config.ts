@@ -9,7 +9,7 @@
 // - [x] 块缩进处理（普通缩进当作代码块处理，其他时候无序列表块缩进为 2，有序列表块缩进为 4）
 // - [x] 列表规范化：`- xxx`、`1. xxx`
 // - [x] 行间距（特别是标题）
-// - [ ] 列表、Table 的行结尾去除 `。` 号
+// - [x] 列表、Table 的行结尾去除 `。` 号
 // - [ ] 标题不含序号
 // - [ ] Table 格式化（对齐、宽度有限、标题行、消除左右两端竖边）
 // - [ ] inline 格式化与去格式化（code、math、strong）
@@ -55,7 +55,7 @@ export interface ListConfig {
     trimTrailingChars: Array<string>; // 行结尾要去除的字符列表，比如去除 `。`；注意，列表下缩进的内容（非直接列表所在行），不受该配置影响
 }
 
-/* TODO Table 格式化 */
+/* Table 格式化 */
 export interface TableConfig {
     // 列表默认靠左对齐，自动插入空格对齐列
     enabled: boolean; // 是否启用 Table 格式化
@@ -139,7 +139,7 @@ export const k_defaultFormatterConfig: FormatterConfig = {
         enabled: true,
         removeOuterBorders: true,
         trimTrailingChars: ["。"], // 默认移除中文句号
-        maxFormatColumnWidth: 65,
+        maxFormatColumnWidth: 64,
     },
 
     /* Inline 元素格式化 */

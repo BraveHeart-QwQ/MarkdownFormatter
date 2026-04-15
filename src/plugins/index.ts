@@ -147,12 +147,34 @@ function registerListFormatting(registry: VisitorRegistry, config: FormatterConf
 }
 
 /**
- * 根据 config.table 计算列宽、写入 TableExtraData / TableRowExtraData。
- * TODO 实现
+ * 根据 config.table 处理 TableCell：去除行尾 trimTrailingChars 指定的字符。
+ * 列宽计算与列对齐由 tableHandler 在 stringify 阶段完成。
  */
 function registerTableFormatting(registry: VisitorRegistry, config: FormatterConfig): void {
-    void registry;
-    void config;
+    if (!config.table.enabled) return;
+
+    const charsToTrim = config.table.trimTrailingChars;
+    if (charsToTrim.length === 0) return;
+
+    registry.tableCell.push((cell: TableCell) => {
+        if (cell.children.length === 0) return;
+        const lastChild = cell.children[cell.children.length - 1];
+        if (lastChild.type !== "text") return;
+
+        const textNode = lastChild as Text;
+        let value = textNode.value;
+        let changed = true;
+        while (changed) {
+            changed = false;
+            for (const ch of charsToTrim) {
+                if (value.endsWith(ch)) {
+                    value = value.slice(0, -ch.length);
+                    changed = true;
+                }
+            }
+        }
+        textNode.value = value;
+    });
 }
 
 /**
@@ -165,12 +187,21 @@ function registerInlineFormatting(registry: VisitorRegistry, config: FormatterCo
 }
 
 /**
- * 处理 config.other 中的杂项规则：移除标题序号、singleCharTableHead 等。
- * TODO 实现
+ * 处理 config.other 中的杂项规则：singleCharTableHead。
  */
 function registerOtherFormatting(registry: VisitorRegistry, config: FormatterConfig): void {
-    void registry;
-    void config;
+    if (!config.other.singleCharTableHead) return;
+
+    // 将每张表的表头行各格替换为单字符（a, b, c, ...）
+    registry.table.push((node: Table) => {
+        if (node.children.length === 0) return;
+        const headerRow = node.children[0];
+        for (let i = 0; i < headerRow.children.length; i++) {
+            const cell = headerRow.children[i];
+            const char = String.fromCharCode("a".charCodeAt(0) + i);
+            cell.children = [{ type: "text", value: char } as Text];
+        }
+    });
 }
 
 // ── Main plugin ───────────────────────────────────────────────────────────────
@@ -187,6 +218,7 @@ export function remarkFormatter(config: FormatterConfig): (tree: Root) => void {
     return function (tree: Root): void {
         const registry = createRegistry();
 
+        // 这里的顺序很重要
         registerTextReplacement(registry, config);
         registerLineSpacing(registry, config);
         registerWordSpacing(registry, config);
