@@ -1,11 +1,112 @@
-import { describe, it } from "vitest";
+import { describe, expect, it } from "vitest";
+import { k_defaultFormatterConfig } from "../../src/config.js";
+import type { FormatterConfig } from "../../src/config.js";
+import { fmt } from "../helpers.js";
+
+/** 关闭 wordSpacing，只测 inline 行为 */
+function makeConfig(overrides: Partial<FormatterConfig["inline"]>): FormatterConfig {
+    return {
+        ...k_defaultFormatterConfig,
+        wordSpacing: {
+            spaceBetweenChineseAndEnglish: false,
+            spaceBetweenChineseAndNumber: false,
+            spaceBetweenWordAndInlineCode: false,
+            spaceBetweenWordAndInlineEquation: false,
+            spaceBetweenInlineElements: false,
+        },
+        inline: { ...k_defaultFormatterConfig.inline, ...overrides },
+    };
+}
 
 export function inlineSuite(): void {
     describe("inline", () => {
-        it.todo("去除 inline 元素首尾空格（基础行为，写死）");
-        it.todo("normalizeStrong 将 __ 统一替换为 **");
-        it.todo("handleInlineCode = 'removeAll' 时移除所有行内代码标记");
-        it.todo("handleInlineCode = 'allEnglishWord' 时将英文单词格式化为行内代码");
-        it.todo("handleInlineMath / handleInlineStrong 分别按配置处理");
+
+        // ── 基础行为：去除 inline 元素首尾空格（写死）───────────────────────
+
+        it("去除 inlineCode 内首尾空格", async () => {
+            // CommonMark：单侧空格被 parser 抹去；双侧两个空格各剩一个，由 trim 处理
+            const cfg = makeConfig({});
+            expect(await fmt("使用`  code  `示例", cfg)).toBe("使用`code`示例");
+        });
+
+        it("去除 inlineMath 内首尾空格", async () => {
+            const cfg = makeConfig({});
+            expect(await fmt("设$ x^2 $为例", cfg)).toBe("设$x^2$为例");
+        });
+
+        // ── normalizeStrong ────────────────────────────────────────────────
+
+        it("normalizeStrong 将 __ 统一替换为 **", async () => {
+            // remark-gfm 在 parse 阶段将 __text__ 统一解析为 Strong 节点，
+            // stringify 阶段默认输出 **text**，无需额外处理。
+            // 注意：CJK 字符紧邻 __ 时因 Unicode 字母限制 __ 不会触发 strong 解析，
+            // 须使用空格或 ASCII 上下文测试。
+            const cfg = makeConfig({ normalizeStrong: true });
+            expect(await fmt("this is __important__ text", cfg)).toBe("this is **important** text");
+        });
+
+        // ── handleInlineCode = 'removeAll' ────────────────────────────────
+
+        it("removeAll 移除行内代码标记，保留内容", async () => {
+            const cfg = makeConfig({ handleInlineCode: "removeAll" });
+            expect(await fmt("使用`code`示例", cfg)).toBe("使用code示例");
+        });
+
+        it("removeAll 同段多个行内代码均被移除", async () => {
+            const cfg = makeConfig({ handleInlineCode: "removeAll" });
+            expect(await fmt("`foo` 和 `bar`", cfg)).toBe("foo 和 bar");
+        });
+
+        // ── handleInlineCode = 'allEnglishWord' ───────────────────────────
+
+        it("allEnglishWord 将 Text 节点中的英文单词包裹为行内代码", async () => {
+            const cfg = makeConfig({ handleInlineCode: "allEnglishWord" });
+            expect(await fmt("使用 hello 示例", cfg)).toBe("使用 `hello` 示例");
+        });
+
+        it("allEnglishWord 多个英文单词分别包裹", async () => {
+            const cfg = makeConfig({ handleInlineCode: "allEnglishWord" });
+            expect(await fmt("foo 和 bar", cfg)).toBe("`foo` 和 `bar`");
+        });
+
+        it("allEnglishWord 已有 inlineCode 节点不重复包裹", async () => {
+            const cfg = makeConfig({ handleInlineCode: "allEnglishWord" });
+            expect(await fmt("使用`code`示例", cfg)).toBe("使用`code`示例");
+        });
+
+        // ── handleInlineStrong = 'removeAll' ──────────────────────────────
+
+        it("handleInlineStrong removeAll 移除加粗标记，保留内容", async () => {
+            const cfg = makeConfig({ handleInlineStrong: "removeAll" });
+            expect(await fmt("这是**重点**内容", cfg)).toBe("这是重点内容");
+        });
+
+        it("handleInlineStrong removeAll 保留 strong 内部子节点", async () => {
+            // strong 内部有 inlineCode 子节点
+            const cfg = makeConfig({ handleInlineStrong: "removeAll" });
+            expect(await fmt("**`code`**", cfg)).toBe("`code`");
+        });
+
+        // ── handleInlineStrong = 'allEnglishWord' ─────────────────────────
+
+        it("handleInlineStrong allEnglishWord 将英文单词加粗", async () => {
+            const cfg = makeConfig({ handleInlineStrong: "allEnglishWord" });
+            expect(await fmt("使用 hello 示例", cfg)).toBe("使用 **hello** 示例");
+        });
+
+        // ── handleInlineMath = 'removeAll' ────────────────────────────────
+
+        it("handleInlineMath removeAll 移除行内公式标记，保留内容", async () => {
+            const cfg = makeConfig({ handleInlineMath: "removeAll" });
+            expect(await fmt("设$x^2$为例", cfg)).toBe("设x^2为例");
+        });
+
+        // ── handleInlineMath = 'allEnglishWord' ───────────────────────────
+
+        it("handleInlineMath allEnglishWord 将英文单词包裹为行内公式", async () => {
+            const cfg = makeConfig({ handleInlineMath: "allEnglishWord" });
+            // + 是符号不是英文字母，alpha 和 beta 分别包裹为独立公式
+            expect(await fmt("设 alpha + beta 为例", cfg)).toBe("设 $alpha$ + $beta$ 为例");
+        });
     });
 }

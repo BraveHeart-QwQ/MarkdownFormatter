@@ -32,10 +32,10 @@ export function remarkFormatter(config: FormatterConfig): (tree: Root) => void {
         // 这里的顺序很重要
         registerTextReplacement(registry, config);
         registerLineSpacing(registry, config);
+        registerInlineFormatting(registry, config); // inline 应在 wordSpacing 之前执行
         registerWordSpacing(registry, config);
         registerListFormatting(registry, config);
         registerTableFormatting(registry, config);
-        registerInlineFormatting(registry, config);
         registerOtherFormatting(registry, config);
 
         runSinglePass(tree, registry);

@@ -11,9 +11,9 @@
 // - [x] 行间距（特别是标题）
 // - [x] 列表、Table 的行结尾去除 `。` 号
 // - [x] 词间距
-// - [ ] 标题不含序号
-// - [ ] Table 格式化（对齐、宽度有限、标题行、消除左右两端竖边）
-// - [ ] inline 格式化与去格式化（code、math、strong）
+// - [x] inline 格式化与去格式化（code、math、strong）
+// - [ ] 特殊：标题不含序号
+// - [ ] 特殊：Table 格式化（对齐、宽度有限、标题行、消除左右两端竖边）
 
 /* 文本规范化：预处理与基础正则替换 */
 export interface TextCorrectionConfig {
@@ -67,14 +67,14 @@ export interface TableConfig {
     maxFormatColumnWidth: number; // 当格式化后**某一行**的总宽度超过这个值时，该行不参与 Table 格式化列对齐（Table 其他行不受影响），而是直接转为纯粹的按 ` | ` 分隔的文本
 }
 
-/* TODO Inline 元素格式化（辅助工具） */
+/* Inline 元素格式化（辅助工具） */
 export interface InlineConfig {
     // 该格式化应在 wordSpacing 之前执行
     // 基本格式化（写死）：去除 inline 内的首尾空格
     normalizeStrong: boolean; // 是否规范化加粗（`**` 统一格式）
-    handleInlineCode: "normal" | "allEnglishWord" | "removeAll"; // 正常处理 | 所有英文单词都格式化为 inline code | 移除所有 inline code
-    handleInlineMath: "normal" | "allEnglishWord" | "removeAll"; // 正常处理 | 所有英文单词都格式化为 inline code | 移除所有 inline code
-    handleInlineStrong: "normal" | "allEnglishWord" | "removeAll"; // 正常处理 | 所有英文单词都格式化为 inline code | 移除所有 inline code
+    handleInlineCode: "normal" | "allEnglishWord" | "removeAll"; // 正常处理 | 所有相邻英文（包括英文符号）都格式化为 inline code | 移除所有 inline code
+    handleInlineMath: "normal" | "allEnglishWord" | "removeAll"; // 正常处理 | 所有相邻英文（包括英文符号）都格式化为 inline math | 移除所有 inline math
+    handleInlineStrong: "normal" | "allEnglishWord" | "removeAll"; // 正常处理 | 所有相邻英文（包括英文符号）单词都格式化为 inline strong | 移除所有 inline strong
 }
 
 /* TODO 特殊格式化需求 */
