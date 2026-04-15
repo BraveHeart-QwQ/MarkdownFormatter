@@ -67,8 +67,9 @@ export interface TableConfig {
     maxFormatColumnWidth: number; // 当格式化后**某一行**的总宽度超过这个值时，该行不参与 Table 格式化列对齐（Table 其他行不受影响），而是直接转为纯粹的按 ` | ` 分隔的文本
 }
 
-/* TODO Inline 元素格式化 */
+/* TODO Inline 元素格式化（辅助工具） */
 export interface InlineConfig {
+    // 该格式化应在 wordSpacing 之前执行
     // 基本格式化（写死）：去除 inline 内的首尾空格
     normalizeStrong: boolean; // 是否规范化加粗（`**` 统一格式）
     handleInlineCode: "normal" | "allEnglishWord" | "removeAll"; // 正常处理 | 所有英文单词都格式化为 inline code | 移除所有 inline code

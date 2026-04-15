@@ -56,6 +56,51 @@ function padCell(content: string, targetWidth: number): string {
     return content + " ".repeat(Math.max(0, targetWidth - displayWidth(content)));
 }
 
+/** 计算格式化前某行的原始内容宽度（含分隔符开销），用于判断是否超限。 */
+function rawRowWidth(cells: string[], numCols: number, removeOuterBorders: boolean): number {
+    const contentSum = cells.reduce((acc, c) => acc + displayWidth(c), 0);
+    const gapTotal = 3 * (numCols - 1); // " | " between cells
+    return removeOuterBorders
+        ? contentSum + gapTotal
+        : contentSum + gapTotal + 4; // leading "| " + trailing " |"
+}
+
+/** 将一行单元格渲染为 Markdown 表格行字符串。 */
+function renderRow(cells: string[], skip: boolean, colWidths: number[], removeOuterBorders: boolean): string {
+    if (skip) {
+        return removeOuterBorders
+            ? cells.join(" | ")
+            : "| " + cells.join(" | ") + " |";
+    }
+    const padded = cells.map((cell, c) => padCell(cell, colWidths[c]));
+    return removeOuterBorders
+        ? padded.join(" | ").trimEnd()
+        : "| " + padded.join(" | ") + " |";
+}
+
+/** 渲染分隔行（始终按列宽对齐，超限时压缩最右列）。 */
+function renderSeparator(
+    colWidths: number[],
+    align: (string | null | undefined)[],
+    removeOuterBorders: boolean,
+    maxFormatColumnWidth: number,
+    numCols: number,
+): string {
+    const overhead = removeOuterBorders ? numCols - 1 : numCols + 1;
+    const totalWidth = colWidths.reduce((a, b) => a + b, 0) + overhead;
+
+    const lastColWidths = colWidths.slice();
+    if (totalWidth > maxFormatColumnWidth) {
+        const excess = totalWidth - maxFormatColumnWidth;
+        lastColWidths[numCols - 1] = Math.max(3, lastColWidths[numCols - 1] - excess);
+    }
+
+    const sepCells = lastColWidths.map((w, c) => makeSepCell(align[c], w));
+    return removeOuterBorders
+        ? sepCells.join("|")
+        : "|" + sepCells.join("|") + "|";
+}
+
 /**
  * 返回 Table 节点的 stringify handler。
  *
@@ -101,53 +146,14 @@ export function tableHandler(config: FormatterConfig): Handle {
         });
 
         // ── Step 3: 逐行检查原始内容宽度，超限则跳过列对齐 ───────────────────
-        function rawRowWidth(cells: string[]): number {
-            const contentSum = cells.reduce((acc, c) => acc + displayWidth(c), 0);
-            const gapTotal = 3 * (numCols - 1); // " | " between cells
-            return cfg.removeOuterBorders
-                ? contentSum + gapTotal
-                : contentSum + gapTotal + 4; // leading "| " + trailing " |"
-        }
-        const skipRows: boolean[] = cellStrs.map(cells => rawRowWidth(cells) > cfg.maxFormatColumnWidth);
+        const skipRows: boolean[] = cellStrs.map(cells => rawRowWidth(cells, numCols, cfg.removeOuterBorders) > cfg.maxFormatColumnWidth);
 
         // ── Step 4: 生成各行字符串 ────────────────────────────────────────────
-        function renderRow(cells: string[], skip: boolean): string {
-            if (skip) {
-                return cfg.removeOuterBorders
-                    ? cells.join(" | ")
-                    : "| " + cells.join(" | ") + " |";
-            }
-            const padded = cells.map((cell, c) => padCell(cell, colWidths[c]));
-            return cfg.removeOuterBorders
-                ? padded.join(" | ").trimEnd()
-                : "| " + padded.join(" | ") + " |";
-        }
-
-        function renderSeparator(): string {
-            // 分隔行总宽度：每个单元格长度 = colWidths[c]，单元格之间 / 两端是 `|`
-            // removeOuterBorders=false: 1 + sum(colWidths) + (numCols-1) + 1 = sum + numCols + 1
-            // removeOuterBorders=true : sum(colWidths) + (numCols-1)
-            const overhead = cfg.removeOuterBorders ? numCols - 1 : numCols + 1;
-            const totalWidth = colWidths.reduce((a, b) => a + b, 0) + overhead;
-
-            // 如果超限，压缩最右列宽度（最小 3，以维持 GFM 语法合法性）
-            const lastColWidths = colWidths.slice();
-            if (totalWidth > cfg.maxFormatColumnWidth) {
-                const excess = totalWidth - cfg.maxFormatColumnWidth;
-                lastColWidths[numCols - 1] = Math.max(3, lastColWidths[numCols - 1] - excess);
-            }
-
-            const sepCells = lastColWidths.map((w, c) => makeSepCell(align[c], w));
-            return cfg.removeOuterBorders
-                ? sepCells.join("|")
-                : "|" + sepCells.join("|") + "|";
-        }
-
         const lines: string[] = [];
-        lines.push(renderRow(cellStrs[0], skipRows[0]));  // 表头行
-        lines.push(renderSeparator());                     // 分隔行（始终对齐）
+        lines.push(renderRow(cellStrs[0], skipRows[0], colWidths, cfg.removeOuterBorders));  // 表头行
+        lines.push(renderSeparator(colWidths, align, cfg.removeOuterBorders, cfg.maxFormatColumnWidth, numCols)); // 分隔行（始终对齐）
         for (let r = 1; r < rows.length; r++) {
-            lines.push(renderRow(cellStrs[r], skipRows[r]));
+            lines.push(renderRow(cellStrs[r], skipRows[r], colWidths, cfg.removeOuterBorders));
         }
 
         return lines.join("\n");
