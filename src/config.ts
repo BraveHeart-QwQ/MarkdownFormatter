@@ -8,11 +8,11 @@
 // - [x] 文本矫正（文本基础正则替换）
 // - [x] 块缩进处理（普通缩进当作代码块处理，其他时候无序列表块缩进为 2，有序列表块缩进为 4）
 // - [x] 列表规范化：`- xxx`、`1. xxx`
+// - [x] 行间距（特别是标题）
 // - [ ] 列表、Table 的行结尾去除 `。` 号
 // - [ ] 标题不含序号
 // - [ ] Table 格式化（对齐、宽度有限、标题行、消除左右两端竖边）
 // - [ ] inline 格式化与去格式化（code、math、strong）
-// - [ ] 行间距（特别是标题）
 
 /* 文本规范化：预处理与基础正则替换 */
 export interface TextCorrectionConfig {
@@ -26,7 +26,7 @@ export interface BlockIndentConfig {
     orderedListIndent: number; // 有序列表块缩进空格数
 }
 
-/* TODO 行间距处理 */
+/* 行间距处理 */
 export interface LineSpacingConfig {
     // 如果相邻，则取 Before 和 After 中最大的那个作为间隔
     blankLinesBeforeH1: number; // H1 标题前空行数

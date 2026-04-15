@@ -7,7 +7,7 @@
 import { remark } from "remark";
 import remarkGfm from "remark-gfm";
 import type { FormatterConfig } from "./config.js";
-import { buildHandlers } from "./handlers/index.js";
+import { buildHandlers, buildJoinFunctions } from "./handlers/index.js";
 import { remarkFormatter } from "./plugins/index.js";
 
 // ── Step 2: 预处理 ─────────────────────────────────────────────────────────────
@@ -48,7 +48,10 @@ export function postprocess(output: string, _config: FormatterConfig): string {
  * ExtraData 实现精细化格式化输出。
  */
 function buildProcessor(config: FormatterConfig) {
-    const settings: Record<string, unknown> = { handlers: buildHandlers(config) };
+    const settings: Record<string, unknown> = {
+        handlers: buildHandlers(config),
+        join: buildJoinFunctions(config),
+    };
 
     // parseIndentAsCodeBlock:
     //   true  → fences:true（输出 fenced code block，也是 remark 默认行为）

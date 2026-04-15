@@ -6,6 +6,7 @@
   "type": "module",
   "scripts": {
     "dev": "tsx watch src/main.ts",
+    "format": "python3 tests/format.py",
     "build": "tsc",
     "start": "node dist/main.js",
     "typecheck": "tsc --noEmit",

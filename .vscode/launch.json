@@ -15,6 +15,28 @@
             "console": "integratedTerminal",
         },
         {
+            "name": "Debug (format default)",
+            "type": "node",
+            "request": "launch",
+            "program": "${workspaceFolder}/src/main.ts",
+            "runtimeExecutable": "pnpm",
+            "runtimeArgs": [
+                "exec",
+                "tsx"
+            ],
+            "args": [
+                "-c",
+                "tests/configs/base.json",
+                "-c",
+                "tests/configs/text-corrections.json",
+                "-o",
+                "tests/fixtures/output.md",
+                "tests/fixtures/input.md"
+            ],
+            "sourceMaps": true,
+            "console": "integratedTerminal",
+        },
+        {
             "name": "Build (tsc)",
             "type": "node",
             "request": "launch",
