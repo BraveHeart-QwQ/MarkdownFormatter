@@ -1,0 +1,42 @@
+{
+  "name": "markdown-formatter",
+  "displayName": "Markdown Formatter",
+  "description": "Format Markdown files with CJK-aware word-spacing, list, table, and heading rules",
+  "version": "0.0.1",
+  "publisher": "your-publisher-name",
+  "engines": {
+    "vscode": "^1.90.0"
+  },
+  "categories": [
+    "Formatters"
+  ],
+  "activationEvents": [],
+  "main": "./dist/extension.js",
+  "contributes": {
+    "configuration": {
+      "title": "Markdown Formatter",
+      "properties": {
+        "markdownFormatter.configFiles": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "default": [],
+          "markdownDescription": "Config JSON file paths (workspace-root-relative or absolute) to load and merge in order. Each file's fields override the built-in defaults. Equivalent to `-c` in the CLI."
+        }
+      }
+    }
+  },
+  "scripts": {
+    "build": "node esbuild.config.mjs",
+    "watch": "node esbuild.config.mjs --watch",
+    "vscode:prepublish": "node esbuild.config.mjs --production",
+    "typecheck": "tsc --noEmit"
+  },
+  "devDependencies": {
+    "@types/node": "^20.0.0",
+    "@types/vscode": "^1.90.0",
+    "esbuild": "^0.24.0",
+    "typescript": "^5.4.0"
+  }
+}

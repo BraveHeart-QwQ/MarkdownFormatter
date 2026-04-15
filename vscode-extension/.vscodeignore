@@ -1,0 +1,6 @@
+.vscode/**
+src/**
+esbuild.config.mjs
+tsconfig.json
+**/*.ts
+!dist/**
