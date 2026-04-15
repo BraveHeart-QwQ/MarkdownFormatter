@@ -13,6 +13,16 @@
   "activationEvents": [],
   "main": "./dist/extension.js",
   "contributes": {
+    "commands": [
+      {
+        "command": "markdownFormatter.formatDocument",
+        "title": "Markdown Formatter: Format Document"
+      },
+      {
+        "command": "markdownFormatter.formatSelection",
+        "title": "Markdown Formatter: Format Selection"
+      }
+    ],
     "configuration": {
       "title": "Markdown Formatter",
       "properties": {
