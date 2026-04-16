@@ -21,6 +21,14 @@
       {
         "command": "markdownFormatter.formatSelection",
         "title": "Markdown Formatter: Format Selection"
+      },
+      {
+        "command": "markdownFormatter.formatDocumentWithProfile",
+        "title": "Markdown Formatter: Format Document with Profile"
+      },
+      {
+        "command": "markdownFormatter.formatSelectionWithProfile",
+        "title": "Markdown Formatter: Format Selection with Profile"
       }
     ],
     "configuration": {
@@ -32,7 +40,18 @@
             "type": "string"
           },
           "default": [],
-          "markdownDescription": "Config JSON file paths (workspace-root-relative or absolute) to load and merge in order. Each file's fields override the built-in defaults. Equivalent to `-c` in the CLI."
+          "markdownDescription": "Base config JSON file paths (workspace-root-relative or absolute) applied on every format. Equivalent to `-c` in the CLI."
+        },
+        "markdownFormatter.profiles": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "default": {},
+          "markdownDescription": "Named config profiles. Each key is a profile name; the value is an ordered list of config file paths (workspace-root-relative or absolute) merged **after** `#markdownFormatter.configFiles#`. Select a profile via the *Format Document/Selection with Profile* commands."
         }
       }
     }
