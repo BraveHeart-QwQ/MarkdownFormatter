@@ -4,7 +4,8 @@
 //
 //===----------------------------------------------------------------------===//
 
-import { readFileSync, writeFileSync } from "fs";
+import { existsSync, readFileSync, writeFileSync } from "fs";
+import { join } from "path";
 import { format } from "./pipeline.js";
 import { k_defaultFormatterConfig, FormatterConfig } from "./config.js";
 
@@ -27,6 +28,8 @@ function mergeConfig(base: FormatterConfig, ...overrides: PartialConfig[]): Form
 }
 
 // ── Arg parsing ───────────────────────────────────────────────────────────────
+
+export const k_defualtFormatName = "markdown.format";
 
 interface ParsedArgs {
     input: string;
@@ -91,6 +94,27 @@ async function main(): Promise<void> {
 
     // 依次加载并叠加配置
     const overrides: PartialConfig[] = [];
+
+    // 自动加载工作目录下的 markdown.format
+    const autoConfigPath = join(process.cwd(), k_defualtFormatName);
+    if (existsSync(autoConfigPath)) {
+        let raw: string;
+        try {
+            raw = readFileSync(autoConfigPath, "utf-8");
+        } catch (err) {
+            console.error(`Error: cannot read config "${autoConfigPath}": ${(err as Error).message}`);
+            process.exit(1);
+        }
+        let partialCfg: PartialConfig;
+        try {
+            partialCfg = JSON.parse(raw!) as PartialConfig;
+        } catch (err) {
+            console.error(`Error: invalid JSON in config "${autoConfigPath}": ${(err as Error).message}`);
+            process.exit(1);
+        }
+        overrides.push(partialCfg!);
+    }
+
     for (const configPath of parsed.configPaths) {
         let raw: string;
         try {

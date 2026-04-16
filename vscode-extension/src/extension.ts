@@ -13,7 +13,6 @@ import { MarkdownFormattingProvider } from "./formattingProvider.js";
 // - [x] 提供一个 py 脚本将插件打包为 .visx
 // - [x] 允许用户在项目内自定义配置文件，然后在 settings.json 里*组合**使用。提供格式化命令（全文和选中），允许用户指定组合配置
 // - [ ] 内置一个默认样式，可以作为基础的被叠加配置
-// - [ ] 格式化器改一下，支持自动从执行路径读取配置
 // - [ ] import 里的 `../` 设法删掉？
 
 const k_markdownSelector: vscode.DocumentSelector = { language: "markdown", scheme: "file" };
