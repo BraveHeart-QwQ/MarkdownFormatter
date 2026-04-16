@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 """
 Package the VS Code extension as a .vsix file.
 
@@ -7,7 +6,7 @@ Requirements:
   - @vscode/vsce (installed globally or via npx)
 
 Usage:
-  python3 PackageExtension.py [--skip-build] [--out <path>]
+  python PackageExtension.py [--skip-build] [--out <path>]
 """
 
 import argparse
@@ -16,6 +15,8 @@ import sys
 from pathlib import Path
 
 EXTENSION_DIR = Path(__file__).parent.parent / "vscode-extension"
+
+PNPM = "pnpm.cmd" if sys.platform == "win32" else "pnpm"
 
 
 def run(cmd: list[str], cwd: Path) -> None:
@@ -36,14 +37,14 @@ def main() -> None:
         sys.exit(1)
 
     # Step 1: install dependencies
-    run(["pnpm", "install", "--frozen-lockfile"], cwd=EXTENSION_DIR)
+    run([PNPM, "install", "--frozen-lockfile"], cwd=EXTENSION_DIR)
 
     # Step 2: production build (runs vscode:prepublish internally via vsce, but we do it explicitly)
     if not args.skip_build:
-        run(["pnpm", "run", "build"], cwd=EXTENSION_DIR)
+        run([PNPM, "run", "build"], cwd=EXTENSION_DIR)
 
     # Step 3: package with vsce
-    vsceCmd = ["pnpm", "exec", "vsce", "package", "--no-dependencies"]
+    vsceCmd = [PNPM, "exec", "vsce", "package", "--no-dependencies"]
     if args.out:
         out_path = Path(args.out).resolve()
         vsceCmd += ["--out", str(out_path)]
