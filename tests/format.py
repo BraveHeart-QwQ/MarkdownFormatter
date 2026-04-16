@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 """
 Run the Markdown formatter via tsx.
 
@@ -33,6 +32,7 @@ from pathlib import Path
 
 ROOT = "."
 TESTS = "tests"
+PNPM = "pnpm.cmd" if sys.platform == "win32" else "pnpm"
 
 DEFAULT_INPUT = os.path.join(TESTS, "fixtures", "input.md")
 DEFAULT_OUTPUT = os.path.join(TESTS, "fixtures", "output.md")
@@ -105,7 +105,7 @@ def main() -> None:
 
     # ── Build command ─────────────────────────────────────────────────────────
 
-    cmd: list[str] = [str(TSX_BIN), str(MAIN_TS)]
+    cmd: list[str] = [PNPM, "tsx", str(MAIN_TS)]
 
     for cfg in configPaths:
         cmd += ["-c", str(cfg)]

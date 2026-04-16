@@ -15,7 +15,6 @@ import sys
 from pathlib import Path
 
 EXTENSION_DIR = Path(__file__).parent.parent / "vscode-extension"
-
 PNPM = "pnpm.cmd" if sys.platform == "win32" else "pnpm"
 
 

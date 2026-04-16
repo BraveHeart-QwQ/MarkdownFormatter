@@ -2,15 +2,17 @@
   "name": "markdown-formatter",
   "displayName": "Markdown Formatter",
   "description": "Format Markdown files with CJK-aware word-spacing, list, table, and heading rules",
-  "version": "0.0.1",
-  "publisher": "your-publisher-name",
+  "version": "1.0.0",
+  "publisher": "BraveHeart",
   "engines": {
     "vscode": "^1.90.0"
   },
   "categories": [
     "Formatters"
   ],
-  "activationEvents": [],
+  "activationEvents": [
+    "onLanguage:markdown"
+  ],
   "main": "./dist/extension.js",
   "contributes": {
     "commands": [
