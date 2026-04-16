@@ -8,7 +8,13 @@ function makeConfig(replacements: Array<{ pattern: string; replacement: string }
         ...k_defaultFormatterConfig,
         textCorrection: { replacements },
         // 关闭词间距，避免影响文本矫正测试的预期输出
-        wordSpacing: { spaceBetweenChineseAndEnglish: false, spaceBetweenChineseAndNumber: false, spaceBetweenInlineElements: false },
+        wordSpacing: {
+            spaceBetweenChineseAndEnglish: false,
+            spaceBetweenChineseAndNumber: false,
+            spaceBetweenWordAndInlineCode: false,
+            spaceBetweenWordAndInlineEquation: false,
+            spaceBetweenInlineElements: false
+        },
     };
 }
 
@@ -60,11 +66,11 @@ export function textCorrectionSuite(): void {
 
         it("支持捕获组引用", async () => {
             // 将 (word) 变成 [word]
-            // 注意：remark-stringify 会将 [ 转义为 \[，防止被解析成链接语法，这是正确行为
+            // 注意：remark-stringify 会将 [ 和 ] 均转义（防止被解析成链接语法），这是正确行为
             const result = await fmt("(hello) (world)", makeConfig([
                 { pattern: "\\((\\w+)\\)", replacement: "[$1]" },
             ]));
-            expect(result).toBe("\\[hello] \\[world]");
+            expect(result).toBe("\\[hello\\] \\[world\\]");
         });
 
         it("支持 Unicode（中文字符匹配）", async () => {

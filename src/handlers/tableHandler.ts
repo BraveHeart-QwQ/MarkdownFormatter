@@ -85,7 +85,7 @@ function renderSeparator(
     removeOuterBorders: boolean,
     maxFormatColumnWidth: number,
     numCols: number,
-): string {
+): string { // BUG 对于没有两侧 `|` 的情况，分隔的左右两侧少 `-`
     const overhead = removeOuterBorders ? numCols - 1 : numCols + 1;
     const totalWidth = colWidths.reduce((a, b) => a + b, 0) + overhead;
 

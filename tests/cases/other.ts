@@ -79,5 +79,33 @@ export function otherSuite(): void {
                 expect(result).toContain("名称");
             });
         });
+
+        describe("转义修复", () => {
+            const config = makeConfig({});
+
+            it("\\[&\\] 格式化后保持 \\[&\\]（] 不丢失反斜杠）", async () => {
+                expect(await fmt("\\[&\\]", config)).toBe("\\[&\\]");
+            });
+
+            it("链接 URL 中的 & 不被格式化为 \\&", async () => {
+                expect(await fmt("[link](https://example.com?a=1&b=2)", config))
+                    .toBe("[link](https://example.com?a=1&b=2)");
+            });
+
+            it("图片 URL 中的 & 不被格式化为 \\&", async () => {
+                expect(await fmt("![img](https://example.com?x=1&y=2)", config))
+                    .toBe("![img](https://example.com?x=1&y=2)");
+            });
+
+            it("带 title 的链接 URL 中的 & 不被格式化为 \\&", async () => {
+                expect(await fmt('[link](https://a.com?x=1&y=2 "My Title")', config))
+                    .toBe('[link](https://a.com?x=1&y=2 "My Title")');
+            });
+
+            it("引用定义 URL 中的 & 不受影响", async () => {
+                expect(await fmt("[label]: https://example.com?a=1&b=2", config))
+                    .toBe("[label]: https://example.com?a=1&b=2");
+            });
+        });
     });
 }

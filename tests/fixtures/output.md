@@ -2,9 +2,18 @@
 
 机器学习(Machine Learning)是人工智能($AI$)的一个重要分支。它使计算机系统能够自动从数据中学习和改 $2$ 进，无需进行明确的编程(Explicit Programming)。近年来，随着计算能力的提升和数据量的爆炸式增长，机器学习在各个领域 $取得$ 了突破性进展。
 
+\[&\]
+[编辑](https://en.wikibooks.org/w/index.php?title=Windows_Batch_Scripting&veaction=edit&section=9 "Edit section: How a command is executed")
+
+\[[编辑](https://en.wikibooks.org/w/index.php?title=Windows_Batch_Scripting&veaction=edit&section=9 "Edit section: How a command is executed") | [编辑源代码](https://en.wikibooks.org/w/index.php?title=Windows_Batch_Scripting&action=edit&section=9 "Edit section's source code: How a command is executed")\]
+
 
 
 ## 主要学习类型
+
+a    | b
+----|-------
+test | content
 
 - 监督学习（Supervised Learning）：训练数据含有标签。
   →测试替换→训练 X 数据含有标签
