@@ -33,8 +33,12 @@ export function preprocess(input: string, config: FormatterConfig): string {
  * - 保证文件末尾恰好一个换行符
  * - TODO 其他需在文本层面处理的规则
  */
-export function postprocess(output: string, _config: FormatterConfig): string {
-    return output.trimEnd() + "\n";
+export function postprocess(output: string, config: FormatterConfig): string {
+    let result = output;
+    if (config.other.trimTrailingWhitespace) {
+        result = result.replace(/[^\S\n]+$/gm, "");
+    }
+    return result.trimEnd() + "\n";
 }
 
 // ── Steps 3–5: unified pipeline ───────────────────────────────────────────────
