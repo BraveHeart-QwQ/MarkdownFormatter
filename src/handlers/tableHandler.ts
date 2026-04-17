@@ -85,8 +85,11 @@ function renderSeparator(
     removeOuterBorders: boolean,
     maxFormatColumnWidth: number,
     numCols: number,
-): string { // BUG 对于没有两侧 `|` 的情况，分隔的左右两侧少 `-`
-    const overhead = removeOuterBorders ? numCols - 1 : numCols + 1;
+): string {
+    // When removeOuterBorders, data rows use " | " (3 chars) between cells, so
+    // overhead equals 3*(numCols-1). Without outer borders, separator format is
+    // "|col0|col1|...|" whose overhead is numCols+1.
+    const overhead = removeOuterBorders ? 3 * (numCols - 1) : numCols + 1;
     const totalWidth = colWidths.reduce((a, b) => a + b, 0) + overhead;
 
     const lastColWidths = colWidths.slice();
@@ -95,7 +98,17 @@ function renderSeparator(
         lastColWidths[numCols - 1] = Math.max(3, lastColWidths[numCols - 1] - excess);
     }
 
-    const sepCells = lastColWidths.map((w, c) => makeSepCell(align[c], w));
+    const sepCells = lastColWidths.map((w, c) => {
+        // When removeOuterBorders, data rows surround each "|" with spaces (" | ").
+        // The separator joins with bare "|", so each cell must absorb those spaces
+        // as extra dashes: +1 for the first/last column (one adjacent space each),
+        // +2 for middle columns (one space on each side).
+        if (removeOuterBorders && numCols > 1) {
+            const extra = (c === 0 || c === numCols - 1) ? 1 : 2;
+            return makeSepCell(align[c], w + extra);
+        }
+        return makeSepCell(align[c], w);
+    });
     return removeOuterBorders
         ? sepCells.join("|")
         : "|" + sepCells.join("|") + "|";
