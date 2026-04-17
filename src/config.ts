@@ -48,7 +48,7 @@ export interface WordSpacingConfig {
     spaceBetweenChineseAndNumber: boolean; // 是否在中文和数字之间添加空格
     spaceBetweenWordAndInlineCode: boolean; // 是否在中英文和行内代码之间添加空格
     spaceBetweenWordAndInlineEquation: boolean; // 是否在中英文和行内公式之间添加空格
-    spaceBetweenInlineElements: boolean; // 产生空格的规则，是否适用于其他行内元素（如加粗、Mark）。若为 true，则其产生空格的方式，类似于没有该标记时产生空格的结果（空格添加在 inline 标记外）
+    spaceBetweenInlineElements: boolean; // 产生空格的规则，是否适用于其他行内元素（如加粗、斜体、Mark）。若为 true，则其产生空格的方式，类似于没有该标记时产生空格的结果（空格添加在 inline 标记外）
 }
 
 /* 列表格式化 */
@@ -72,7 +72,7 @@ export interface TableConfig {
 export interface InlineConfig {
     // 该格式化应在 wordSpacing 之前执行
     // 基本格式化（写死）：去除 inline 内的首尾空格
-    normalizeStrong: boolean; // 是否规范化加粗（`**` 统一格式）
+    italicMark: "*" | "_"; // 斜体使用的标记符，影响 normalizeStrong 行为
     handleInlineCode: "normal" | "allEnglishWord" | "removeAll"; // 正常处理 | 所有相邻英文（包括英文符号）都格式化为 inline code | 移除所有 inline code
     handleInlineMath: "normal" | "allEnglishWord" | "removeAll"; // 正常处理 | 所有相邻英文（包括英文符号）都格式化为 inline math | 移除所有 inline math
     handleInlineStrong: "normal" | "allEnglishWord" | "removeAll"; // 正常处理 | 所有相邻英文（包括英文符号）单词都格式化为 inline strong | 移除所有 inline strong
@@ -152,7 +152,7 @@ export const k_defaultFormatterConfig: FormatterConfig = {
 
     /* Inline 元素格式化 */
     inline: {
-        normalizeStrong: true,
+        italicMark: "_",
         handleInlineCode: "normal",
         handleInlineMath: "normal",
         handleInlineStrong: "normal",

@@ -4,7 +4,7 @@
 //
 //===----------------------------------------------------------------------===//
 
-import type { Heading, InlineCode, List, ListItem, Paragraph, Root, Strong, Table, TableCell, TableRow, Text } from "mdast";
+import type { Emphasis, Heading, InlineCode, List, ListItem, Paragraph, Root, Strong, Table, TableCell, TableRow, Text } from "mdast";
 import { visit } from "unist-util-visit";
 
 /** remark-math 注入 AST 的行内公式节点（mdast-util-math 的局部声明） */
@@ -26,6 +26,7 @@ export interface VisitorRegistry {
     inlineCode: Array<(node: InlineCode) => void>;
     inlineMath: Array<(node: InlineMath) => void>;
     strong: Array<(node: Strong) => void>;
+    emphasis: Array<(node: Emphasis) => void>;
 }
 
 export function createRegistry(): VisitorRegistry {
@@ -41,6 +42,7 @@ export function createRegistry(): VisitorRegistry {
         inlineCode: [],
         inlineMath: [],
         strong: [],
+        emphasis: [],
     };
 }
 
@@ -61,6 +63,7 @@ export function runSinglePass(tree: Root, registry: VisitorRegistry): void {
             case "inlineCode": for (const h of registry.inlineCode) h(node as InlineCode); break;
             case "inlineMath": for (const h of registry.inlineMath) h(node as InlineMath); break;
             case "strong": for (const h of registry.strong) h(node as Strong); break;
+            case "emphasis": for (const h of registry.emphasis) h(node as Emphasis); break;
         }
     });
 }

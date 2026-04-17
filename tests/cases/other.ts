@@ -139,7 +139,7 @@ export function otherSuite(): void {
                 });
 
                 it("斜体内的 ] 被转义", async () => {
-                    expect(await fmt("*a ] b*", config)).toBe("*a \\] b*");
+                    expect(await fmt("*a ] b*", config)).toBe("_a \\] b_");
                 });
 
                 it("见出し中的 ] 被转义", async () => {

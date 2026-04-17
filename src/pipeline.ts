@@ -68,6 +68,8 @@ function buildProcessor(config: FormatterConfig) {
     //   false → fences:false（保留缩进格式输出）
     settings.fences = config.blockIndent.parseIndentAsCodeBlock;
 
+    settings.emphasis = config.inline.italicMark;
+
     if (config.list.enabled) {
         settings.bullet = config.list.unorderedMarker;
         settings.incrementListMarker = config.list.orderedStyle === "sequential";

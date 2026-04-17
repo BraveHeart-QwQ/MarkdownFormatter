@@ -64,9 +64,6 @@ export function buildHandlers(config: FormatterConfig): Handlers {
     handlers["link"] = linkHandler;
     handlers["image"] = imageHandler;
 
-    // TODO heading handler — 根据 HeadingExtraData 在输出前后插入空行
-    // TODO list handler   — 根据 ListExtraData 输出正确的缩进
-
     return handlers;
 }
 
