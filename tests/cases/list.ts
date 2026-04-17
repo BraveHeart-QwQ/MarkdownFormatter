@@ -75,6 +75,36 @@ export function listSuite(): void {
             expect(result).toContain("这是续行段落。");
         });
 
+        it("任务列表项 [ ] 保留复选框", async () => {
+            const input = "- [ ] task1\n- [ ] task2";
+            const result = await fmt(input, makeConfig({}));
+            expect(result).toBe("- [ ] task1\n- [ ] task2");
+        });
+
+        it("任务列表项 [x] 保留已选复选框", async () => {
+            const input = "- [x] done1\n- [x] done2";
+            const result = await fmt(input, makeConfig({}));
+            expect(result).toBe("- [x] done1\n- [x] done2");
+        });
+
+        it("任务列表与普通列表混合", async () => {
+            const input = "- [ ] unchecked\n- [x] checked\n- normal";
+            const result = await fmt(input, makeConfig({}));
+            expect(result).toBe("- [ ] unchecked\n- [x] checked\n- normal");
+        });
+
+        it("unorderedMarker 为 * 时任务列表项保留复选框", async () => {
+            const input = "- [ ] task\n- [x] done";
+            const result = await fmt(input, makeConfig({ unorderedMarker: "*" }));
+            expect(result).toBe("* [ ] task\n* [x] done");
+        });
+
+        it("任务列表项与 trimTrailingChars 同时生效", async () => {
+            const input = "- [ ] 任务项。\n- [x] 完成项。";
+            const result = await fmt(input, makeConfig({ trimTrailingChars: ["。"] }));
+            expect(result).toBe("- [ ] 任务项\n- [x] 完成项");
+        });
+
         it("enabled 为 false 时不修改列表标记符", async () => {
             const input = "* item1\n* item2";
             const result = await fmt(input, makeConfig({ enabled: false }));

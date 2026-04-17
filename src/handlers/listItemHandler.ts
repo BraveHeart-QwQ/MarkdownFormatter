@@ -45,6 +45,12 @@ export function listItemHandler(config: FormatterConfig): Handle {
             bullet = String(start + itemIndex) + bullet;
         }
 
+        // GFM 任务列表项：检测 checked 属性，生成 [ ] / [x] 前缀
+        const checkable = typeof item.checked === "boolean"
+            && item.children.length > 0
+            && item.children[0].type === "paragraph";
+        const checkbox = checkable ? "[" + (item.checked ? "x" : " ") + "] " : "";
+
         // 根据有序/无序选择配置的缩进宽度，确保能容纳 bullet + 1 空格
         // "mixed" 风格：紧凑列表（非 spread）使用标准单空格，loose 列表使用配置值
         const isOrdered = !!(listParent && (listParent as List).ordered);
@@ -58,6 +64,7 @@ export function listItemHandler(config: FormatterConfig): Handle {
 
         const tracker = s.createTracker(info);
         tracker.move(bullet + " ".repeat(size - bullet.length));
+        if (checkable) tracker.move(checkbox);
         tracker.shift(size);
         const exit = s.enter("listItem");
         const value = s.indentLines(
@@ -66,7 +73,7 @@ export function listItemHandler(config: FormatterConfig): Handle {
                 if (index) {
                     return (blank ? "" : " ".repeat(size)) + line;
                 }
-                return (blank ? bullet : bullet + " ".repeat(size - bullet.length)) + line;
+                return (blank ? bullet : bullet + " ".repeat(size - bullet.length)) + checkbox + line;
             }
         );
         exit();
