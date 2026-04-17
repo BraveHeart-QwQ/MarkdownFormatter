@@ -51,29 +51,24 @@ export function listItemHandler(config: FormatterConfig): Handle {
             && item.children[0].type === "paragraph";
         const checkbox = checkable ? "[" + (item.checked ? "x" : " ") + "] " : "";
 
-        // 根据有序/无序选择配置的缩进宽度，确保能容纳 bullet + 1 空格
-        // "mixed" 风格：紧凑列表（非 spread）使用标准单空格，loose 列表使用配置值
+        // 第一行 bullet 后固定 1 个空格（即 `1. AAA`），续行按配置缩进
         const isOrdered = !!(listParent && (listParent as List).ordered);
-        const configuredIndent = isOrdered
+        const continuationSize = isOrdered
             ? config.blockIndent.orderedListIndent
             : config.blockIndent.unorderedListIndent;
-        const isSpread = !!(listParent && (listParent as List).spread) || !!item.spread;
-        const size = isSpread
-            ? Math.max(bullet.length + 1, configuredIndent)
-            : bullet.length + 1;
 
         const tracker = s.createTracker(info);
-        tracker.move(bullet + " ".repeat(size - bullet.length));
+        tracker.move(bullet + " ");
         if (checkable) tracker.move(checkbox);
-        tracker.shift(size);
+        tracker.shift(continuationSize);
         const exit = s.enter("listItem");
         const value = s.indentLines(
             s.containerFlow(item, tracker.current()),
             (line: string, index: number, blank: boolean): string => {
                 if (index) {
-                    return (blank ? "" : " ".repeat(size)) + line;
+                    return (blank ? "" : " ".repeat(continuationSize)) + line;
                 }
-                return (blank ? bullet : bullet + " ".repeat(size - bullet.length)) + checkbox + line;
+                return (blank ? bullet : bullet + " ") + checkbox + line;
             }
         );
         exit();

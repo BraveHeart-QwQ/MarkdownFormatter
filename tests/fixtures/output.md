@@ -15,17 +15,27 @@ a    | b
 ----|-------
 test | content
 
-- 监督学习（Supervised Learning）：训练数据含有标签。
+- OK
+  - OK1
+  - OK2
+  - [ ] Check
+    1. Oh Well
+    1. Hey
+        - Test Indent
+    1. Hey
+        - [ ] OK2
+
+* 监督学习（Supervised Learning）：训练数据含有标签。
   →测试替换→训练 X 数据含有标签
 
-- 无监督学习（Unsupervised Learning）：训练数据不含标签
+* 无监督学习（Unsupervised Learning）：训练数据不含标签
   a           | b
   -----------|----------------
   表格内替换→ | x 也必须可以执行
 
-- 半监督学习（Semi-supervised Learning）：仅有少量数据有标签
+* 半监督学习（Semi-supervised Learning）：仅有少量数据有标签
 
-- 强化学习（Reinforcement Learning）：通过与环境交互获得奖励信号来学习
+* 强化学习（Reinforcement Learning）：通过与环境交互获得奖励信号来学习
 
 相邻的符号，J 就**不需要**产生空格间隙 `J`。
 
