@@ -54,6 +54,13 @@ function buildProcessor(config: FormatterConfig) {
     const settings: Record<string, unknown> = {
         handlers: buildHandlers(config),
         join: buildJoinFunctions(config),
+        unsafe: [
+            {
+                character: "]",
+                inConstruct: "phrasing",
+                notInConstruct: ["label", "reference", "autolink", "destinationLiteral", "destinationRaw", "titleQuote", "titleApostrophe"],
+            }
+        ],
     };
 
     // parseIndentAsCodeBlock:
