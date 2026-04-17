@@ -41,7 +41,7 @@ export function inlineSuite(): void {
             // stringify 阶段默认输出 **text**，无需额外处理。
             // 注意：CJK 字符紧邻 __ 时因 Unicode 字母限制 __ 不会触发 strong 解析，
             // 须使用空格或 ASCII 上下文测试。
-            const cfg = makeConfig({ normalizeStrong: true });
+            const cfg = makeConfig({});
             expect(await fmt("this is __important__ text", cfg)).toBe("this is **important** text");
         });
 

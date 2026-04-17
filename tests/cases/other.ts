@@ -308,6 +308,27 @@ export function otherSuite(): void {
                 });
             });
 
+            describe("Markdown 符号不被额外转义", () => {
+                it("* 斜体正常显示", async () => {
+                    expect(await fmt("它使*计算机系统*能够", config)).toBe("它使 *计算机系统* 能够");
+                });
+                it("* 斜体正常显示（英文）", async () => {
+                    expect(await fmt("它使*computer system* 能够", config)).toBe("它使 *computer system* 能够");
+                });
+                it("_ 正常切换为 *", async () => {
+                    expect(await fmt("它使_计算机系统_能够", config)).toBe("它使 *计算机系统* 能够");
+                });
+                it("_ 在英文时保持正常", async () => {
+                    expect(await fmt("ok test_some_code ok", config)).toBe("ok test_some_code ok");
+                });
+                it("_ 在英文时保持正常（两侧暴露）", async () => {
+                    expect(await fmt("ok _some_ ok", config)).toBe("ok _some_ ok");
+                });
+                it("_ 在英文时保持正常（两侧暴露，双下划线）", async () => {
+                    expect(await fmt("ok __DEFINE__ ok", config)).toBe("ok __DEFINE__ ok");
+                });
+            });
+
             describe("列表中的转义", () => {
                 it("无序列表项中链接 URL 含 & 不被转义", async () => {
                     expect(await fmt("- [link](https://a.com?x=1&y=2)", config))
