@@ -72,7 +72,6 @@ export interface TableConfig {
 export interface InlineConfig {
     // 该格式化应在 wordSpacing 之前执行
     // 基本格式化（写死）：去除 inline 内的首尾空格
-    italicMark: "*" | "_"; // 斜体使用的标记符，影响 normalizeStrong 行为
     handleInlineCode: "normal" | "allEnglishWord" | "removeAll"; // 正常处理 | 所有相邻英文（包括英文符号）都格式化为 inline code | 移除所有 inline code
     handleInlineMath: "normal" | "allEnglishWord" | "removeAll"; // 正常处理 | 所有相邻英文（包括英文符号）都格式化为 inline math | 移除所有 inline math
     handleInlineStrong: "normal" | "allEnglishWord" | "removeAll"; // 正常处理 | 所有相邻英文（包括英文符号）单词都格式化为 inline strong | 移除所有 inline strong
@@ -152,7 +151,6 @@ export const k_defaultFormatterConfig: FormatterConfig = {
 
     /* Inline 元素格式化 */
     inline: {
-        italicMark: "_",
         handleInlineCode: "normal",
         handleInlineMath: "normal",
         handleInlineStrong: "normal",

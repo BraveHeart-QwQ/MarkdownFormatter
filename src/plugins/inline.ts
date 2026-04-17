@@ -1,4 +1,4 @@
-import type { Emphasis, InlineCode, Paragraph, PhrasingContent, Strong, Text } from "mdast";
+import type { InlineCode, Paragraph, PhrasingContent, Strong, Text } from "mdast";
 import type { FormatterConfig } from "../config.js";
 import type { InlineMath, VisitorRegistry } from "./registry.js";
 
@@ -52,6 +52,7 @@ function wrapWordsInParagraph(
  * 基础行为（写死，始终执行）：
  *   - 去除 inlineCode / inlineMath 的首尾空格（value.trim()）
  *   - 去除 strong 第一 / 最后一个 Text 子节点的首尾空格
+ *   - normalizeStrong：remark-gfm 在 parse/serialize 时自动将 `__text__` 转换为 `**text**`，无需额外处理
  *
  * handleInlineCode / handleInlineMath / handleInlineStrong（段落级别操作）：
  *   - 'normal'     : 仅做基础处理
@@ -73,14 +74,6 @@ export function registerInlineFormatting(registry: VisitorRegistry, config: Form
     });
 
     registry.strong.push((node: Strong) => {
-        if (node.children.length === 0) return;
-        const first = node.children[0];
-        if (first.type === "text") (first as Text).value = (first as Text).value.trimStart();
-        const last = node.children[node.children.length - 1];
-        if (last.type === "text") (last as Text).value = (last as Text).value.trimEnd();
-    });
-
-    registry.emphasis.push((node: Emphasis) => {
         if (node.children.length === 0) return;
         const first = node.children[0];
         if (first.type === "text") (first as Text).value = (first as Text).value.trimStart();

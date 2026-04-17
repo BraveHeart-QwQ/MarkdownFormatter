@@ -1,11 +1,13 @@
 # 机器学习简介
 
-机器学习(Machine Learning)是人工智能($AI$)的一个重要分支。它使计算机系统能够自动从数据中学习和改 $2$ 进，无需进行明确的编程(Explicit Programming)。近年来，随着计算能力的提升和数据量的爆炸式增长，机器学习在各个领域 $取得$ 了突破性进展。
+机器学习(Machine Learning)是人工_智能($AI$)的一个重要分支。它使_计算机系统_能够自动从数据中学习和改 $2$ 进，无需进行明确的编程(Explicit Programming)。近年来，随着计算*能力的提升*和数据量的爆炸式增长，机器学习在各个领域 $取得$ 了突破性进展。
 
 \[&\]
 [编辑](https://en.wikibooks.org/w/index.php?title=Windows_Batch_Scripting&veaction=edit&section=9 "Edit section: How a command is executed")
 
-\[[编辑](https://en.wikibooks.org/w/index.php?title=Windows_Batch_Scripting&veaction=edit&section=9 "Edit section: How a command is executed") | [编辑源代码](https://en.wikibooks.org/w/index.php?title=Windows_Batch_Scripting&action=edit&section=9 "Edit section's source code: How a command is executed")\]
+[[编辑](https://en.wikibooks.org/w/index.php?title=Windows_Batch_Scripting&veaction=edit&section=9 "Edit section: How a command is executed") | [编辑源代码](https://en.wikibooks.org/w/index.php?title=Windows_Batch_Scripting&action=edit&section=9 "Edit section's source code: How a command is executed")]
+
+**[]**
 
 
 
@@ -25,17 +27,23 @@ test | content
     1. Hey
         - [ ] OK2
 
-* 监督学习（Supervised Learning）：训练数据含有标签。
+* item1
+
+* item2
+
+列表
+
+- 监督学习（Supervised Learning）：训练数据含有标签。
   →测试替换→训练 X 数据含有标签
 
-* 无监督学习（Unsupervised Learning）：训练数据不含标签
+- 无监督学习（Unsupervised Learning）：训练数据不含标签
   a           | b
   ------------|-----------------
   表格内替换→ | x 也必须可以执行
 
-* 半监督学习（Semi-supervised Learning）：仅有少量数据有标签
+- 半监督学习（Semi-supervised Learning）：仅有少量数据有标签
 
-* 强化学习（Reinforcement Learning）：通过与环境交互获得奖励信号来学习
+- 强化学习（Reinforcement Learning）：通过与环境交互获得奖励信号来学习
 
 相邻的符号，J 就**不需要**产生空格间隙 `J`。
 

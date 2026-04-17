@@ -54,21 +54,12 @@ function buildProcessor(config: FormatterConfig) {
     const settings: Record<string, unknown> = {
         handlers: buildHandlers(config),
         join: buildJoinFunctions(config),
-        unsafe: [
-            {
-                character: "]",
-                inConstruct: "phrasing",
-                notInConstruct: ["label", "reference", "autolink", "destinationLiteral", "destinationRaw", "titleQuote", "titleApostrophe"],
-            }
-        ],
     };
 
     // parseIndentAsCodeBlock:
     //   true  → fences:true（输出 fenced code block，也是 remark 默认行为）
     //   false → fences:false（保留缩进格式输出）
     settings.fences = config.blockIndent.parseIndentAsCodeBlock;
-
-    settings.emphasis = config.inline.italicMark;
 
     if (config.list.enabled) {
         settings.bullet = config.list.unorderedMarker;

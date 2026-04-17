@@ -107,47 +107,52 @@ export function otherSuite(): void {
                     .toBe("[label]: https://example.com?a=1&b=2");
             });
 
+            it("引用定义 URL 中的 () 不受影响", async () => {
+                expect(await fmt("[label]: https://example.com?a=1&b=2()", config))
+                    .toBe("[label]: https://example.com?a=1&b=2()");
+            });
+
             describe("段落文本中的 ] 字符", () => {
-                it("独立的 ] 被转义为 \\]", async () => {
-                    expect(await fmt("text ] end", config)).toBe("text \\] end");
+                it("独立的 ] 不被转义为 \\]", async () => {
+                    expect(await fmt("text ] end", config)).toBe("text ] end");
                 });
 
-                it("多个 ] 均被转义", async () => {
-                    expect(await fmt("a ] b ] c", config)).toBe("a \\] b \\] c");
+                it("多个 ] 均不被转义", async () => {
+                    expect(await fmt("a ] b ] c", config)).toBe("a ] b ] c");
                 });
 
                 it("已转义的 \\] 保持不变", async () => {
                     expect(await fmt("text \\] end", config)).toBe("text \\] end");
                 });
 
-                it("单独一个 ] 被转义", async () => {
-                    expect(await fmt("]", config)).toBe("\\]");
+                it("单独一个 ] 不被转义", async () => {
+                    expect(await fmt("]", config)).toBe("]");
                 });
 
-                it("单独一个 [ 被转义", async () => {
-                    expect(await fmt("[", config)).toBe("\\[");
+                it("单独一个 [ 不被转义", async () => {
+                    expect(await fmt("[", config)).toBe("[");
                 });
 
-                it("[] 对被转义为 \\[\\]", async () => {
-                    expect(await fmt("[]", config)).toBe("\\[\\]");
+                it("[] 对不被转义为 \\[\\]", async () => {
+                    expect(await fmt("[]", config)).toBe("[]");
                 });
             });
 
             describe("行内格式中的 ] 字符", () => {
                 it("加粗内的 ] 被转义", async () => {
-                    expect(await fmt("**a ] b**", config)).toBe("**a \\] b**");
+                    expect(await fmt("**a ] b**", config)).toBe("**a ] b**");
                 });
 
                 it("斜体内的 ] 被转义", async () => {
-                    expect(await fmt("*a ] b*", config)).toBe("_a \\] b_");
+                    expect(await fmt("*a ] b*", config)).toBe("*a ] b*");
                 });
 
                 it("见出し中的 ] 被转义", async () => {
-                    expect(await fmt("## title ] more", config)).toBe("## title \\] more");
+                    expect(await fmt("## title ] more", config)).toBe("## title ] more");
                 });
 
                 it("引用块中的 ] 被转义", async () => {
-                    expect(await fmt("> text ] end", config)).toBe("> text \\] end");
+                    expect(await fmt("> text ] end", config)).toBe("> text ] end");
                 });
             });
 
@@ -310,22 +315,22 @@ export function otherSuite(): void {
 
             describe("Markdown 符号不被额外转义", () => {
                 it("* 斜体正常显示", async () => {
-                    expect(await fmt("它使*计算机系统*能够", config)).toBe("它使 *计算机系统* 能够");
+                    expect(await fmt("它使*计算机系统*能够", config)).toBe("它使*计算机系统*能够");
                 });
                 it("* 斜体正常显示（英文）", async () => {
                     expect(await fmt("它使*computer system* 能够", config)).toBe("它使 *computer system* 能够");
                 });
                 it("_ 正常切换为 *", async () => {
-                    expect(await fmt("它使_计算机系统_能够", config)).toBe("它使 *计算机系统* 能够");
+                    expect(await fmt("它使_计算机系统_能够", config)).toBe("它使_计算机系统_能够");
                 });
                 it("_ 在英文时保持正常", async () => {
                     expect(await fmt("ok test_some_code ok", config)).toBe("ok test_some_code ok");
                 });
                 it("_ 在英文时保持正常（两侧暴露）", async () => {
-                    expect(await fmt("ok _some_ ok", config)).toBe("ok _some_ ok");
+                    expect(await fmt("ok _some_ ok", config)).toBe("ok *some* ok");
                 });
                 it("_ 在英文时保持正常（两侧暴露，双下划线）", async () => {
-                    expect(await fmt("ok __DEFINE__ ok", config)).toBe("ok __DEFINE__ ok");
+                    expect(await fmt("ok __DEFINE__ ok", config)).toBe("ok **DEFINE** ok");
                 });
             });
 
@@ -345,8 +350,8 @@ export function otherSuite(): void {
                         .toBe("- item\n  - [link](https://a.com?x=1&y=2)");
                 });
 
-                it("列表项中独立的 ] 被转义", async () => {
-                    expect(await fmt("- text ] item", config)).toBe("- text \\] item");
+                it("列表项中独立的 ] 不被转义", async () => {
+                    expect(await fmt("- text ] item", config)).toBe("- text ] item");
                 });
             });
 

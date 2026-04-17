@@ -8,7 +8,7 @@ import type { Nodes, Parents } from "mdast";
 import type { Handle } from "./tableHandler.js";
 import { tableHandler } from "./tableHandler.js";
 import { listItemHandler } from "./listItemHandler.js";
-import { linkHandler, imageHandler } from "./escapeFixHandler.js";
+import { linkHandler, imageHandler, textHandler, definitionHandler } from "./escapeFixHandler.js";
 import type { FormatterConfig } from "../config.js";
 
 export type { Handle };
@@ -63,6 +63,8 @@ export function buildHandlers(config: FormatterConfig): Handlers {
 
     handlers["link"] = linkHandler;
     handlers["image"] = imageHandler;
+    handlers["text"] = textHandler;
+    handlers["definition"] = definitionHandler;
 
     return handlers;
 }

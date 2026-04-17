@@ -155,7 +155,7 @@ export function wordSpacingSuite(): void {
 
         it("斜体英文与中文边界补充空格", async () => {
             const cfg = makeConfig({ spaceBetweenInlineElements: true, spaceBetweenChineseAndEnglish: true });
-            expect(await fmt("这是*emphasis*内容", cfg)).toBe("这是 _emphasis_ 内容");
+            expect(await fmt("这是*emphasis*内容", cfg)).toBe("这是 *emphasis* 内容");
         });
 
         it("加粗数字与中文边界补充空格", async () => {

@@ -18,6 +18,12 @@ export function listSuite(): void {
             expect(result).toBe("- item1\n- item2");
         });
 
+        it("无序列表标记符统一为 unorderedMarker 配置值（带行间距）", async () => {
+            const input = "* item1\n\n* item2\n";
+            const result = await fmt(input, makeConfig({ unorderedMarker: "-" }));
+            expect(result).toBe("- item1\n\n- item2");
+        });
+
         it("unorderedMarker 为 * 时统一为星号", async () => {
             const input = "- item1\n- item2";
             const result = await fmt(input, makeConfig({ unorderedMarker: "*" }));
