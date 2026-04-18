@@ -55,6 +55,18 @@ function compactListJoin(left: Nodes, right: Nodes): number | undefined {
 }
 
 /**
+ * 当表格与前一节点紧凑时（原文无空行），保持紧凑排版
+ */
+function compactTableJoin(left: Nodes, right: Nodes): number | undefined {
+    if (right.type !== "table") return undefined;
+    const leftEnd = left.position?.end?.line;
+    const rightStart = right.position?.start?.line;
+    if (leftEnd !== undefined && rightStart !== undefined && leftEnd + 1 === rightStart)
+        return 0;
+    return undefined;
+}
+
+/**
  * 控制 list item 内部的行间距
  */
 function listSpreadJoin(left: Nodes, right: Nodes, parent: Parents): number | undefined {
@@ -77,7 +89,7 @@ function listSpreadJoin(left: Nodes, right: Nodes, parent: Parents): number | un
  * 构建传给 remark-stringify 的 join 函数数组。
  */
 export function buildJoinFunctions(_config: FormatterConfig): JoinFn[] {
-    return [headingLineSpacingJoin, compactListJoin, listSpreadJoin];
+    return [headingLineSpacingJoin, compactListJoin, compactTableJoin, listSpreadJoin];
 }
 
 /**
