@@ -27,10 +27,6 @@ test | content
     1. Hey
         - [ ] OK2
 
-* item1
-
-* item2
-
 列表
 
 - 监督学习（Supervised Learning）：训练数据含有标签。
@@ -53,6 +49,16 @@ a                                      | b
 无监督学习（Unsupervised Learning）    | 训练数据不含标签
 半监督学习（Semi-supervised Learning） | 仅有少量数据有标签
 强化学习（Reinforcement Learning） | 通过与环境交互获得奖励信号来学习
+
+
+
+## 测试混合列表
+
+- jijsijdf
+
+* item2
+
+  这些内容的收尾句号不要被删除。
 
 
 

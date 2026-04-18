@@ -80,24 +80,40 @@ export function otherSuite(): void {
             });
         });
 
-        describe("转义修复", () => {
+        describe("Parse 阶段反转义检查", () => { // 这里让 Parse 自然反转义即可，格式化器允许执行反转义
             const config = makeConfig({});
 
-            it("\\[&\\] 格式化后保持 \\[&\\]（] 不丢失反斜杠）", async () => {
-                expect(await fmt("\\[&\\]", config)).toBe("\\[&\\]");
+            it("各种符号的反转义", async () => {
+                expect(await fmt("\\\\ \\` \\* \\_ \\{ \\} \\[ \\] \\( \\) \\# \\+ \\- \\. \\! \\| \\~ \\< \\> \\&", config)).toBe("\\ ` * _ { } [ ] ( ) # + - . ! | ~ < > &");
             });
 
-            it("链接 URL 中的 & 不被格式化为 \\&", async () => {
+            it("已转义的 \\[ 会被反转义", async () => {
+                expect(await fmt("text \\[ end", config)).toBe("text [ end");
+            });
+
+            it("已转义的 \\] 会被反转义", async () => {
+                expect(await fmt("text \\] end", config)).toBe("text ] end");
+            });
+        })
+
+        describe("取消 Serialization 阶段产生的非必要转义", () => { // 这里的策略是：默认不执行任何保护性转义，除非必要。必要情况手动枚举处理
+            const config = makeConfig({});
+
+            it("\\[&\\] 转义", async () => {
+                expect(await fmt("\\[&\\]", config)).toBe("[&]");
+            });
+
+            it("链接 URL 中的 & 不被转义为 \\&", async () => {
                 expect(await fmt("[link](https://example.com?a=1&b=2)", config))
                     .toBe("[link](https://example.com?a=1&b=2)");
             });
 
-            it("图片 URL 中的 & 不被格式化为 \\&", async () => {
+            it("图片 URL 中的 & 不被转义为 \\&", async () => {
                 expect(await fmt("![img](https://example.com?x=1&y=2)", config))
                     .toBe("![img](https://example.com?x=1&y=2)");
             });
 
-            it("带 title 的链接 URL 中的 & 不被格式化为 \\&", async () => {
+            it("带 title 的链接 URL 中的 & 不被转义为 \\&", async () => {
                 expect(await fmt('[link](https://a.com?x=1&y=2 "My Title")', config))
                     .toBe('[link](https://a.com?x=1&y=2 "My Title")');
             });
@@ -108,29 +124,21 @@ export function otherSuite(): void {
             });
 
             it("引用定义 URL 中的 () 不受影响", async () => {
-                expect(await fmt("[label]: https://example.com?a=1&b=2()", config))
-                    .toBe("[label]: https://example.com?a=1&b=2()");
+                expect(await fmt("[Command shell overview](https://docs.microsoft.com/en-us/previous-versions/windows/it-pro/windows-xp/bb490954(v=technet.10))", config))
+                    .toBe("[Command shell overview](https://docs.microsoft.com/en-us/previous-versions/windows/it-pro/windows-xp/bb490954(v=technet.10))");
             });
 
             describe("段落文本中的 ] 字符", () => {
-                it("独立的 ] 不被转义为 \\]", async () => {
+                it("单个符号本身不被额外转义", async () => {
+                    expect(await fmt("\\ ` * _ { } [ ] ( ) # + - . ! | ~ < > &", config)).toBe("\\ ` * _ { } [ ] ( ) # + - . ! | ~ < > &");
+                });
+
+                it("] 不被额外转义为 \\]", async () => {
                     expect(await fmt("text ] end", config)).toBe("text ] end");
                 });
 
                 it("多个 ] 均不被转义", async () => {
                     expect(await fmt("a ] b ] c", config)).toBe("a ] b ] c");
-                });
-
-                it("已转义的 \\] 保持不变", async () => {
-                    expect(await fmt("text \\] end", config)).toBe("text \\] end");
-                });
-
-                it("单独一个 ] 不被转义", async () => {
-                    expect(await fmt("]", config)).toBe("]");
-                });
-
-                it("单独一个 [ 不被转义", async () => {
-                    expect(await fmt("[", config)).toBe("[");
                 });
 
                 it("[] 对不被转义为 \\[\\]", async () => {

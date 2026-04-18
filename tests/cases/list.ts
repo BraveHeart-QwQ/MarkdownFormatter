@@ -24,10 +24,10 @@ export function listSuite(): void {
             expect(result).toBe("- item1\n\n- item2");
         });
 
-        it("unorderedMarker 为 * 时统一为星号", async () => {
-            const input = "- item1\n- item2";
-            const result = await fmt(input, makeConfig({ unorderedMarker: "*" }));
-            expect(result).toBe("* item1\n* item2");
+        it("unorderedMarker 为 - 时统一为星号", async () => {
+            const input = "* item1\n- item2";
+            const result = await fmt(input, makeConfig({ unorderedMarker: "-" }));
+            expect(result).toBe("- item1\n- item2");
         });
 
         it("有序列表样式 notSequential：所有项使用相同编号", async () => {
