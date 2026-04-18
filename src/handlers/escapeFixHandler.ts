@@ -279,7 +279,7 @@ function textHandlerFunc(node: object, _: object | null, state: object, info: ob
     // link labels is still escaped by safe() itself.
     const original = s.unsafe;
     s.unsafe = original.filter((p) =>
-        p.character !== "_" && p.character !== "[" &&
+        p.character !== "_" && p.character !== "[" && p.character !== "-" &&
         p.character !== "*" && p.character !== "`" && p.character !== "~" &&
         p.character !== "." && p.character !== "$" && p.character !== "&" &&
         p.character !== "<" && p.character !== ">"

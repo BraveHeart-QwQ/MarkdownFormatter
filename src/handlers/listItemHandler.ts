@@ -8,9 +8,6 @@ import type { List, ListItem, Parents } from "mdast";
 import type { FormatterConfig } from "../config.js";
 import type { Handle } from "./tableHandler.js";
 
-// BUG 列表整体的上下行间隙不应被格式化
-// TODO 列表 item 之间的间隙，取决于是否存在缩进内容
-
 // mdast-util-to-markdown State 的最小接口（避免对传递依赖的直接 import）
 interface ToMarkdownState {
     bulletCurrent: string | undefined;
