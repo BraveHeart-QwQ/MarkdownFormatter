@@ -80,10 +80,10 @@ export function otherSuite(): void {
             });
         });
 
-        describe("Parse 阶段反转义检查", () => { // 这里让 Parse 自然反转义即可，格式化器允许执行反转义
+        describe("Parse 阶段：自然反转义", () => { // 让 mdast 自然反转义，格式化器不重新转义
             const config = makeConfig({});
 
-            it("各种符号的反转义", async () => {
+            it("各种符号经 parse 反转义后原样输出", async () => {
                 expect(await fmt("\\\\ \\` \\* \\_ \\{ \\} \\[ \\] \\( \\) \\# \\+ \\- \\. \\! \\| \\~ \\< \\> \\&", config)).toBe("\\ ` * _ { } [ ] ( ) # + - . ! | ~ < > &");
             });
 
@@ -94,14 +94,14 @@ export function otherSuite(): void {
             it("已转义的 \\] 会被反转义", async () => {
                 expect(await fmt("text \\] end", config)).toBe("text ] end");
             });
-        })
 
-        describe("取消 Serialization 阶段产生的非必要转义", () => { // 这里的策略是：默认不执行任何保护性转义，除非必要。必要情况手动枚举处理
-            const config = makeConfig({});
-
-            it("\\[&\\] 转义", async () => {
+            it("\\[&\\] 经 parse 反转义后不被重新转义", async () => {
                 expect(await fmt("\\[&\\]", config)).toBe("[&]");
             });
+        })
+
+        describe("Serialization 阶段：最小转义策略", () => { // 默认不执行保护性转义，仅在必要时转义
+            const config = makeConfig({});
 
             it("链接 URL 中的 & 不被转义为 \\&", async () => {
                 expect(await fmt("[link](https://example.com?a=1&b=2)", config))
@@ -123,7 +123,7 @@ export function otherSuite(): void {
                     .toBe("[label]: https://example.com?a=1&b=2");
             });
 
-            it("引用定义 URL 中的 () 不受影响", async () => {
+            it("内联链接 URL 中的平衡括号不被转义", async () => {
                 expect(await fmt("[Command shell overview](https://docs.microsoft.com/en-us/previous-versions/windows/it-pro/windows-xp/bb490954(v=technet.10))", config))
                     .toBe("[Command shell overview](https://docs.microsoft.com/en-us/previous-versions/windows/it-pro/windows-xp/bb490954(v=technet.10))");
             });
@@ -146,20 +146,20 @@ export function otherSuite(): void {
                 });
             });
 
-            describe("行内格式中的 ] 字符", () => {
-                it("加粗内的 ] 被转义", async () => {
+            describe("行内格式中的 ] 不被额外转义", () => {
+                it("加粗内的 ] 不被转义", async () => {
                     expect(await fmt("**a ] b**", config)).toBe("**a ] b**");
                 });
 
-                it("斜体内的 ] 被转义", async () => {
+                it("斜体内的 ] 不被转义", async () => {
                     expect(await fmt("*a ] b*", config)).toBe("*a ] b*");
                 });
 
-                it("见出し中的 ] 被转义", async () => {
+                it("标题中的 ] 不被转义", async () => {
                     expect(await fmt("## title ] more", config)).toBe("## title ] more");
                 });
 
-                it("引用块中的 ] 被转义", async () => {
+                it("引用块中的 ] 不被转义", async () => {
                     expect(await fmt("> text ] end", config)).toBe("> text ] end");
                 });
             });
@@ -299,7 +299,7 @@ export function otherSuite(): void {
                 });
             });
 
-            describe("Markdown 转义序列保持不变", () => {
+            describe("必须保留的转义", () => {
                 it("\\* 保持不变", async () => {
                     expect(await fmt("\\*not bold\\*", config)).toBe("\\*not bold\\*");
                 });
@@ -321,7 +321,7 @@ export function otherSuite(): void {
                 });
             });
 
-            describe("Markdown 符号不被额外转义", () => {
+            describe("格式符号不产生多余转义", () => {
                 it("* 斜体正常显示", async () => {
                     expect(await fmt("它使*计算机系统*能够", config)).toBe("它使*计算机系统*能够");
                 });

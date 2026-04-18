@@ -34,18 +34,44 @@ interface ToMarkdownState {
 }
 
 /**
+ * Returns true when the URL contains only balanced (matched) parentheses.
+ * This mirrors the CommonMark rule that allows unescaped balanced parens in
+ * link destinations.
+ */
+function hasBalancedParens(url: string): boolean {
+    let depth = 0;
+    for (const ch of url) {
+        if (ch === "(") depth++;
+        else if (ch === ")") { depth--; if (depth < 0) return false; }
+    }
+    return depth === 0;
+}
+
+/**
  * mdast-util-to-markdown@2 has a bug: the `&` phrasing unsafe rule lacks
- * `noInConstruct: fullPhrasingSpans`, so `&` gets in correctly escaped inside
- * inline link/image URLs (which are `destinationRaw` context but still have
- * `phrasing` in the stack because links live inside paragraphs).
- * This function strips the rule temporarily during URL serialization.
+ * `noInConstruct: fullPhrasingSpans`, so `&` gets incorrectly escaped inside
+ * inline link/image URLs.
+ *
+ * Additionally, `(` and `)` are over-escaped in `destinationRaw` context when
+ * the URL contains balanced parentheses — CommonMark allows those natively.
+ *
+ * This function strips both sets of rules temporarily during URL serialization.
  */
 function safeUrl(state: ToMarkdownState, url: string, info: object): string {
     const original = state.unsafe;
+    const balanced = hasBalancedParens(url);
     state.unsafe = original.filter((p) => {
-        if (p.character !== "&") return true;
-        const c = p.inConstruct;
-        return typeof c === "string" ? c !== "phrasing" : !(Array.isArray(c) && c.includes("phrasing"));
+        if (p.character === "&") {
+            const c = p.inConstruct;
+            if (typeof c === "string" ? c === "phrasing" : (Array.isArray(c) && c.includes("phrasing")))
+                return false;
+        }
+        if (balanced && (p.character === "(" || p.character === ")")) {
+            const c = p.inConstruct;
+            if (typeof c === "string" && c === "destinationRaw") return false;
+            if (Array.isArray(c) && c.includes("destinationRaw")) return false;
+        }
+        return true;
     });
     const result = state.safe(url, info);
     state.unsafe = original;
@@ -220,48 +246,75 @@ function escapeBracketPairs(text: string): string {
 }
 
 /**
- * Custom text handler — removes the blanket `_` and `[` unsafe rules and
- * instead applies selective escaping:
- *  - `_` : only escaped when it could open/close emphasis (not intra-word)
- *  - `[` / `]` : only escaped as non-empty bracket pairs that could be
- *    reinterpreted as link references; inside label/reference constructs
- *    `[` is always escaped.
+ * Check if an emphasis-like delimiter (`*` or `_`) at this position could
+ * open or close emphasis according to CommonMark flanking rules.
+ * Returns true when the character needs escaping.
+ */
+function needsEmphasisEscape(ch: string, prev: string, next: string): boolean {
+    // For `_`, intra-word position (word chars on both sides) never forms emphasis
+    if (ch === "_" && isWordChar(prev) && isWordChar(next)) return false;
+
+    const prevWs = prev === "" || /\s/.test(prev);
+    const nextWs = next === "" || /\s/.test(next);
+    // Both sides whitespace / empty → cannot be flanking → safe
+    if (prevWs && nextWs) return false;
+
+    return true;
+}
+
+/**
+ * Custom text handler — removes the blanket `_`, `[`, `*`, `` ` ``, and `~`
+ * unsafe rules and instead applies selective escaping:
+ *  - `_` / `*` : only escaped when they could open/close emphasis
+ *  - `~` : only escaped when adjacent to another `~` (potential strikethrough)
+ *  - `` ` `` : only escaped when ≥ 2 backticks in the text (potential code span)
+ *  - `[` : only escaped inside label / reference constructs
  */
 function textHandlerFunc(node: object, _: object | null, state: object, info: object): string {
     const n = node as { value: string };
     const s = state as ToMarkdownState;
 
-    // Remove ALL `_` and `[` unsafe patterns before calling state.safe().
+    // Remove emphasis, bracket, backtick, and tilde unsafe patterns.
     // `]` default rules (label/reference only) are kept so that `]` inside
     // link labels is still escaped by safe() itself.
     const original = s.unsafe;
-    s.unsafe = original.filter((p) => p.character !== "_" && p.character !== "[");
+    s.unsafe = original.filter((p) =>
+        p.character !== "_" && p.character !== "[" &&
+        p.character !== "*" && p.character !== "`" && p.character !== "~"
+    );
     const safeInfo = info as { before?: string; after?: string };
     const result = s.safe(n.value, info);
     s.unsafe = original;
 
-    // Re-escape only the underscores that could form emphasis.
+    // Count backticks: a single backtick cannot form a code span on its own.
+    let backtickCount = 0;
+    for (let i = 0; i < result.length; i++) {
+        if (result[i] === "`") backtickCount++;
+    }
+
+    // Selective re-escaping
     let escaped = "";
     for (let i = 0; i < result.length; i++) {
-        if (result[i] !== "_") {
-            escaped += result[i];
-            continue;
-        }
+        const ch = result[i];
         const prev = i > 0 ? result[i - 1] : (safeInfo.before ?? "");
         const next = i < result.length - 1 ? result[i + 1] : (safeInfo.after ?? "");
-        if (isWordChar(prev) && isWordChar(next)) {
-            escaped += "_";           // intra-word: safe to leave unescaped
+
+        if (ch === "_" || ch === "*") {
+            escaped += needsEmphasisEscape(ch, prev, next) ? "\\" + ch : ch;
+        } else if (ch === "~") {
+            // Only escape when adjacent to another ~ (potential ~~strikethrough~~)
+            escaped += (next === "~" || prev === "~") ? "\\~" : "~";
+        } else if (ch === "`") {
+            // Only escape when ≥ 2 backticks exist (could form a code span)
+            escaped += backtickCount >= 2 ? "\\`" : "`";
         } else {
-            escaped += "\\_";         // could open/close emphasis: escape
+            escaped += ch;
         }
     }
 
-    // Re-escape brackets: inside label/reference, escape all `[`; elsewhere,
-    // only escape `[` and `]` that form non-empty pairs (potential references).
+    // Inside label/reference constructs, escape all `[`
     if (s.stack.includes("label") || s.stack.includes("reference")) {
         escaped = escaped.replace(/\[/g, "\\[");
-    } else {
-        escaped = escapeBracketPairs(escaped);
     }
 
     return escaped;

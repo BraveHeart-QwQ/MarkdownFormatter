@@ -66,11 +66,11 @@ export function textCorrectionSuite(): void {
 
         it("支持捕获组引用", async () => {
             // 将 (word) 变成 [word]
-            // 注意：remark-stringify 会将 [ 和 ] 均转义（防止被解析成链接语法），这是正确行为
+            // 最小转义策略下 [] 不被额外转义
             const result = await fmt("(hello) (world)", makeConfig([
                 { pattern: "\\((\\w+)\\)", replacement: "[$1]" },
             ]));
-            expect(result).toBe("\\[hello\\] \\[world\\]");
+            expect(result).toBe("[hello] [world]");
         });
 
         it("支持 Unicode（中文字符匹配）", async () => {
