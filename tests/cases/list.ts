@@ -150,13 +150,7 @@ export function listSuite(): void {
             expect(result).toBe("Content:\n- list");
         });
 
-        it("列表缩进（二）", async () => {
-            const input = "- item1\n\n- item2\n\n\n- item3";
-            const result = await fmt(input, makeConfig({ unorderedMarker: "-" }));
-            expect(result).toBe("- item1\n- item2\n- item3");
-        });
-
-        it("列表缩进（三）", async () => {
+        it("列表缩进（二）", async () => { // 列表内部，item 之间不应该有空行，除非有缩进内容，缩进内容与 item 之间则应该有一个空行
             const input = "- item0 \n\n  indent content。 \n\n\n\n- item1\n    indent content\n- item2\n\n\n- item3";
             const result = await fmt(input, makeConfig({ unorderedMarker: "-" }));
             expect(result).toBe("- item0\n\n  indent content。\n\n- item1\n\n  indent content\n\n- item2\n- item3");
