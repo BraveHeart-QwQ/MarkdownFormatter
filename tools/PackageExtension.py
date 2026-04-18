@@ -43,7 +43,11 @@ def main() -> None:
     run([PNPM, "install", "--frozen-lockfile"], cwd=ROOT_DIR)
     run([PNPM, "install", "--frozen-lockfile"], cwd=EXTENSION_DIR)
 
-    # Step 2: production build
+    # Step 2: build root src (tsc)
+    if not args.skip_build:
+        run([PNPM, "run", "build"], cwd=ROOT_DIR)
+
+    # Step 3: production build of the extension
     # vsce package will also invoke vscode:prepublish (same build), but running explicitly
     # here ensures the build fails fast with visible output before vsce takes over.
     if not args.skip_build:
