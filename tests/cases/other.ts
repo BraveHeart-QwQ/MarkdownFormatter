@@ -163,6 +163,11 @@ export function otherSuite(): void {
                     .toBe("Some Equation：\n$$\n\\begin{array}\nf(x)=ax+b\\\\\n\\end{array}\n$$\n\nEndText");
             });
 
+            it("公式块复杂测试（七）", async () => {
+                expect(await fmt("- 计算\n\n  $$f(x) = ax + \\\\\n  b$$", config))
+                    .toBe("- 计算\n\n  $$f(x) = ax + \\\\\n  b$$");
+            });
+
             it("公式块不应该影响到后续内容的解析", async () => {
                 expect(await fmt("Some Equation：\n$$two line\nequation$$\n* Test List", config))
                     .toBe("Some Equation：\n$$two line\nequation$$\n- Test List");
