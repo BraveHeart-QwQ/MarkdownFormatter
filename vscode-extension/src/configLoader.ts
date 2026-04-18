@@ -1,7 +1,7 @@
 import * as fs from "fs";
 import * as path from "path";
 import * as vscode from "vscode";
-import { k_defaultFormatterConfig, type FormatterConfig } from "../../src/config.js";
+import { k_defaultFormatterConfig, type FormatterConfig, validatePartialConfig } from "../../src/config.js";
 
 export type PartialFormatterConfig = {
     [K in keyof FormatterConfig]?: Partial<FormatterConfig[K]>;
@@ -19,27 +19,56 @@ export function mergeConfig(base: FormatterConfig, ...overrides: PartialFormatte
     return result;
 }
 
+import { ProfileEntry } from "./profile.js";
+
 /**
  * Build a FormatterConfig for the given workspace root.
  *
- * @param workspaceRoot  Absolute path used to resolve relative file references.
- * @param extraFiles     Additional config files (from a profile) merged **after**
- *                       the global `markdownFormatter.configFiles` list.
+ * @param workspaceRoot   Absolute path used to resolve relative file references.
+ * @param extraEntries    Additional config entries (from a profile) merged **after**
+ *                        the global `markdownFormatter.configFiles` list.
+ *                        Each entry is either a file path string or an inline partial config object.
  */
-export function loadFormatterConfig(workspaceRoot: string, extraFiles: string[] = []): FormatterConfig {
+export function loadFormatterConfig(workspaceRoot: string, extraEntries: ProfileEntry[] = []): FormatterConfig {
     const vsConfig = vscode.workspace.getConfiguration("markdownFormatter");
     const baseFiles: string[] = vsConfig.get("configFiles") ?? [];
-    const allFiles = [...baseFiles, ...extraFiles];
+    // base files are all strings; profile entries may be strings or inline objects
+    const allEntries: ProfileEntry[] = [...baseFiles, ...extraEntries];
 
     const overrides: PartialFormatterConfig[] = [];
-    for (const cf of allFiles) {
-        const absPath = path.isAbsolute(cf) ? cf : path.join(workspaceRoot, cf);
-        try {
-            const raw = fs.readFileSync(absPath, "utf-8");
-            overrides.push(JSON.parse(raw) as PartialFormatterConfig);
-        } catch {
-            vscode.window.showErrorMessage(`Markdown Formatter: cannot load config file "${absPath}"`);
+    for (const entry of allEntries) {
+        if (typeof entry === "string") {
+            const absPath = path.isAbsolute(entry) ? entry : path.join(workspaceRoot, entry);
+            let partial: PartialFormatterConfig;
+            try {
+                const raw = fs.readFileSync(absPath, "utf-8");
+                partial = JSON.parse(raw) as PartialFormatterConfig;
+            } catch {
+                throw new Error(`Cannot load config file "${absPath}"`);
+            }
+            const errors = validatePartialConfig(partial);
+            if (errors.length > 0) {
+                throw new Error(`Invalid config in "${absPath}":\n${errors.join("\n")}`);
+            }
+            overrides.push(partial);
+        } else {
+            // inline object entry from a profile
+            const errors = validatePartialConfig(entry);
+            if (errors.length > 0) {
+                throw new Error(`Invalid inline config in profile entry:\n${errors.join("\n")}`);
+            }
+            overrides.push(entry);
         }
+    }
+
+    // 读取 settings 中的内联配置（优先级最高，覆盖文件配置）
+    const inlineConfig: PartialFormatterConfig | undefined = vsConfig.get("config");
+    if (inlineConfig && typeof inlineConfig === "object") {
+        const errors = validatePartialConfig(inlineConfig);
+        if (errors.length > 0) {
+            throw new Error(`Invalid inline config in "markdownFormatter.config" setting:\n${errors.join("\n")}`);
+        }
+        overrides.push(inlineConfig);
     }
 
     return mergeConfig(k_defaultFormatterConfig, ...overrides);

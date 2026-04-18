@@ -99,6 +99,47 @@ export interface FormatterConfig {
     other: OtherConfig;
 }
 
+/**
+ * 校验一个 PartialConfig 对象是否合法。
+ * 以 k_defaultFormatterConfig 为 schema 来源，检查：
+ *   - 顶层是否存在未知的 section key
+ *   - 每个 section 内是否存在未知的子 key
+ * @returns 错误信息数组，为空则校验通过
+ */
+export function validatePartialConfig(obj: unknown): string[] {
+    const errors: string[] = [];
+
+    if (typeof obj !== "object" || obj === null || Array.isArray(obj)) {
+        return ["Config root must be a JSON object."];
+    }
+
+    const validSections = new Set(Object.keys(k_defaultFormatterConfig));
+
+    for (const section of Object.keys(obj as Record<string, unknown>)) {
+        if (!validSections.has(section)) {
+            errors.push(`Unknown config section "${section}".`);
+            continue;
+        }
+
+        const sectionVal = (obj as Record<string, unknown>)[section];
+        if (typeof sectionVal !== "object" || sectionVal === null || Array.isArray(sectionVal)) {
+            errors.push(`Config section "${section}" must be an object.`);
+            continue;
+        }
+
+        const validKeys = new Set(
+            Object.keys(k_defaultFormatterConfig[section as keyof FormatterConfig] as object),
+        );
+        for (const key of Object.keys(sectionVal as Record<string, unknown>)) {
+            if (!validKeys.has(key)) {
+                errors.push(`Unknown key "${key}" in config section "${section}".`);
+            }
+        }
+    }
+
+    return errors;
+}
+
 export const k_defaultFormatterConfig: FormatterConfig = {
     /* 文本规范化：预处理与基础正则替换 */
     textCorrection: {

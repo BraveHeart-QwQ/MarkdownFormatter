@@ -49,11 +49,79 @@
           "additionalProperties": {
             "type": "array",
             "items": {
-              "type": "string"
+              "oneOf": [
+                {
+                  "type": "string",
+                  "description": "Path to a config JSON file (workspace-root-relative or absolute)."
+                },
+                {
+                  "type": "object",
+                  "description": "Inline partial config object, same structure as a config JSON file.",
+                  "properties": {
+                    "textCorrection": {
+                      "type": "object"
+                    },
+                    "blockIndent": {
+                      "type": "object"
+                    },
+                    "lineSpacing": {
+                      "type": "object"
+                    },
+                    "wordSpacing": {
+                      "type": "object"
+                    },
+                    "list": {
+                      "type": "object"
+                    },
+                    "table": {
+                      "type": "object"
+                    },
+                    "inline": {
+                      "type": "object"
+                    },
+                    "other": {
+                      "type": "object"
+                    }
+                  },
+                  "additionalProperties": false
+                }
+              ]
             }
           },
           "default": {},
-          "markdownDescription": "Named config profiles. Each key is a profile name; the value is an ordered list of config file paths (workspace-root-relative or absolute) merged **after** `#markdownFormatter.configFiles#`. Select a profile via the *Format Document/Selection with Profile* commands."
+          "markdownDescription": "Named config profiles. Each key is a profile name; the value is an ordered list of entries merged **after** `#markdownFormatter.configFiles#`. Each entry can be a file path string or an inline partial config object. Select a profile via the *Format Document/Selection with Profile* commands.\n\nExample:\n```json\n{\n  \"compact\": [\n    \"base.json\",\n    { \"lineSpacing\": { \"blankLinesBeforeH2\": 1 } }\n  ]\n}\n```"
+        },
+        "markdownFormatter.config": {
+          "type": "object",
+          "default": {},
+          "markdownDescription": "Inline formatter config object. Merged **after** `#markdownFormatter.configFiles#`, so these values take highest priority. Uses the same structure as a config JSON file. Example:\n```json\n{\n  \"wordSpacing\": { \"spaceBetweenChineseAndEnglish\": false },\n  \"lineSpacing\": { \"blankLinesBeforeH2\": 2 }\n}\n```",
+          "properties": {
+            "textCorrection": {
+              "type": "object"
+            },
+            "blockIndent": {
+              "type": "object"
+            },
+            "lineSpacing": {
+              "type": "object"
+            },
+            "wordSpacing": {
+              "type": "object"
+            },
+            "list": {
+              "type": "object"
+            },
+            "table": {
+              "type": "object"
+            },
+            "inline": {
+              "type": "object"
+            },
+            "other": {
+              "type": "object"
+            }
+          },
+          "additionalProperties": false
         }
       }
     }

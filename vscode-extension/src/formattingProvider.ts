@@ -8,7 +8,13 @@ export async function applyFormatToDocument(
     config: FormatterConfig,
 ): Promise<void> {
     const original = document.getText();
-    const formatted = await format(original, config);
+    let formatted: string;
+    try {
+        formatted = await format(original, config);
+    } catch (err) {
+        vscode.window.showErrorMessage(`Markdown Formatter: formatting failed — ${(err as Error).message}`);
+        return;
+    }
     if (formatted === original) return;
 
     const fullRange = new vscode.Range(
@@ -26,7 +32,13 @@ export async function applyFormatToRange(
     config: FormatterConfig,
 ): Promise<void> {
     const original = document.getText(range);
-    const formatted = await format(original, config);
+    let formatted: string;
+    try {
+        formatted = await format(original, config);
+    } catch (err) {
+        vscode.window.showErrorMessage(`Markdown Formatter: formatting failed — ${(err as Error).message}`);
+        return;
+    }
     if (formatted === original) return;
 
     const edit = new vscode.WorkspaceEdit();
@@ -42,9 +54,21 @@ export class MarkdownFormattingProvider
         _options: vscode.FormattingOptions,
         _token: vscode.CancellationToken,
     ): Promise<vscode.TextEdit[]> {
-        const config = loadFormatterConfig(workspaceRootFor(document.uri));
+        let config;
+        try {
+            config = loadFormatterConfig(workspaceRootFor(document.uri));
+        } catch (err) {
+            vscode.window.showErrorMessage(`Markdown Formatter: ${(err as Error).message}`);
+            return [];
+        }
         const original = document.getText();
-        const formatted = await format(original, config);
+        let formatted: string;
+        try {
+            formatted = await format(original, config);
+        } catch (err) {
+            vscode.window.showErrorMessage(`Markdown Formatter: formatting failed — ${(err as Error).message}`);
+            return [];
+        }
         if (formatted === original) return [];
 
         const fullRange = new vscode.Range(
@@ -60,9 +84,21 @@ export class MarkdownFormattingProvider
         _options: vscode.FormattingOptions,
         _token: vscode.CancellationToken,
     ): Promise<vscode.TextEdit[]> {
-        const config = loadFormatterConfig(workspaceRootFor(document.uri));
+        let config;
+        try {
+            config = loadFormatterConfig(workspaceRootFor(document.uri));
+        } catch (err) {
+            vscode.window.showErrorMessage(`Markdown Formatter: ${(err as Error).message}`);
+            return [];
+        }
         const original = document.getText(range);
-        const formatted = await format(original, config);
+        let formatted: string;
+        try {
+            formatted = await format(original, config);
+        } catch (err) {
+            vscode.window.showErrorMessage(`Markdown Formatter: formatting failed — ${(err as Error).message}`);
+            return [];
+        }
         if (formatted === original) return [];
         return [vscode.TextEdit.replace(range, formatted)];
     }

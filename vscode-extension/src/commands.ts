@@ -21,7 +21,13 @@ export async function cmdFormatDocumentWithProfile(editor: vscode.TextEditor): P
     if (editor.document.languageId !== "markdown") return;
     const extraFiles = await pickProfile();
     if (extraFiles === undefined) return;
-    const config = loadFormatterConfig(workspaceRootFor(editor.document.uri), extraFiles);
+    let config;
+    try {
+        config = loadFormatterConfig(workspaceRootFor(editor.document.uri), extraFiles);
+    } catch (err) {
+        vscode.window.showErrorMessage(`Markdown Formatter: ${(err as Error).message}`);
+        return;
+    }
     await applyFormatToDocument(editor.document, config);
 }
 
@@ -33,6 +39,12 @@ export async function cmdFormatSelectionWithProfile(editor: vscode.TextEditor): 
     }
     const extraFiles = await pickProfile();
     if (extraFiles === undefined) return;
-    const config = loadFormatterConfig(workspaceRootFor(editor.document.uri), extraFiles);
+    let config;
+    try {
+        config = loadFormatterConfig(workspaceRootFor(editor.document.uri), extraFiles);
+    } catch (err) {
+        vscode.window.showErrorMessage(`Markdown Formatter: ${(err as Error).message}`);
+        return;
+    }
     await applyFormatToRange(editor.document, editor.selection, config);
 }
