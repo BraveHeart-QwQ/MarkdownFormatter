@@ -68,7 +68,7 @@ function buildProcessor(config: FormatterConfig) {
     }
 
     return remark()
-        .use(remarkGfm)
+        .use(remarkGfm, { singleTilde: false }) // 允许 ~~strikethrough~~ 中的 ~ 被转义（不强制要求成对出现）
         .use(remarkMath)
         .use(remarkFormatter, config)
         .data("settings", settings);
