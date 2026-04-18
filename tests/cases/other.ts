@@ -164,8 +164,8 @@ export function otherSuite(): void {
             });
 
             it("公式块复杂测试（七）", async () => {
-                expect(await fmt("- 计算\n\n  $$f(x) = ax + \\\\\n  b$$", config))
-                    .toBe("- 计算\n\n  $$f(x) = ax + \\\\\n  b$$");
+                expect(await fmt("Test List:\n- 计算\n\n  $$f(x) = ax + \\\\\n  b$$\n\nAfter Content", config))
+                    .toBe("Test List:\n- 计算\n\n  $$f(x) = ax + \\\\\n  b$$\n\nAfter Content");
             });
 
             it("公式块不应该影响到后续内容的解析", async () => {
@@ -174,8 +174,8 @@ export function otherSuite(): void {
             });
 
             it("公式块内的内容不应该被转义影响", async () => {
-                expect(await fmt("$$\\left \\{ \\\\\n\\right.$$", config))
-                    .toBe("$$\\left \\{ \\\\\n\\right.$$");
+                expect(await fmt("Before Equation:\n\n$$\\left \\{ \\\\\n\\right.$$\n\nAfter Equation", config))
+                    .toBe("Before Equation:\n\n$$\\left \\{ \\\\\n\\right.$$\n\nAfter Equation");
             });
 
             it(". 符号不产生额外转义", async () => {
