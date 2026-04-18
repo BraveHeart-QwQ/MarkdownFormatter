@@ -98,6 +98,10 @@ export function otherSuite(): void {
             it("\\[&\\] 经 parse 反转义后不被重新转义", async () => {
                 expect(await fmt("\\[&\\]", config)).toBe("[&]");
             });
+
+            it("* 号复杂情况下的反转义", async () => {
+                expect(await fmt("copy \\*.txt \\*.bak", config)).toBe("copy *.txt *.bak");
+            });
         })
 
         describe("Serialization 阶段：最小转义策略", () => { // 默认不执行保护性转义，仅在必要时转义
@@ -111,6 +115,31 @@ export function otherSuite(): void {
             it("省略号正确", async () => {
                 expect(await fmt("...\n\n(...)\n\n[](...)", config))
                     .toBe("...\n\n(...)\n\n[](...)");
+            });
+
+            it("~ 符号不产生额外转义", async () => {
+                expect(await fmt("C:\\\\PROGRA~2\\\\WINDOW~3\\\\ACCESS~1\\\\wordpad.exe", config))
+                    .toBe("C:\\PROGRA~2\\WINDOW~3\\ACCESS~1\\wordpad.exe");
+            });
+
+            it(". 符号不产生额外转义", async () => {
+                expect(await fmt("stackoverflow.com", config))
+                    .toBe("stackoverflow.com");
+            });
+
+            it("$ 符号不产生额外转义", async () => {
+                expect(await fmt("perl -ne \"$. <= 10 and print\" MyFile.txt", config))
+                    .toBe("perl -ne \"$. <= 10 and print\" MyFile.txt");
+            });
+
+            it("& 符号不产生额外转义", async () => {
+                expect(await fmt("- echo 1&echo 2&echo 3", config))
+                    .toBe("- echo 1&echo 2&echo 3");
+            });
+
+            it("< 符号不产生额外转义", async () => {
+                expect(await fmt("set <NUL /p=Output of a command", config))
+                    .toBe("set <NUL /p=Output of a command");
             });
 
             it("图片 URL 中的 & 不被转义为 \\&", async () => {
@@ -374,6 +403,12 @@ export function otherSuite(): void {
                     const result = await fmt(input, config);
                     expect(result).toContain("a & b");
                     expect(result).not.toContain("\\&");
+                });
+
+                it("表格单元格中 _ 文本不被转义", async () => {
+                    const input = "a   | b\n----|----\n$_  | b";
+                    const result = await fmt(input, config);
+                    expect(result).toBe("a   | b\n----|----\n$_  | b");
                 });
 
                 it("表格单元格中包含链接时 URL & 不被转义", async () => {

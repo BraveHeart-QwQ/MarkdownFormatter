@@ -17,7 +17,6 @@ import { remarkFormatter } from "./plugins/index.js";
  * 在解析前对 Markdown 原始文本进行预处理（文本层面）。
  *
  * - 统一换行符（CRLF / CR → LF）
- * - TODO 块缩进处理（config.blockIndent.parseIndentAsCodeBlock）
  *   将 4 空格 / Tab 缩进块识别为代码，转为 fenced code block
  */
 export function preprocess(input: string): string {
@@ -31,7 +30,6 @@ export function preprocess(input: string): string {
  * 在 stringify 后对输出文本进行后处理（文本层面）。
  *
  * - 保证文件末尾恰好一个换行符
- * - TODO 其他需在文本层面处理的规则
  */
 export function postprocess(output: string, config: FormatterConfig): string {
     let result = output;

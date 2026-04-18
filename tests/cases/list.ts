@@ -137,5 +137,17 @@ export function listSuite(): void {
             expect(result).toContain("第一项。");
             expect(result).toContain("第二项。");
         });
+
+        it("列表换行 + 尾空格测试", async () => {
+            const input = "* not good  \n  but ok  ";
+            const result = await fmt(input, makeConfig({ enabled: false, trimTrailingChars: ["。"] }));
+            expect(result).toBe("* not good\n  but ok");
+        });
+
+        it("特殊列表结构", async () => {
+            const input = "- * (asterisk)\n\nOrdered List:\n1. * /";
+            const result = await fmt(input, makeConfig({ unorderedMarker: "-" }));
+            expect(result).toBe("- * (asterisk)\n\nOrdered List:\n1. * /");
+        });
     });
 }

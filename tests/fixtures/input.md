@@ -7,8 +7,35 @@
 
 \[[编辑](https://en.wikibooks.org/w/index.php?title=Windows_Batch_Scripting&veaction=edit&section=9 "Edit section: How a command is executed") | [编辑源代码](https://en.wikibooks.org/w/index.php?title=Windows_Batch_Scripting&action=edit&section=9 "Edit section's source code: How a command is executed")\]
 
+C:\\Windows\\System32\\notepad.exe
+C:\Windows\System32\notepad.exe
+C:\\PROGRA~2\\WINDOW~3\\ACCESS~1\\wordpad.exe
+
+1. abc
+11. abc
+
+stackoverflow.com
+- pack
+- list
+- test
+
+好吧
+
+* not good  
+  but   ok
+
+- pack  
+-   echo 1&echo 2&echo 3
+-   list
+
+
+- test
+
 **[]**
+
 ## 1.1 主要学习类型
+
+set <NUL /p=Output of a command
 
 a   | b
 ----|----
