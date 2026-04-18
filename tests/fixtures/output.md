@@ -73,10 +73,13 @@ $$one line equation$$
 $$two line equation$$
 
 - what ?
+- 计算
 
-$$\{$$
+  $$f(x) = ax + \\
+  b$$
 
-$$\left \{ \right.$$
+$$\left \{
+\right.$$
 
 
 

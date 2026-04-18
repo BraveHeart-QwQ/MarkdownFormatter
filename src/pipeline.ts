@@ -139,9 +139,12 @@ function protectUnclosedMathFences(text: string): string {
                 if (closingIsInline && closingIdx + 1 < lines.length) {
                     // Split inline closing "equation$$" -> "equation\n$$" so remark-math
                     // can recognize the closing fence and doesn't consume trailing content.
+                    // Preserve leading whitespace so the inserted fence stays within the
+                    // same indentation context (e.g. inside a list item).
                     const dollarMatch = /\$\$+$/.exec(lines[closingIdx])!;
+                    const leadingWS = /^\s*/.exec(lines[closingIdx])![0];
                     lines[closingIdx] = lines[closingIdx].slice(0, -dollarMatch[0].length).trimEnd();
-                    lines.splice(closingIdx + 1, 0, "$$");
+                    lines.splice(closingIdx + 1, 0, leadingWS + dollarMatch[0]);
                     inMathBlock = true;
                     mathBlockEnd = closingIdx + 1;
                 } else {
@@ -188,7 +191,7 @@ function remarkPreserveMathMarkers() {
             if (!n.position) return;
             const lineIdx = n.position.start.line - 1;
             if (lineIdx < 0 || lineIdx >= lines.length) return;
-            const match = lines[lineIdx].match(/^\$\$(.*)$/);
+            const match = lines[lineIdx].match(/^\s*\$\$(.*)$/);
             if (match) {
                 n.data = { ...(n.data ?? {}), rawMeta: match[1] };
             }
