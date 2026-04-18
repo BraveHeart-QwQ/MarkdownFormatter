@@ -43,6 +43,7 @@ Other List:
 
   but   ok
 
+[list: style="table"]
 - pack
 - echo 1&echo 2&echo 3
   - list
@@ -53,7 +54,8 @@ Other List:
     1. list
 
 - test
-- > > Hello
+
+<!-- Hey -->
 
 > > Hello
 
@@ -63,14 +65,23 @@ Other List:
 
 ## 主要学习类型
 
+a   | b
+----|----
+x   | y
+
 - list
   content
+  a   | b
+  ----|----
+  x   | y
+  - second list
 
 set <NUL /p=Output of a command
 
-a    | b
------|--------
-test | content
+[table: title="标题"]
+a   | b
+----|----
+x   | y
 
 - OK
   - OK1

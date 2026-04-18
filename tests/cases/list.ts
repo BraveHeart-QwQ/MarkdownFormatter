@@ -163,9 +163,9 @@ export function listSuite(): void {
         });
 
         it("列表缩进（四）", async () => {
-            const input = "-   list\n  content";
+            const input = "-   list\n  content\n\n  a   | b\n  ----|----\n  x   | y";
             const result = await fmt(input, makeConfig({ unorderedMarker: "-" }));
-            expect(result).toBe("- list\n\n  content");
+            expect(result).toBe("- list\n\n  content\n\n  a   | b\n  ----|----\n  x   | y");
         });
 
         it("特殊列表结构（一）", async () => {

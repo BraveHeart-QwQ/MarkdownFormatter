@@ -24,7 +24,50 @@ export function preprocess(input: string, config: FormatterConfig): string {
     if (config.other.trimTrailingWhitespace) {
         text = text.replace(/[^\S\n]+$/gm, "");
     }
+    text = normalizeListMarkerSpacing(text);
     return text;
+}
+
+// TODO preprocess 增加一个保护流程
+// BUG 列表 后紧跟 `*` 修一下
+/**
+ * 规范化列表标记符后的空格：`-   text` → `- text`、`1.   text` → `1. text`。
+ *
+ * 宽标记（多余空格）会使 parser 将内容起始列推到更深的位置，
+ * 导致后续缩进续行和子内容（如表格）被排除在列表项之外。
+ * 在解析前统一为单空格，确保 parser 生成正确的 AST。
+ */
+function normalizeListMarkerSpacing(text: string): string {
+    const lines = text.split('\n');
+    let fenceChar = '';
+    let fenceLen = 0;
+
+    for (let i = 0; i < lines.length; i++) {
+        const line = lines[i];
+
+        // 跟踪 fenced code block（避免修改代码块内容）
+        const fenceMatch = line.match(/^\s*(`{3,}|~{3,})/);
+        if (fenceMatch) {
+            const char = fenceMatch[1][0];
+            const len = fenceMatch[1].length;
+            if (!fenceChar) {
+                fenceChar = char;
+                fenceLen = len;
+            } else if (char === fenceChar && len >= fenceLen) {
+                fenceChar = '';
+                fenceLen = 0;
+            }
+            continue;
+        }
+        if (fenceChar) continue;
+
+        // 无序列表：`-   text` → `- text`
+        lines[i] = line.replace(/^(\s*[-*+]) {2,}(?=\S)/, '$1 ');
+        // 有序列表：`1.   text` → `1. text`
+        lines[i] = lines[i].replace(/^(\s*\d+[.)]) {2,}(?=\S)/, '$1 ');
+    }
+
+    return lines.join('\n');
 }
 
 // ── Step 6: 后处理 ─────────────────────────────────────────────────────────────
