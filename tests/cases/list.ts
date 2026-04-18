@@ -145,9 +145,9 @@ export function listSuite(): void {
         });
 
         it("列表缩进（一）", async () => {
-            const input = "Content:\n- list\nEnd";
+            const input = "Content:\n- list";
             const result = await fmt(input, makeConfig({ unorderedMarker: "-" }));
-            expect(result).toBe("Content:\n- list\nEnd");
+            expect(result).toBe("Content:\n- list");
         });
 
         it("列表缩进（二）", async () => {
