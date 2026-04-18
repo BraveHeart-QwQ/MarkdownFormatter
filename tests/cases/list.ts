@@ -149,5 +149,11 @@ export function listSuite(): void {
             const result = await fmt(input, makeConfig({ unorderedMarker: "-" }));
             expect(result).toBe("- - (asterisk)\n\nOrdered List:\n\n1. - /"); // 这里起始不应该发生替换，单姑且放一马，修起来有点困难
         });
+
+        it("特殊列表结构（二）", async () => {
+            const input = "-   test list\n  - list test";
+            const result = await fmt(input, makeConfig({ unorderedMarker: "-" }));
+            expect(result).toBe("- test list\n  - list test"); // 这里起始不应该发生替换，单姑且放一马，修起来有点困难
+        });
     });
 }
