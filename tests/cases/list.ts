@@ -32,10 +32,15 @@ export function listSuite(): void {
 
         it("unorderedMarker 为 * 时统一", async () => {
             const input = "* item1\n- item2";
-            const result = await fmt(input, makeConfig({ unorderedMarker: "-" }));
+            const result = await fmt(input, makeConfig({ unorderedMarker: "*" }));
             expect(result).toBe("* item1\n* item2");
         });
 
+        it("复杂情况的统一", async () => {
+            const input = "> * item1\n> - item2\n>   * item3\n>   - item4\n> * item5\n\n```* not a list item\n```";
+            const result = await fmt(input, makeConfig({ unorderedMarker: "-" }));
+            expect(result).toBe("> - item1\n> - item2\n>   - item3\n>   - item4\n> - item5\n\n```* not a list item\n```");
+        });
 
         it("有序列表样式 notSequential：所有项使用相同编号", async () => {
             const input = "1. first\n2. second\n3. third";

@@ -10,7 +10,7 @@ import { createRegistry, runSinglePass } from "./registry.js";
 import { registerTextReplacement } from "./textCorrection.js";
 import { registerLineSpacing } from "./lineSpacing.js";
 import { registerWordSpacing } from "./wordSpacing.js";
-import { registerListFormatting } from "./list.js";
+import { mergeAdjacentUnorderedLists, registerListFormatting } from "./list.js";
 import { registerTableFormatting } from "./table.js";
 import { registerInlineFormatting } from "./inline.js";
 import { registerOtherFormatting } from "./other.js";
@@ -27,6 +27,8 @@ import { registerOtherFormatting } from "./other.js";
  */
 export function remarkFormatter(config: FormatterConfig): (tree: Root) => void {
     return function (tree: Root): void {
+        if (config.list.enabled) mergeAdjacentUnorderedLists(tree);
+
         const registry = createRegistry();
 
         // 这里的顺序很重要

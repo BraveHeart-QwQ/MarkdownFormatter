@@ -20,7 +20,7 @@ import { remarkFormatter } from "./plugins/index.js";
  * - TODO 块缩进处理（config.blockIndent.parseIndentAsCodeBlock）
  *   将 4 空格 / Tab 缩进块识别为代码，转为 fenced code block
  */
-export function preprocess(input: string, config: FormatterConfig): string {
+export function preprocess(input: string): string {
     const text = input.replace(/\r\n/g, "\n").replace(/\r/g, "\n");
     return text;
 }
@@ -85,7 +85,7 @@ function buildProcessor(config: FormatterConfig) {
  * 5. 后处理（文本层面收尾）
  */
 export async function format(input: string, config: FormatterConfig): Promise<string> {
-    const preprocessed = preprocess(input, config);
+    const preprocessed = preprocess(input);
     const processor = buildProcessor(config);
     const file = await processor.process(preprocessed);
     return postprocess(String(file), config);

@@ -1,7 +1,29 @@
-import type { ListItem, Paragraph, Text } from "mdast";
+import type { List, ListItem, Paragraph, Root, Text } from "mdast";
 import type { FormatterConfig } from "../config.js";
 import type { VisitorRegistry } from "./registry.js";
 import { trimTrailingChars } from "./utils.js";
+
+type AnyNode = { type: string; children?: AnyNode[] };
+
+function mergeChildren(node: AnyNode): void {
+    if (!node.children) return;
+    for (const child of node.children) mergeChildren(child);
+    let i = 0;
+    while (i < node.children.length - 1) {
+        const a = node.children[i] as unknown as List;
+        const b = node.children[i + 1] as unknown as List;
+        if (a.type === "list" && !a.ordered && b.type === "list" && !b.ordered) {
+            a.children.push(...b.children);
+            node.children.splice(i + 1, 1);
+        } else {
+            i++;
+        }
+    }
+}
+
+export function mergeAdjacentUnorderedLists(tree: Root): void {
+    mergeChildren(tree as unknown as AnyNode);
+}
 
 function trimListItemNode(node: ListItem, charsToTrim: string[]): void {
     // 只处理列表项的第一个段落（续行段落不受影响）
