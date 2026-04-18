@@ -155,5 +155,17 @@ export function tableSuite(): void {
             // 分隔行中 "---..." 长度应匹配 colWidths
             expect(lines[1]).toMatch(/^\|-+\|-+\|$/);
         });
+
+        it("Table Spacing Line 测试", async () => {
+            const input = [
+                "[table: title=\"标题\"]",
+                "a | b",
+                "--- | ---",
+                "x | y",
+            ].join("\n");
+            const result = await fmt(input, makeConfig({ removeOuterBorders: false }));
+            const lines = result.split("\n");
+            expect(lines.length).toBe(4); // no extra blank line before table
+        });
     });
 }
