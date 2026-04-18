@@ -109,15 +109,39 @@ function linkHandlerFunc(node: object, _: object | null, state: object, info: ob
     const tracker = s.createTracker(info);
 
     if (isAutolink(n, s)) {
-        const savedStack = s.stack;
-        s.stack = [];
-        const exitAuto = s.enter("autolink");
-        let v = tracker.move("<");
-        v += tracker.move(s.containerPhrasing(n, { before: v, after: ">", ...tracker.current() }));
-        v += tracker.move(">");
-        exitAuto();
-        s.stack = savedStack;
-        return v;
+        const isStandard = !!(n as { data?: { standardAutolink?: boolean } }).data?.standardAutolink;
+        if (isStandard) {
+            const exit = s.enter("autolink");
+            // Suppress `&` phrasing escape inside autolink angle brackets
+            const original = s.unsafe;
+            s.unsafe = original.filter((p) => {
+                if (p.character === "&") {
+                    const c = p.inConstruct;
+                    if (typeof c === "string" ? c === "phrasing" : (Array.isArray(c) && c.includes("phrasing")))
+                        return false;
+                }
+                return true;
+            });
+            let value = tracker.move("<");
+            value += tracker.move(
+                s.containerPhrasing(n, {
+                    before: value,
+                    after: ">",
+                    ...tracker.current(),
+                }),
+            );
+            value += tracker.move(">");
+            s.unsafe = original;
+            exit();
+            return value;
+        }
+        // GFM autolink literal: output bare URL
+        const i = info as { before?: string; after?: string };
+        return s.containerPhrasing(n, {
+            before: i.before ?? "",
+            after: i.after ?? "",
+            ...tracker.current(),
+        });
     }
 
     const exit = s.enter("link");
@@ -282,7 +306,7 @@ function textHandlerFunc(node: object, _: object | null, state: object, info: ob
         p.character !== "_" && p.character !== "[" && p.character !== "-" &&
         p.character !== "*" && p.character !== "`" && p.character !== "~" &&
         p.character !== "." && p.character !== "$" && p.character !== "&" &&
-        p.character !== "<" && p.character !== ">"
+        p.character !== "<" && p.character !== ">" && p.character !== ":"
     );
     const safeInfo = info as { before?: string; after?: string };
     const result = s.safe(n.value, info);

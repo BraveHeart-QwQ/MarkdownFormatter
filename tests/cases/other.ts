@@ -278,7 +278,7 @@ export function otherSuite(): void {
 
                 it("裸 URL 自动转换为自动链接后 & 不被转义", async () => {
                     expect(await fmt("Visit https://a.com?x=1&y=2 here", config))
-                        .toBe("Visit <https://a.com?x=1&y=2> here");
+                        .toBe("Visit https://a.com?x=1&y=2 here");
                 });
             });
 

@@ -26,5 +26,11 @@ export function miscSuite(): void {
         it("保持分隔符", async () => {
             expect(await fmt("---", config)).toBe("---");
         });
+
+        /*====-------------- Link 相关测试 --------------====*/
+
+        it("保持网址不变", async () => {
+            expect(await fmt("https://csdiy.wiki/并行与分布式系统/CS149/", config)).toBe("https://csdiy.wiki/并行与分布式系统/CS149/");
+        });
     });
 }

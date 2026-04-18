@@ -36,6 +36,13 @@ export interface ListExtraData {
     indent?: number;
 }
 
+// ── Link ──────────────────────────────────────────────────────────────────────
+
+export interface LinkExtraData {
+    /** 为 true 时，源文本使用了 <url> 标准 autolink 语法 */
+    standardAutolink?: boolean;
+}
+
 // ── Module Augmentation ───────────────────────────────────────────────────────
 // 将上述接口合并到 @types/mdast 对应节点的 data 字段类型中。
 
@@ -44,4 +51,5 @@ declare module "mdast" {
     interface TableData extends TableExtraData { }
     interface TableRowData extends TableRowExtraData { }
     interface ListData extends ListExtraData { }
+    interface LinkData extends LinkExtraData { }
 }

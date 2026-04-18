@@ -38,6 +38,24 @@ function tagEmphasisMarkers(tree: Root, source: string): void {
     });
 }
 
+/**
+ * 标记源文本中使用 `<url>` 标准 autolink 语法的 link 节点，
+ * 以便 stringify handler 区分标准 autolink 与 GFM autolink literal。
+ */
+function tagStandardAutolinks(tree: Root, source: string): void {
+    visit(tree, "link", (node) => {
+        if (!node.position) return;
+        const offset = node.position.start.offset;
+        if (offset === undefined) return;
+        if (source[offset] === "<") {
+            (node as { data?: Record<string, unknown> }).data = {
+                ...(node as { data?: object }).data,
+                standardAutolink: true,
+            };
+        }
+    });
+}
+
 // ── Main plugin ────────────────────────────────────────────────
 
 /**
@@ -51,6 +69,7 @@ function tagEmphasisMarkers(tree: Root, source: string): void {
 export function remarkFormatter(config: FormatterConfig): (tree: Root, file: { value: string | Uint8Array }) => void {
     return function (tree: Root, file: { value: string | Uint8Array }): void {
         tagEmphasisMarkers(tree, String(file.value));
+        tagStandardAutolinks(tree, String(file.value));
 
         if (config.list.enabled) {
             mergeAdjacentUnorderedLists(tree);
