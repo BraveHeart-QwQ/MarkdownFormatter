@@ -157,9 +157,9 @@ export function listSuite(): void {
         });
 
         it("列表缩进（三）", async () => {
-            const input = "- item1\n    indent content\n- item2\n\n\n- item3";
+            const input = "- item0 \n\n  indent content。 \n\n\n\n- item1\n    indent content\n- item2\n\n\n- item3";
             const result = await fmt(input, makeConfig({ unorderedMarker: "-" }));
-            expect(result).toBe("- item1\n\n  indent content\n\n- item2\n\n\n- item3");
+            expect(result).toBe("- item0\n\n  indent content。\n\n- item1\n\n  indent content\n\n- item2\n- item3");
         });
 
         it("特殊列表结构（一）", async () => {
