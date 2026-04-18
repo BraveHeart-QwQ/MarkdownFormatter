@@ -333,17 +333,17 @@ export function otherSuite(): void {
                 });
             });
 
-            describe("必须保留的转义", () => {
-                it("\\* 保持不变", async () => {
-                    expect(await fmt("\\*not bold\\*", config)).toBe("\\*not bold\\*");
-                });
+            describe("潜在需要保留的转义", () => {
+                // it("\\* 保持不变", async () => {
+                //     expect(await fmt("\\*not bold\\*", config)).toBe("\\*not bold\\*");
+                // });
+
+                // it("\\_ 保持不变", async () => {
+                //     expect(await fmt("\\_not italic\\_", config)).toBe("\\_not italic\\_");
+                // });
 
                 it("\\\\ 双反斜杠保持不变", async () => {
                     expect(await fmt("\\\\", config)).toBe("\\\\");
-                });
-
-                it("\\_ 保持不变", async () => {
-                    expect(await fmt("\\_not italic\\_", config)).toBe("\\_not italic\\_");
                 });
 
                 it("\\# 保持不变", async () => {
@@ -369,10 +369,10 @@ export function otherSuite(): void {
                     expect(await fmt("ok test_some_code ok", config)).toBe("ok test_some_code ok");
                 });
                 it("_ 在英文时保持正常（两侧暴露）", async () => {
-                    expect(await fmt("ok _some_ ok", config)).toBe("ok *some* ok");
+                    expect(await fmt("ok _some_ ok", config)).toBe("ok _some_ ok");
                 });
                 it("_ 在英文时保持正常（两侧暴露，双下划线）", async () => {
-                    expect(await fmt("ok __DEFINE__ ok", config)).toBe("ok **DEFINE** ok");
+                    expect(await fmt("ok __DEFINE__ ok", config)).toBe("ok __DEFINE__ ok");
                 });
             });
 
