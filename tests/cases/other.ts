@@ -108,6 +108,11 @@ export function otherSuite(): void {
                     .toBe("[link](https://example.com?a=1&b=2)");
             });
 
+            it("省略号正确", async () => {
+                expect(await fmt("...\n\n(...)\n\n[](...)", config))
+                    .toBe("...\n\n(...)\n\n[](...)");
+            });
+
             it("图片 URL 中的 & 不被转义为 \\&", async () => {
                 expect(await fmt("![img](https://example.com?x=1&y=2)", config))
                     .toBe("![img](https://example.com?x=1&y=2)");

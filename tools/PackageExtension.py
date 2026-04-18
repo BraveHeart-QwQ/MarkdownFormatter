@@ -31,16 +31,23 @@ def main() -> None:
     parser.add_argument("--out", metavar="PATH", help="Output .vsix path (default: <extension-dir>/<name>-<version>.vsix).")
     args = parser.parse_args()
 
+    ROOT_DIR = EXTENSION_DIR.parent
+
     if not EXTENSION_DIR.is_dir():
         print(f"Error: extension directory not found: {EXTENSION_DIR}", file=sys.stderr)
         sys.exit(1)
 
     # Step 1: install dependencies
+    # Root deps (remark, remark-gfm, etc.) are bundled by esbuild via ../../src imports,
+    # so they must be installed too.
+    run([PNPM, "install", "--frozen-lockfile"], cwd=ROOT_DIR)
     run([PNPM, "install", "--frozen-lockfile"], cwd=EXTENSION_DIR)
 
-    # Step 2: production build (runs vscode:prepublish internally via vsce, but we do it explicitly)
+    # Step 2: production build
+    # vsce package will also invoke vscode:prepublish (same build), but running explicitly
+    # here ensures the build fails fast with visible output before vsce takes over.
     if not args.skip_build:
-        run([PNPM, "run", "build"], cwd=EXTENSION_DIR)
+        run([PNPM, "exec", "node", "esbuild.config.mjs", "--production"], cwd=EXTENSION_DIR)
 
     # Step 3: package with vsce
     vsceCmd = [PNPM, "exec", "vsce", "package", "--no-dependencies"]
