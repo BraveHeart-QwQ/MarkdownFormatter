@@ -120,6 +120,10 @@ function mathHandler(node: { value?: string; meta?: string | null }): string {
             return seq + "\n" + stripped;
         }
     }
+    if (node.meta) {
+        // $$meta opener with standalone closing -> reconstruct as inline closing style
+        return seq + node.meta + "\n" + raw + seq;
+    }
     let result = seq + (node.meta ? node.meta : "") + "\n";
     if (raw) result += raw + "\n";
     result += seq;

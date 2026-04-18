@@ -126,6 +126,31 @@ function protectUnclosedMathFences(text: string): string {
             } else {
                 lines[i] = lines[i].replace('$$', '\\$\\$');
             }
+        } else if (/^\$\$[^$]/.test(trimmed) && !/\$\$+$/.test(trimmed)) {
+            // $$<meta> opener (not-empty meta, not a single-line $$...$$)
+            let closingIdx = -1;
+            let closingIsInline = false;
+            for (let j = i + 1; j < lines.length; j++) {
+                const jTrimmed = lines[j].trim();
+                if (jTrimmed === '$$') { closingIdx = j; closingIsInline = false; break; }
+                if (/\$\$+$/.test(jTrimmed)) { closingIdx = j; closingIsInline = true; break; }
+            }
+            if (closingIdx !== -1) {
+                if (closingIsInline && closingIdx + 1 < lines.length) {
+                    // Split inline closing "equation$$" -> "equation\n$$" so remark-math
+                    // can recognize the closing fence and doesn't consume trailing content.
+                    const dollarMatch = /\$\$+$/.exec(lines[closingIdx])!;
+                    lines[closingIdx] = lines[closingIdx].slice(0, -dollarMatch[0].length).trimEnd();
+                    lines.splice(closingIdx + 1, 0, "$$");
+                    inMathBlock = true;
+                    mathBlockEnd = closingIdx + 1;
+                } else {
+                    inMathBlock = true;
+                    mathBlockEnd = closingIdx;
+                }
+            } else {
+                lines[i] = lines[i].replace("$$", "\\$\\$");
+            }
         }
     }
     return lines.join('\n');
