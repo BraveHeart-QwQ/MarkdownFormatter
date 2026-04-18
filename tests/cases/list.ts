@@ -162,6 +162,12 @@ export function listSuite(): void {
             expect(result).toBe("- item0\n\n  indent content。\n\n- item1\n\n  indent content\n\n- item2\n- item3");
         });
 
+        it("列表缩进（四）", async () => {
+            const input = "-   list\n  content";
+            const result = await fmt(input, makeConfig({ unorderedMarker: "-" }));
+            expect(result).toBe("- list\n\n  content");
+        });
+
         it("特殊列表结构（一）", async () => {
             const input = "- * (asterisk)\n\nOrdered List:\n\n1. * /";
             const result = await fmt(input, makeConfig({ unorderedMarker: "-" }));

@@ -59,9 +59,14 @@ Other List:
 
 - test
 
+>> Hello
+
 **[]**
 
 ## 1.1.2 主要学习类型
+
+-   list
+  content
 
 set <NUL /p=Output of a command
 

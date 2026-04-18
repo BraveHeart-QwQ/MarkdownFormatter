@@ -7,6 +7,7 @@ import { otherSuite } from "./cases/other.js";
 import { tableSuite } from "./cases/table.js";
 import { textCorrectionSuite } from "./cases/textCorrection.js";
 import { wordSpacingSuite } from "./cases/wordSpacing.js";
+import { miscSuite } from "./cases/miscTest.js";
 
 // ── 注册所有测试 ──────────────────────────────────────────────────────────────
 textCorrectionSuite();
@@ -17,3 +18,4 @@ listSuite();
 tableSuite();
 inlineSuite();
 otherSuite();
+miscSuite();

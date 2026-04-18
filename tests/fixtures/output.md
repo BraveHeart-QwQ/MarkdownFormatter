@@ -53,12 +53,18 @@ Other List:
     1. list
 
 - test
+- > > Hello
+
+> > Hello
 
 **[]**
 
 
 
 ## 主要学习类型
+
+- list
+  content
 
 set <NUL /p=Output of a command
 
@@ -162,8 +168,6 @@ print(model.predict([[6]]))
 - 《深度学习》 (Deep Learning) - Goodfellow et al.
 - Kaggle 上的实战项目，适合练手
 - Arxiv.org 上的最新论文
-
----End---
 
 
 
