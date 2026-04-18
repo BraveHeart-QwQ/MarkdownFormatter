@@ -144,6 +144,24 @@ export function listSuite(): void {
             expect(result).toBe("* not good\n  but ok");
         });
 
+        it("列表缩进（一）", async () => {
+            const input = "Content:\n- list\nEnd";
+            const result = await fmt(input, makeConfig({ unorderedMarker: "-" }));
+            expect(result).toBe("Content:\n- list\nEnd");
+        });
+
+        it("列表缩进（二）", async () => {
+            const input = "- item1\n\n- item2\n\n\n- item3";
+            const result = await fmt(input, makeConfig({ unorderedMarker: "-" }));
+            expect(result).toBe("- item1\n- item2\n- item3");
+        });
+
+        it("列表缩进（三）", async () => {
+            const input = "- item1\n    indent content\n- item2\n\n\n- item3";
+            const result = await fmt(input, makeConfig({ unorderedMarker: "-" }));
+            expect(result).toBe("- item1\n\n  indent content\n\n- item2\n\n\n- item3");
+        });
+
         it("特殊列表结构（一）", async () => {
             const input = "- * (asterisk)\n\nOrdered List:\n\n1. * /";
             const result = await fmt(input, makeConfig({ unorderedMarker: "-" }));
