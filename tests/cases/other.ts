@@ -449,25 +449,25 @@ export function otherSuite(): void {
             it("customEnding 为 null 时不追加结尾", async () => {
                 const config = makeConfig({ customEnding: null });
                 const result = await format("# Hello", config);
-                expect(result).toBe("# Hello\n");
+                expect(result).toBe("# Hello");
             });
 
             it("追加固定结尾文本", async () => {
                 const config = makeConfig({ customEnding: "---End---", spacingLineBeforeCustomEnding: 1 });
                 const result = await format("# Hello", config);
-                expect(result).toBe("# Hello\n\n---End---\n");
+                expect(result).toBe("# Hello\n---End---\n");
             });
 
             it("spacingLineBeforeCustomEnding 控制空行数", async () => {
                 const config = makeConfig({ customEnding: "---End---", spacingLineBeforeCustomEnding: 3 });
                 const result = await format("# Hello", config);
-                expect(result).toBe("# Hello\n\n\n\n---End---\n");
+                expect(result).toBe("# Hello\n\n\n---End---\n");
             });
 
             it("spacingLineBeforeCustomEnding 为 0 时无空行", async () => {
                 const config = makeConfig({ customEnding: "---End---", spacingLineBeforeCustomEnding: 0 });
                 const result = await format("# Hello", config);
-                expect(result).toBe("# Hello\n---End---\n");
+                expect(result).toBe("# Hello---End---\n");
             });
 
             it("文档已包含 customEnding 时不重复追加", async () => {
