@@ -29,7 +29,7 @@ function mergeConfig(base: FormatterConfig, ...overrides: PartialConfig[]): Form
 
 // ── Arg parsing ───────────────────────────────────────────────────────────────
 
-export const k_defualtFormatName = "markdown.format";
+export const k_defaultFormatName = "markdown.format";
 
 interface ParsedArgs {
     input: string;
@@ -107,7 +107,7 @@ async function main(): Promise<void> {
     const overrides: PartialConfig[] = [];
 
     // 自动加载工作目录下的 markdown.format
-    const autoConfigPath = join(process.cwd(), k_defualtFormatName);
+    const autoConfigPath = join(process.cwd(), k_defaultFormatName);
     if (existsSync(autoConfigPath)) {
         let raw: string;
         try {
