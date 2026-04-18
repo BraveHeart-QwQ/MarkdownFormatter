@@ -169,8 +169,8 @@ export function otherSuite(): void {
             });
 
             it("公式块内的内容不应该被转义影响", async () => {
-                expect(await fmt("$$\\left \\{\n\\right.$$", config))
-                    .toBe("$$\\left \\{\n\\right.$$");
+                expect(await fmt("$$\\left \\{ \\\\\n\\right.$$", config))
+                    .toBe("$$\\left \\{ \\\\\n\\right.$$");
             });
 
             it(". 符号不产生额外转义", async () => {

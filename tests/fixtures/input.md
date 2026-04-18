@@ -76,6 +76,11 @@ $$two line equation$$
 
 * what ?
 
+$$\{$$
+
+$$\left \{
+\right.$$
+
 ## 1.1.2 主要学习类型
 
 

@@ -74,6 +74,10 @@ $$two line equation$$
 
 - what ?
 
+$$\{$$
+
+$$\left \{ \right.$$
+
 
 
 ## 主要学习类型

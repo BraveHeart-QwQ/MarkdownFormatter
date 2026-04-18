@@ -100,9 +100,12 @@ function listSpreadJoin(left: Nodes, right: Nodes, parent: Parents): number | un
 /**
  * 正确输出数学元素
  */
-function mathHandler(node: { value?: string; meta?: string | null }): string {
+function mathHandler(node: { value?: string; meta?: string | null; data?: { rawMeta?: string } }): string {
     const raw = node.value || "";
-    if (!raw && !node.meta) {
+    // Prefer the raw meta extracted from source (preserves backslashes that remark
+    // would other wise process as markdown escape sequences, e.g. \{ -> {).
+    const meta = node.data?.rawMeta !== undefined ? node.data.rawMeta : (node.meta ?? "");
+    if (!raw && !meta) {
         return "$$";
     }
     // Only lines starting with $$ can act as closing fences (scan line starts only)
@@ -111,20 +114,20 @@ function mathHandler(node: { value?: string; meta?: string | null }): string {
     // When closing $$ inline (not at line start), remark-math absorbs it into value
     const lastLine = raw.split("\n").pop() || "";
     if (/\$\$+$/.test(lastLine)) {
-        if (node.meta) {
+        if (meta) {
             // Has meta (e.g. $$\begin{array}), then keep the inline closing verbatim
-            return seq + node.meta + "\n" + raw;
+            return seq + meta + "\n" + raw;
         } else {
             const trailingDollors = /\$\$+$/.exec(lastLine)![0].length;
             const stripped = raw.slice(0, raw.length - trailingDollors).trimEnd();
             return seq + "\n" + stripped;
         }
     }
-    if (node.meta) {
+    if (meta) {
         // $$meta opener with standalone closing -> reconstruct as inline closing style
-        return seq + node.meta + "\n" + raw + seq;
+        return seq + meta + "\n" + raw + seq;
     }
-    let result = seq + (node.meta ? node.meta : "") + "\n";
+    let result = seq + "\n";
     if (raw) result += raw + "\n";
     result += seq;
     return result;

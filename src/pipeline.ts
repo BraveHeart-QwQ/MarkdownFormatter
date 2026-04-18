@@ -157,26 +157,43 @@ function protectUnclosedMathFences(text: string): string {
 }
 
 /**
- * Records the original delimiter (`$` or `$$`) on each inlineMath node so the
- * custom inlineMath handler can reproduce it faithfully.
+ * Records the original delimiter (`$` or `$$`) on each inlineMath node, and
+ * the raw meta string on each math block node (before remark escape-processes it),
+ * so handlers can reproduce the faithfully.
  */
 function remarkPreserveMathMarkers() {
     return function (tree: unknown, file: { value: string | Uint8Array }) {
         const src = String(file.value);
+        const lines = src.split("\n");
         const lineOffsets: number[] = [];
         let offset = 0;
-        for (const line of src.split('\n')) {
+        for (const line of lines) {
             lineOffsets.push(offset);
             offset += line.length + 1;
         }
 
-        visit(tree as Parameters<typeof visit>[0], 'inlineMath', (node: unknown) => {
+        visit(tree as Parameters<typeof visit>[0], "inlineMath", (node: unknown) => {
             const n = node as { position?: { start: { line: number; column: number } }; data?: Record<string, unknown> };
             if (!n.position) return;
             const nodeOffset = lineOffsets[n.position.start.line - 1] + n.position.start.column - 1;
-            const marker = src[nodeOffset + 1] === '$' ? '$$' : '$';
+            const marker = src[nodeOffset + 1] === "$" ? "$$" : "$";
             n.data = { ...(n.data ?? {}), marker };
         });
+
+        // Preserve raw meta from the opening fence line of block math nodes.
+        // remark processes escape sequences in meta (e.g. \{ -> {), so we re-read
+        // the raw source to avoid losing backslashes inside LaTeX meta strings.
+        visit(tree as Parameters<typeof visit>[0], "math", (node: unknown) => {
+            const n = node as { position?: { start: { line: number; column: number } }; data?: Record<string, unknown> };
+            if (!n.position) return;
+            const lineIdx = n.position.start.line - 1;
+            if (lineIdx < 0 || lineIdx >= lines.length) return;
+            const match = lines[lineIdx].match(/^\$\$(.*)$/);
+            if (match) {
+                n.data = { ...(n.data ?? {}), rawMeta: match[1] };
+            }
+        });
+
     };
 }
 
