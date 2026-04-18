@@ -116,6 +116,7 @@ function buildProcessor(config: FormatterConfig) {
     //   true  → fences:true（输出 fenced code block，也是 remark 默认行为）
     //   false → fences:false（保留缩进格式输出）
     settings.fences = config.blockIndent.parseIndentAsCodeBlock;
+    settings.rule = "-";
 
     if (config.list.enabled) {
         settings.bullet = config.list.unorderedMarker;
