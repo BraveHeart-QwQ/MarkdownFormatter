@@ -65,7 +65,20 @@ Other List:
 
 **[]**
 
+## 1.1.2 测试数学公式
+
+你好，这是$数学公式$，很好 $f(x) = ax + b$。
+
+$$one line equation$$
+
+下面测试公式块：
+$$\newcommand{\arraystretch}{1.2}\begin{array}{l}\displaystyle
+f(x) &= ax + b \\
+&= a \cdot x + b
+\end{array}$$
+
 ## 1.1.2 主要学习类型
+
 
 a   | b
 ----|----
@@ -185,8 +198,6 @@ x | y
 
 
 ---End---
-
-
 
 
 

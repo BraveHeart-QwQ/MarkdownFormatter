@@ -123,6 +123,26 @@ export function otherSuite(): void {
                     .toBe("C:\\PROGRA~2\\WINDOW~3\\ACCESS~1\\wordpad.exe");
             });
 
+            it("$ 符号不产生额外转义", async () => {
+                expect(await fmt("$", config))
+                    .toBe("$");
+            });
+
+            it("$$ 符号不产生额外转义", async () => {
+                expect(await fmt("$$", config))
+                    .toBe("$$");
+            });
+
+            it("公式块应该和代码块一样被保护（一）", async () => {
+                expect(await fmt("$$\\begin{array}\nf(x)=ax+b\\\\\n\\end{array}$$", config))
+                    .toBe("$$\\begin{array}\nf(x)=ax+b\\\\\n\\end{array}$$");
+            });
+
+            it("公式块应该和代码块一样被保护（二）", async () => {
+                expect(await fmt("$$\n\\begin{array}\nf(x)=ax+b\\\\\n\\end{array}\n$$", config))
+                    .toBe("$$\n\\begin{array}\nf(x)=ax+b\\\\\n\\end{array}\n$$");
+            });
+
             it(". 符号不产生额外转义", async () => {
                 expect(await fmt("stackoverflow.com", config))
                     .toBe("stackoverflow.com");
