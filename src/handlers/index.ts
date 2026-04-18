@@ -4,7 +4,7 @@
 //
 //===----------------------------------------------------------------------===//
 
-import type { Nodes, Parents } from "mdast";
+import type { List, ListItem, Nodes, Parents } from "mdast";
 import type { Handle } from "./tableHandler.js";
 import { tableHandler } from "./tableHandler.js";
 import { listItemHandler } from "./listItemHandler.js";
@@ -55,10 +55,29 @@ function compactListJoin(left: Nodes, right: Nodes): number | undefined {
 }
 
 /**
+ * 控制 list item 内部的行间距
+ */
+function listSpreadJoin(left: Nodes, right: Nodes, parent: Parents): number | undefined {
+    const isListNode = (t: string) => t === "list";
+    const countNonListChildren = (item: ListItem) => item.children.filter(c => !isListNode(c.type)).length;
+    if (parent.type === "list" && left.type === "listItem" && right.type === "listItem") {
+        const leftItem = left as ListItem;
+        if (countNonListChildren(leftItem) > 1) {
+            return 1;
+        }
+        return 0;
+    }
+    if (parent.type === "listItem" && !isListNode(left.type) && !isListNode(right.type)) {
+        return 1;
+    }
+    return undefined
+}
+
+/**
  * 构建传给 remark-stringify 的 join 函数数组。
  */
 export function buildJoinFunctions(_config: FormatterConfig): JoinFn[] {
-    return [headingLineSpacingJoin, compactListJoin];
+    return [headingLineSpacingJoin, compactListJoin, listSpreadJoin];
 }
 
 /**

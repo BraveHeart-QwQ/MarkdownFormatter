@@ -1,6 +1,7 @@
 import type { List, ListItem, Paragraph, Root, Text } from "mdast";
 import type { FormatterConfig } from "../config.js";
 import type { VisitorRegistry } from "./registry.js";
+import { visit } from "unist-util-visit";
 import { trimTrailingChars } from "./utils.js";
 
 type AnyNode = { type: string; children?: AnyNode[] };
@@ -86,6 +87,58 @@ function trimListItemNode(node: ListItem, charsToTrim: string[]): void {
     if (lastChild.type !== "text") return;
 
     (lastChild as Text).value = trimTrailingChars((lastChild as Text).value, charsToTrim);
+}
+
+/**
+ * 将列表项中"被解析器合并为单段但实际含有缩进续行"的段落拆分为多个段落。
+ *
+ * 例如输入 `- item\n    indent content`，解析器会生成单个段落 "item\nindent content"，
+ * 但因续行列相对段落起始列有额外缩进，说明原文意图是两段，此处据此拆开。
+ */
+export function splitIndentedContinuations(tree: Root): void {
+    visit(tree, "listItem", (listItem: ListItem) => {
+        const newChildren: ListItem["children"] = [];
+        let modified = false;
+
+        for (const child of listItem.children) {
+            if (child.type !== "paragraph") { newChildren.push(child); continue; }
+
+            const para = child as Paragraph;
+            if (para.children.length !== 1 || para.children[0].type !== "text") {
+                newChildren.push(para); continue;
+            }
+
+            const textNode = para.children[0] as Text;
+            if (!textNode.value.includes("\n")) { newChildren.push(para); continue; }
+
+            const paraStartCol = para.position?.start?.column;
+            const textEndCol = textNode.position?.end?.column;
+            if (paraStartCol === undefined || textEndCol === undefined) {
+                newChildren.push(para); continue;
+            }
+
+            // 用末行长度反推续行起始列
+            const lastNl = textNode.value.lastIndexOf("\n");
+            const lastPart = textNode.value.substring(lastNl + 1);
+            const contCol = textEndCol - lastPart.length;
+
+            if (contCol < paraStartCol) { newChildren.push(para); continue; }
+
+            // 按 \n 拆成多个段落
+            for (const part of textNode.value.split("\n")) {
+                newChildren.push({
+                    type: "paragraph",
+                    children: [{ type: "text", value: part } as Text],
+                } as Paragraph);
+            }
+            modified = true;
+        }
+
+        if (modified) {
+            listItem.children = newChildren;
+            listItem.spread = true;
+        }
+    });
 }
 
 /**
