@@ -42,10 +42,23 @@ function headingLineSpacingJoin(left: Nodes, right: Nodes): number | undefined {
 }
 
 /**
+ * 当非列表快紧凑时（原文无空行），保持紧凑排版
+ */
+function compactListJoin(left: Nodes, right: Nodes): number | undefined {
+    if (right.type !== "list") return undefined;
+    if (left.type === "list") return undefined;
+    const leftEnd = left.position?.end?.line;
+    const rightStart = right.position?.start?.line;
+    if (leftEnd !== undefined && rightStart !== undefined && leftEnd + 1 === rightStart)
+        return 0;
+    return undefined;
+}
+
+/**
  * 构建传给 remark-stringify 的 join 函数数组。
  */
 export function buildJoinFunctions(_config: FormatterConfig): JoinFn[] {
-    return [headingLineSpacingJoin];
+    return [headingLineSpacingJoin, compactListJoin];
 }
 
 /**
