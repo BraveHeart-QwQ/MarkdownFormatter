@@ -14,5 +14,9 @@
         "replacement": "×"
       }
     ]
+  },
+  "other": {
+    "spacingLineBeforeCustomEnding": 8,
+    "customEnding": "---End---"
   }
 }

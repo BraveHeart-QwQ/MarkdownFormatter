@@ -7,6 +7,22 @@
 
 \[[编辑](https://en.wikibooks.org/w/index.php?title=Windows_Batch_Scripting&veaction=edit&section=9 "Edit section: How a command is executed") | [编辑源代码](https://en.wikibooks.org/w/index.php?title=Windows_Batch_Scripting&action=edit&section=9 "Edit section's source code: How a command is executed")\]
 
+-   dir \*.txt  -   匹配 Myfile.txt、Plan.txt 以及其他任何带有 .txt extension 的文件。
+    
+-   dir \*txt  -   不必包含 period。不过，这样也会匹配那些不使用 period 约定命名的文件，例如 myfiletxt。
+    
+-   ren \*.cxx \*.cpp  -   将所有带有 .cxx extension 的文件重命名为使用 .cpp extension。
+    
+-   dir a?b.txt  -   匹配 aab.txt、abb.txt、a0b.txt 等文件。
+  -   不匹配 ab.txt，因为后面跟着的字符既不是 question mark 也不是 period 时，question mark 不能匹配零个字符。
+  -   不匹配 a.b.txt，因为 question mark 不能匹配 period。
+    
+-   dir ???.txt  -   会匹配 .txt、a.txt、aa.txt 和 aaa.txt 等，因为这个序列中后面跟着 period 的每个 question mark 都可以匹配零个字符。
+    
+-   dir a???.b???.txt???  -   会匹配 a.b.txt 等文件。尽管最后那串 question marks 后面并没有跟着 period，但它仍位于 file name 某个最长无 period 部分的末尾。
+    
+-   dir ????????.txt & @REM eight question marks  -   与 \*.txt 匹配到相同的文件，因为每个文件还都有一个 short file name，而该名称在 .txt 之前最多不超过 8 个字符。
+
 C:\\Windows\\System32\\notepad.exe
 C:\Windows\System32\notepad.exe
 C:\\PROGRA~2\\WINDOW~3\\ACCESS~1\\wordpad.exe
@@ -19,7 +35,7 @@ stackoverflow.com
 - list
 - test
 
-好吧
+好吧 $_
 
 - * (asterisk)
 - **(asterisk)**
@@ -34,14 +50,18 @@ Other List:
 
 - pack  
 -   echo 1&echo 2&echo 3
--   list
+  - list
+  -   list
 
+1.   echo 1&echo 2&echo 3
+   1. list
+   1.   list
 
 - test
 
 **[]**
 
-## 1.1 主要学习类型
+## 1.1.2 主要学习类型
 
 set <NUL /p=Output of a command
 
@@ -130,3 +150,29 @@ test | content
 * 《深度学习》 (Deep Learning) - Goodfellow et al.。
 * Kaggle上的实战项目，适合练手。
 * Arxiv.org 上的最新论文。
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+---End---
+
+
+
+
+
+
+

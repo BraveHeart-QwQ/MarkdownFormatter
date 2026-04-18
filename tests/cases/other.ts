@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 import { k_defaultFormatterConfig } from "../../src/config.js";
 import type { FormatterConfig } from "../../src/config.js";
 import { fmt } from "../helpers.js";
+import { format } from "../../src/pipeline.js";
 
 function makeConfig(otherOverrides: Partial<FormatterConfig["other"]>): FormatterConfig {
     return {
@@ -441,6 +442,44 @@ export function otherSuite(): void {
                     const input = "![alt][ref]\n\n[ref]: https://a.com?x=1&y=2";
                     expect(await fmt(input, config)).toBe("![alt][ref]\n\n[ref]: https://a.com?x=1&y=2");
                 });
+            });
+        });
+
+        describe("customEnding", () => {
+            it("customEnding 为 null 时不追加结尾", async () => {
+                const config = makeConfig({ customEnding: null });
+                const result = await format("# Hello", config);
+                expect(result).toBe("# Hello\n");
+            });
+
+            it("追加固定结尾文本", async () => {
+                const config = makeConfig({ customEnding: "---End---", spacingLineBeforeCustomEnding: 1 });
+                const result = await format("# Hello", config);
+                expect(result).toBe("# Hello\n\n---End---\n");
+            });
+
+            it("spacingLineBeforeCustomEnding 控制空行数", async () => {
+                const config = makeConfig({ customEnding: "---End---", spacingLineBeforeCustomEnding: 3 });
+                const result = await format("# Hello", config);
+                expect(result).toBe("# Hello\n\n\n\n---End---\n");
+            });
+
+            it("spacingLineBeforeCustomEnding 为 0 时无空行", async () => {
+                const config = makeConfig({ customEnding: "---End---", spacingLineBeforeCustomEnding: 0 });
+                const result = await format("# Hello", config);
+                expect(result).toBe("# Hello\n---End---\n");
+            });
+
+            it("文档已包含 customEnding 时不重复追加", async () => {
+                const config = makeConfig({ customEnding: "---End---", spacingLineBeforeCustomEnding: 1 });
+                const result = await format("# Hello\n\n---End---\n", config);
+                expect(result).toBe("# Hello\n\n---End---\n");
+            });
+
+            it("已有 customEnding 但间距不同时规范化间距", async () => {
+                const config = makeConfig({ customEnding: "---End---", spacingLineBeforeCustomEnding: 1 });
+                const result = await format("# Hello\n\n\n\n---End---\n", config);
+                expect(result).toBe("# Hello\n\n---End---\n");
             });
         });
     });

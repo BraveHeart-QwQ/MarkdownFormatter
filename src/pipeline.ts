@@ -39,7 +39,19 @@ export function postprocess(output: string, config: FormatterConfig): string {
     if (config.other.trimTrailingWhitespace) {
         result = result.replace(/[^\S\n]+$/gm, "");
     }
-    return result.trimEnd() + "\n";
+    result = result.trimEnd() + "\n";
+
+    // 在文档末尾追加固定结尾（若已存在则先移除再重新追加，以规范化间距）
+    if (config.other.customEnding != null) {
+        const ending = config.other.customEnding;
+        if (result.trimEnd().endsWith(ending)) {
+            result = result.trimEnd().slice(0, -ending.length).trimEnd() + "\n";
+        }
+        const spacingLines = "\n".repeat(config.other.spacingLineBeforeCustomEnding);
+        result += spacingLines + ending + "\n";
+    }
+
+    return result;
 }
 
 // ── Steps 3–5: unified pipeline ───────────────────────────────────────────────

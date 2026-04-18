@@ -4,7 +4,7 @@
 //
 //===----------------------------------------------------------------------===//
 
-// TODO Formatter 需求：
+// Formatter 需求：
 // - [x] 文本矫正（文本基础正则替换）
 // - [x] 块缩进处理（普通缩进当作代码块处理，其他时候无序列表块缩进为 2，有序列表块缩进为 4）
 // - [x] 列表规范化：`- xxx`、`1. xxx`
@@ -14,7 +14,7 @@
 // - [x] inline 格式化与去格式化（code、math、strong）
 // - [x] 特殊：标题不含序号
 // - [x] 特殊：Table 格式化（对齐、宽度有限、标题行、消除左右两端竖边）
-// - [ ] 特殊：支持添加固定结尾
+// - [x] 特殊：支持添加固定结尾
 
 /* 文本规范化：预处理与基础正则替换 */
 export interface TextCorrectionConfig {
@@ -82,6 +82,8 @@ export interface OtherConfig {
     removeHeaderNumber: boolean; // 移除标题中的序号（如 `1.`、`2.3`、`一、`），这在 AI 产生的 MD 中比较常见
     singleCharTableHead: boolean; // 将表格 Header 行格式化为 a | b | c... 这样的单字符，因为大部分 Table 是不显示 Header 行
     trimTrailingWhitespace: boolean; // 删除每行行尾的多余空格
+    spacingLineBeforeCustomEnding: number; // 在 customEnding 之前添加的空行数
+    customEnding: string | null; // 在文档末尾添加一个固定的结尾（如 `---End---`），如果不需要则设为 null
 }
 
 //====================== 总配置 ======================//
@@ -161,5 +163,7 @@ export const k_defaultFormatterConfig: FormatterConfig = {
         removeHeaderNumber: true,
         singleCharTableHead: false,
         trimTrailingWhitespace: true,
+        spacingLineBeforeCustomEnding: 1,
+        customEnding: null,
     },
 };

@@ -7,35 +7,51 @@
 
 [[编辑](https://en.wikibooks.org/w/index.php?title=Windows_Batch_Scripting&veaction=edit&section=9 "Edit section: How a command is executed") | [编辑源代码](https://en.wikibooks.org/w/index.php?title=Windows_Batch_Scripting&action=edit&section=9 "Edit section's source code: How a command is executed")]
 
+- dir *.txt  -   匹配 Myfile.txt、Plan.txt 以及其他任何带有 .txt extension 的文件
+- dir *txt  -   不必包含 period。不过，这样也会匹配那些不使用 period 约定命名的文件，例如 myfiletxt
+- ren *.cxx *.cpp  -   将所有带有 .cxx extension 的文件重命名为使用 .cpp extension
+- dir a?b.txt  -   匹配 aab.txt、abb.txt、a0b.txt 等文件
+  - 不匹配 ab.txt，因为后面跟着的字符既不是 question mark 也不是 period 时，question mark 不能匹配零个字符
+  - 不匹配 a.b.txt，因为 question mark 不能匹配 period
+- dir ???.txt  -   会匹配 .txt、a.txt、aa.txt 和 aaa.txt 等，因为这个序列中后面跟着 period 的每个 question mark 都可以匹配零个字符
+- dir a???.b???.txt???  -   会匹配 a.b.txt 等文件。尽管最后那串 question marks 后面并没有跟着 period，但它仍位于 file name 某个最长无 period 部分的末尾
+- dir ????????.txt & @REM eight question marks  -   与 *.txt 匹配到相同的文件，因为每个文件还都有一个 short file name，而该名称在 .txt 之前最多不超过 8 个字符
+
 C:\Windows\System32\notepad.exe
 C:\Windows\System32\notepad.exe
-C:\PROGRA~~2\WINDOW~~3\ACCESS~1\wordpad.exe
+C:\PROGRA~2\WINDOW~3\ACCESS~1\wordpad.exe
 
 1. abc
 1. abc
 
-stackoverflow\.com
-
+stackoverflow.com
 - pack
 - list
 - test
 
-好吧
+好吧 $_
 
 - - (asterisk)
 - **(asterisk)**
 
 Ordered List:
-
 1. - ok
 
 Other List:
 
 - not good
+
   but   ok
+
 - pack
-- echo 1\&echo 2\&echo 3
-- list
+- echo 1&echo 2&echo 3
+  - list
+  - list
+
+1. echo 1&echo 2&echo 3
+    1. list
+    1. list
+
 - test
 
 **[]**
@@ -44,7 +60,7 @@ Other List:
 
 ## 主要学习类型
 
-set \<NUL /p=Output of a command
+set <NUL /p=Output of a command
 
 a    | b
 -----|--------
@@ -62,26 +78,27 @@ test | content
 
 列表
 
-- 监督学习（Supervised Learning）：训练数据含有标签。
-  →测试替换→训练 X 数据含有标签
+- 监督学习（Supervised Learning）：训练数据含有标签
+
+  →测试替换→训练 X 数据含有标签。
 
 - 无监督学习（Unsupervised Learning）：训练数据不含标签
+
   a           | b
   ------------|-----------------
   表格内替换→ | x 也必须可以执行
 
 - 半监督学习（Semi-supervised Learning）：仅有少量数据有标签
-
 - 强化学习（Reinforcement Learning）：通过与环境交互获得奖励信号来学习
 
 相邻的符号，J 就**不需要**产生空格间隙 `J`。
 
 a                                      | b
----------------------------------------|------------------------
+---------------------------------------|----------------------------------------
 监督学习（Supervised Learning） | 训练数据含有标签。训练数据含有标签。训练数据含有标签。训练数据含有标签
 无监督学习（Unsupervised Learning）    | 训练数据不含标签
 半监督学习（Semi-supervised Learning） | 仅有少量数据有标签
-强化学习（Reinforcement Learning） | 通过与环境交互获得奖励信号来学习
+强化学习（Reinforcement Learning）     | 通过与环境交互获得奖励信号来学习
 
 
 
@@ -145,3 +162,14 @@ print(model.predict([[6]]))
 - 《深度学习》 (Deep Learning) - Goodfellow et al.
 - Kaggle 上的实战项目，适合练手
 - Arxiv.org 上的最新论文
+
+---End---
+
+
+
+
+
+
+
+
+---End---
