@@ -7,6 +7,7 @@
 import { remark } from "remark";
 import remarkGfm from "remark-gfm";
 import remarkMath from "remark-math";
+import { visit } from "unist-util-visit";
 import type { FormatterConfig } from "./config.js";
 import { buildHandlers, buildJoinFunctions } from "./handlers/index.js";
 import { remarkFormatter } from "./plugins/index.js";
@@ -25,6 +26,7 @@ export function preprocess(input: string, config: FormatterConfig): string {
         text = text.replace(/[^\S\n]+$/gm, "");
     }
     text = normalizeListMarkerSpacing(text);
+    text = protectUnclosedMathFences(text);
     return text;
 }
 
@@ -68,6 +70,89 @@ function normalizeListMarkerSpacing(text: string): string {
     }
 
     return lines.join('\n');
+}
+
+
+/**
+ * Escape lone `$$` lines that have no matching closing fence (neither a
+ * standalone `$$` line nor a line ending with `$$`) so remark-math doesn't
+ * consume the rest of the document as math content.
+ */
+function protectUnclosedMathFences(text: string): string {
+    const lines = text.split('\n');
+    let inCodeFence = false;
+    let codeFenceChar = '';
+    let codeFenceLen = 0;
+    let inMathBlock = false;
+    let mathBlockEnd = -1;
+
+    for (let i = 0; i < lines.length; i++) {
+        const trimmed = lines[i].trim();
+
+        if (!inMathBlock) {
+            const fenceMatch = lines[i].match(/^\s*(`{3,}|~{3,})/);
+            if (fenceMatch) {
+                const char = fenceMatch[1][0];
+                const len = fenceMatch[1].length;
+                if (!inCodeFence) {
+                    inCodeFence = true;
+                    codeFenceChar = char;
+                    codeFenceLen = len;
+                } else if (char === codeFenceChar && len >= codeFenceLen) {
+                    inCodeFence = false;
+                    codeFenceChar = '';
+                    codeFenceLen = 0;
+                }
+                continue;
+            }
+            if (inCodeFence) continue;
+        }
+
+        if (inMathBlock) {
+            if (i === mathBlockEnd) inMathBlock = false;
+            continue;
+        }
+
+        if (trimmed === '$$') {
+            let closingIdx = -1;
+            for (let j = i + 1; j < lines.length; j++) {
+                const jTrimmed = lines[j].trim();
+                if (jTrimmed === '$$') { closingIdx = j; break; }
+                if (/\$\$+$/.test(jTrimmed)) { closingIdx = j; break; }
+            }
+            if (closingIdx !== -1) {
+                inMathBlock = true;
+                mathBlockEnd = closingIdx;
+            } else {
+                lines[i] = lines[i].replace('$$', '\\$\\$');
+            }
+        }
+    }
+    return lines.join('\n');
+}
+
+/**
+ * Records the original delimiter (`$` or `$$`) on each inlineMath node so the
+ * custom inlineMath handler can reproduce it faithfully.
+ */
+function remarkPreserveMathMarkers() {
+    return function (tree: unknown, file: { value: string | Uint8Array }) {
+        const src = String(file.value);
+        const lineOffsets: number[] = [];
+        let offset = 0;
+        for (const line of src.split('\n')) {
+            lineOffsets.push(offset);
+            offset += line.length + 1;
+        }
+
+        visit(tree as Parameters<typeof visit>[0], 'inlineMath', (node: unknown) => {
+            const n = node as { position?: { start: { line: number; column: number } }; data?: Record<string, unknown> };
+            if (!n.position) return;
+            const nodeOffset = lineOffsets[n.position.start.line - 1] + n.position.start.column - 1;
+            const marker = src[nodeOffset + 1] === '$' ? '$$' : '$';
+            n.data = { ...(n.data ?? {}), marker };
+        });
+    };
 }
 
 // ── Step 6: 后处理 ─────────────────────────────────────────────────────────────
@@ -126,6 +211,7 @@ function buildProcessor(config: FormatterConfig) {
     return remark()
         .use(remarkGfm, { singleTilde: false }) // 允许 ~~strikethrough~~ 中的 ~ 被转义（不强制要求成对出现）
         .use(remarkMath)
+        .use(remarkPreserveMathMarkers)
         .use(remarkFormatter, config)
         .data("settings", settings);
 }

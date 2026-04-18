@@ -98,6 +98,40 @@ function listSpreadJoin(left: Nodes, right: Nodes, parent: Parents): number | un
 }
 
 /**
+ * 正确输出数学元素
+ */
+function mathHandler(node: { value?: string; meta?: string | null }): string {
+    const raw = node.value || "";
+    if (!raw && !node.meta) {
+        return "$$";
+    }
+    // Only lines starting with $$ can act as closing fences (scan line starts only)
+    const lineStartStreak = (raw.match(/^\$+/gm) || [])?.reduce((max, m) => Math.max(max, m.length), 0);
+    const seq = "$".repeat(Math.max(lineStartStreak + 1, 2));
+    // When closing $$ inline (not at line start), remark-math absorbs it into value
+    const lastLine = raw.split("\n").pop() || "";
+    if (/\$\$+$/.test(lastLine)) {
+        if (node.meta) {
+            // Has meta (e.g. $$\begin{array}), then keep the inline closing verbatim
+            return seq + node.meta + "\n" + raw;
+        } else {
+            const trailingDollors = /\$\$+$/.exec(lastLine)![0].length;
+            const stripped = raw.slice(0, raw.length - trailingDollors).trimEnd();
+            return seq + "\n" + stripped;
+        }
+    }
+    let result = seq + (node.meta ? node.meta : "") + "\n";
+    if (raw) result += raw + "\n";
+    result += seq;
+    return result;
+}
+
+function inlineMathHandler(node: { value: string; data?: { marker?: string } }): string {
+    const marker = node.data?.marker ?? "$";
+    return marker + node.value + marker;
+}
+
+/**
  * 构建传给 remark-stringify 的 join 函数数组。
  */
 export function buildJoinFunctions(_config: FormatterConfig): JoinFn[] {
@@ -123,6 +157,8 @@ export function buildHandlers(config: FormatterConfig): Handlers {
     handlers["definition"] = definitionHandler;
     handlers["emphasis"] = emphasisHandler;
     handlers["strong"] = strongHandler;
+    handlers["math"] = mathHandler;
+    handlers["inlineMath"] = inlineMathHandler as unknown as Handle;
 
     return handlers;
 }

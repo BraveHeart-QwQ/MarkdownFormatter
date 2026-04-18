@@ -72,17 +72,16 @@ Other List:
 $$one line equation$$
 
 下面测试公式块：
-$$\newcommand{\arraystretch}{1.2}\begin{array}{l}\displaystyle
-f(x) &= ax + b \\
-&= a \cdot x + b
-\end{array}$$
+$$two line equation$$
+
+* what ?
 
 ## 1.1.2 主要学习类型
 
 
-a   | b
+a  | b
 ----|----
-x   | y
+x  | y
 
 -   list
   content

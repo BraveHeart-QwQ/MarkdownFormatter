@@ -133,34 +133,39 @@ export function otherSuite(): void {
                     .toBe("OKOK\n\n$$\n\nEnd");
             });
 
-            it("公式块应该和代码块一样被保护（一）", async () => {
+            it("公式块复杂测试（一）", async () => {
                 expect(await fmt("$$\\begin{array}\nf(x)=ax+b\\\\\n\\end{array}$$", config))
                     .toBe("$$\\begin{array}\nf(x)=ax+b\\\\\n\\end{array}$$");
             });
 
-            it("公式块应该和代码块一样被保护（二）", async () => {
+            it("公式块复杂测试（二）", async () => {
                 expect(await fmt("$$\n\\begin{array}\nf(x)=ax+b\\\\\n\\end{array}\n$$", config))
                     .toBe("$$\n\\begin{array}\nf(x)=ax+b\\\\\n\\end{array}\n$$");
             });
 
-            it("公式块应该和代码块一样被保护（三）", async () => {
+            it("公式块复杂测试（三）", async () => {
                 expect(await fmt("- Test List\n\n  $$\n  \\begin{array}\n  f(x)=ax+b\\\\\n  \\end{array}\n  $$", config))
                     .toBe("- Test List\n\n  $$\n  \\begin{array}\n  f(x)=ax+b\\\\\n  \\end{array}\n  $$");
             });
 
-            it("公式块应该和代码块一样被保护（四）", async () => {
+            it("公式块复杂测试（四）", async () => {
                 expect(await fmt("> Test BlockQuote:\n> $$\n> \\begin{array}\n> f(x)=ax+b\\\\\n> \\end{array}\n> $$", config))
                     .toBe("> Test BlockQuote:\n> $$\n> \\begin{array}\n> f(x)=ax+b\\\\\n> \\end{array}\n> $$");
             });
 
-            it("公式块应该和代码块一样被保护（五）", async () => {
+            it("公式块复杂测试（五）", async () => {
                 expect(await fmt("SomeText\n\n$$f(x)=ax+b$$\n\nEndText", config))
                     .toBe("SomeText\n\n$$f(x)=ax+b$$\n\nEndText");
             });
 
-            it("公式块应该和代码块一样被保护（六）", async () => {
-                expect(await fmt("Some Equation：\n$$\n\\begin{array}\nf(x)=ax+b\\\\\n\\end{array}\n\nEndText$$", config))
-                    .toBe("Some Equation：\n$$\n\\begin{array}\nf(x)=ax+b\\\\\n\\end{array}\n\nEndText");
+            it("公式块复杂测试（六）", async () => {
+                expect(await fmt("Some Equation：\n$$\n\\begin{array}\nf(x)=ax+b\\\\\n\\end{array}\n$$\n\nEndText", config))
+                    .toBe("Some Equation：\n$$\n\\begin{array}\nf(x)=ax+b\\\\\n\\end{array}\n$$\n\nEndText");
+            });
+
+            it("公式块不应该影响到后续内容的解析", async () => {
+                expect(await fmt("Some Equation：\n$$two line\nequation$$\n* Test List", config))
+                    .toBe("Some Equation：\n$$two line\nequation$$\n- Test List");
             });
 
             it(". 符号不产生额外转义", async () => {
