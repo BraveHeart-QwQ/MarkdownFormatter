@@ -65,7 +65,7 @@ function nestSiblings(node: AnyNode): void {
                     break;
                 }
             }
-            const nestedList: List = { type: "list", ordered: false, spread: false, start: null, children: nestedItems };
+            const nestedList: List = { type: "list", ordered: list.ordered, spread: false, start: list.ordered ? 1 : null, children: nestedItems };
             (current.children as unknown as AnyNode[]).push(nestedList as unknown as AnyNode);
         }
         i++;
