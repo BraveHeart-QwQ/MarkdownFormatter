@@ -122,7 +122,7 @@ export function splitIndentedContinuations(tree: Root): void {
             const lastPart = textNode.value.substring(lastNl + 1);
             const contCol = textEndCol - lastPart.length;
 
-            if (contCol < (listItem.position?.start?.column ?? 1) + 2) { newChildren.push(para); continue; }
+            if (contCol < paraStartCol) { newChildren.push(para); continue; }
 
             // 按 \n 拆成多个段落
             for (const part of textNode.value.split("\n")) {
@@ -136,10 +136,6 @@ export function splitIndentedContinuations(tree: Root): void {
 
         if (modified) {
             listItem.children = newChildren;
-            listItem.spread = true;
-        } else if (!listItem.spread && listItem.children.length > 1 &&
-            listItem.children.every(c => c.type === "paragraph")
-        ) {
             listItem.spread = true;
         }
     });
