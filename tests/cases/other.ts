@@ -168,6 +168,11 @@ export function otherSuite(): void {
                     .toBe("Some Equation：\n$$two line\nequation$$\n- Test List");
             });
 
+            it("公式块内的内容不应该被转义影响", async () => {
+                expect(await fmt("$$\\left \\{\n\\right.$$", config))
+                    .toBe("$$\\left \\{\n\\right.$$");
+            });
+
             it(". 符号不产生额外转义", async () => {
                 expect(await fmt("stackoverflow.com", config))
                     .toBe("stackoverflow.com");
