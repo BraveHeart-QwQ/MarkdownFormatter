@@ -129,8 +129,8 @@ export function otherSuite(): void {
             });
 
             it("$$ 符号不产生额外转义", async () => {
-                expect(await fmt("$$", config))
-                    .toBe("$$");
+                expect(await fmt("OKOK\n\n$$\n\nEnd", config))
+                    .toBe("OKOK\n\n$$\n\nEnd");
             });
 
             it("公式块应该和代码块一样被保护（一）", async () => {
@@ -144,13 +144,23 @@ export function otherSuite(): void {
             });
 
             it("公式块应该和代码块一样被保护（三）", async () => {
-                expect(await fmt("- Test List\n  $$\n  \\begin{array}\n  f(x)=ax+b\\\\\n  \\end{array}\n$$", config))
-                    .toBe("- Test List\n  $$\n  \\begin{array}\n  f(x)=ax+b\\\\\n  \\end{array}\n$$");
+                expect(await fmt("- Test List\n\n  $$\n  \\begin{array}\n  f(x)=ax+b\\\\\n  \\end{array}\n  $$", config))
+                    .toBe("- Test List\n\n  $$\n  \\begin{array}\n  f(x)=ax+b\\\\\n  \\end{array}\n  $$");
             });
 
             it("公式块应该和代码块一样被保护（四）", async () => {
-                expect(await fmt("> $$\n> \\begin{array}\n> f(x)=ax+b\\\\\n> \\end{array}\n$$", config))
-                    .toBe("> $$\n> \\begin{array}\n> f(x)=ax+b\\\\\n> \\end{array}\n$$");
+                expect(await fmt("> Test BlockQuote:\n> $$\n> \\begin{array}\n> f(x)=ax+b\\\\\n> \\end{array}\n> $$", config))
+                    .toBe("> Test BlockQuote:\n> $$\n> \\begin{array}\n> f(x)=ax+b\\\\\n> \\end{array}\n> $$");
+            });
+
+            it("公式块应该和代码块一样被保护（五）", async () => {
+                expect(await fmt("SomeText\n\n$$f(x)=ax+b$$\n\nEndText", config))
+                    .toBe("SomeText\n\n$$f(x)=ax+b$$\n\nEndText");
+            });
+
+            it("公式块应该和代码块一样被保护（六）", async () => {
+                expect(await fmt("Some Equation：\n$$\n\\begin{array}\nf(x)=ax+b\\\\\n\\end{array}\n\nEndText$$", config))
+                    .toBe("Some Equation：\n$$\n\\begin{array}\nf(x)=ax+b\\\\\n\\end{array}\n\nEndText");
             });
 
             it(". 符号不产生额外转义", async () => {
