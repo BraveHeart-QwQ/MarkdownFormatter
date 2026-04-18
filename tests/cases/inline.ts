@@ -36,13 +36,14 @@ export function inlineSuite(): void {
 
         // ── normalizeStrong ────────────────────────────────────────────────
 
-        it("normalizeStrong 将 __ 统一替换为 **", async () => {
-            // remark-gfm 在 parse 阶段将 __text__ 统一解析为 Strong 节点，
-            // stringify 阶段默认输出 **text**，无需额外处理。
-            // 注意：CJK 字符紧邻 __ 时因 Unicode 字母限制 __ 不会触发 strong 解析，
-            // 须使用空格或 ASCII 上下文测试。
+        it("__ 将保留原文", async () => {
             const cfg = makeConfig({});
-            expect(await fmt("this is __important__ text", cfg)).toBe("this is **important** text");
+            expect(await fmt("this is __important__ text", cfg)).toBe("this is __important__ text");
+        });
+
+        it("_ 将保留原文", async () => {
+            const cfg = makeConfig({});
+            expect(await fmt("this is _emphasis_ text", cfg)).toBe("this is _emphasis_ text");
         });
 
         // ── handleInlineCode = 'removeAll' ────────────────────────────────

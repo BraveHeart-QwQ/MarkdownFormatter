@@ -395,7 +395,44 @@ function definitionHandlerFunc(node: object, _: object | null, state: object, in
     return value;
 }
 
+/**
+ * Custom emphasis handler — uses the marker recorded on node.data.marker (`_` or `*`)
+ * instead of always outputting `*`, preserving the original source delimiter.
+ */
+function emphasisHandlerFunc(node: object, _: object | null, state: object, info: object): string {
+    const n = node as { children: object[]; data?: { marker?: string } };
+    const s = state as ToMarkdownState;
+    const marker = n.data?.marker ?? "*";
+    const tracker = s.createTracker(info);
+    const exit = s.enter("emphasis");
+    let value = tracker.move(marker);
+    value += tracker.move(s.containerPhrasing(n, { before: marker, after: marker, ...tracker.current() }));
+    value += tracker.move(marker);
+    exit();
+    return value;
+}
+
+/**
+ * Custom strong handler — uses the marker recorded on node.data.marker (`_` or `*`)
+ * instead of always outputting `**`, preserving the original source delimiter.
+ */
+function strongHandlerFunc(node: object, _: object | null, state: object, info: object): string {
+    const n = node as { children: object[]; data?: { marker?: string } };
+    const s = state as ToMarkdownState;
+    const singleMarker = n.data?.marker ?? "*";
+    const marker = singleMarker + singleMarker;
+    const tracker = s.createTracker(info);
+    const exit = s.enter("strong");
+    let value = tracker.move(marker);
+    value += tracker.move(s.containerPhrasing(n, { before: marker, after: marker, ...tracker.current() }));
+    value += tracker.move(marker);
+    exit();
+    return value;
+}
+
 export const linkHandler: Handle = Object.assign(linkHandlerFunc, { peek: () => "[" });
 export const imageHandler: Handle = Object.assign(imageHandlerFunc, { peek: () => "!" });
 export const textHandler: Handle = textHandlerFunc as Handle;
 export const definitionHandler: Handle = definitionHandlerFunc as Handle;
+export const emphasisHandler: Handle = emphasisHandlerFunc as Handle;
+export const strongHandler: Handle = strongHandlerFunc as Handle;

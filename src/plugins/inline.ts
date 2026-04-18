@@ -52,7 +52,7 @@ function wrapWordsInParagraph(
  * 基础行为（写死，始终执行）：
  *   - 去除 inlineCode / inlineMath 的首尾空格（value.trim()）
  *   - 去除 strong 第一 / 最后一个 Text 子节点的首尾空格
- *   - normalizeStrong：remark-gfm 在 parse/serialize 时自动将 `__text__` 转换为 `**text**`，无需额外处理
+ *   - emphasis/strong 的 `_`/`*` 由原始文本定义，不强制转换
  *
  * handleInlineCode / handleInlineMath / handleInlineStrong（段落级别操作）：
  *   - 'normal'     : 仅做基础处理

@@ -21,6 +21,14 @@ stackoverflow.com
 
 好吧
 
+- * (asterisk)
+- **(asterisk)**
+
+Ordered List:
+1. * ok
+
+Other List:
+
 * not good  
   but   ok
 

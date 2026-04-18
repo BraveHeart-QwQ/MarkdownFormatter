@@ -22,7 +22,16 @@ stackoverflow\.com
 
 好吧
 
-- not good\
+- - (asterisk)
+- **(asterisk)**
+
+Ordered List:
+
+1. - ok
+
+Other List:
+
+- not good
   but   ok
 - pack
 - echo 1\&echo 2\&echo 3
