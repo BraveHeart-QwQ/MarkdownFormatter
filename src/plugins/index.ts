@@ -11,11 +11,10 @@ import { createRegistry, runSinglePass } from "./registry.js";
 import { registerTextReplacement } from "./textCorrection.js";
 import { registerLineSpacing } from "./lineSpacing.js";
 import { registerWordSpacing } from "./wordSpacing.js";
-import { mergeAdjacentUnorderedLists, registerListFormatting } from "./list.js";
+import { mergeAdjacentUnorderedLists, nestIndentedListItems, registerListFormatting } from "./list.js";
 import { registerTableFormatting } from "./table.js";
 import { registerInlineFormatting } from "./inline.js";
 import { registerOtherFormatting } from "./other.js";
-import { off } from "node:cluster";
 
 /**
  * Before any AST transformation, record which delimiter character (`*` or `_`)
@@ -53,7 +52,10 @@ export function remarkFormatter(config: FormatterConfig): (tree: Root, file: { v
     return function (tree: Root, file: { value: string | Uint8Array }): void {
         tagEmphasisMarkers(tree, String(file.value));
 
-        if (config.list.enabled) mergeAdjacentUnorderedLists(tree);
+        if (config.list.enabled) {
+            mergeAdjacentUnorderedLists(tree);
+            nestIndentedListItems(tree);
+        }
 
         const registry = createRegistry();
 
