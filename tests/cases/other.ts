@@ -143,6 +143,16 @@ export function otherSuite(): void {
                     .toBe("$$\n\\begin{array}\nf(x)=ax+b\\\\\n\\end{array}\n$$");
             });
 
+            it("公式块应该和代码块一样被保护（三）", async () => {
+                expect(await fmt("- Test List\n  $$\n  \\begin{array}\n  f(x)=ax+b\\\\\n  \\end{array}\n$$", config))
+                    .toBe("- Test List\n  $$\n  \\begin{array}\n  f(x)=ax+b\\\\\n  \\end{array}\n$$");
+            });
+
+            it("公式块应该和代码块一样被保护（四）", async () => {
+                expect(await fmt("> $$\n> \\begin{array}\n> f(x)=ax+b\\\\\n> \\end{array}\n$$", config))
+                    .toBe("> $$\n> \\begin{array}\n> f(x)=ax+b\\\\\n> \\end{array}\n$$");
+            });
+
             it(". 符号不产生额外转义", async () => {
                 expect(await fmt("stackoverflow.com", config))
                     .toBe("stackoverflow.com");
