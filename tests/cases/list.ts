@@ -144,7 +144,7 @@ export function listSuite(): void {
             expect(result).toBe("* not good\n  but ok");
         });
 
-        it("特殊列表结构", async () => {
+        it("特殊列表结构（一）", async () => {
             const input = "- * (asterisk)\n\nOrdered List:\n\n1. * /";
             const result = await fmt(input, makeConfig({ unorderedMarker: "-" }));
             expect(result).toBe("- - (asterisk)\n\nOrdered List:\n\n1. - /"); // 这里起始不应该发生替换，单姑且放一马，修起来有点困难
@@ -154,6 +154,12 @@ export function listSuite(): void {
             const input = "-   test list\n  - list test";
             const result = await fmt(input, makeConfig({ unorderedMarker: "-" }));
             expect(result).toBe("- test list\n  - list test"); // 这里起始不应该发生替换，单姑且放一马，修起来有点困难
+        });
+
+        it("特殊列表结构（三）", async () => {
+            const input = "1.   echo\n   1. list\n   1.   list";
+            const result = await fmt(input, makeConfig({}));
+            expect(result).toBe("1. echo\n    1. list\n    1. list"); // 这里起始不应该发生替换，单姑且放一马，修起来有点困难
         });
     });
 }
