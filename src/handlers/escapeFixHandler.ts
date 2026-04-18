@@ -301,7 +301,8 @@ function textHandlerFunc(node: object, _: object | null, state: object, info: ob
         const next = i < result.length - 1 ? result[i + 1] : (safeInfo.after ?? "");
 
         if (ch === "_" || ch === "*") {
-            escaped += needsEmphasisEscape(ch, prev, next) ? "\\" + ch : ch;
+            escaped += ch; // don't need to escape by default, make things worse in some cases. It's just a formatter not a markdown renderer
+            // escaped += needsEmphasisEscape(ch, prev, next) ? "\\" + ch : ch;
         } else if (ch === "~") {
             // Only escape when adjacent to another ~ (potential ~~strikethrough~~)
             escaped += (next === "~" || prev === "~") ? "\\~" : "~";
