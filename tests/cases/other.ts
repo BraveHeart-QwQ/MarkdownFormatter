@@ -178,6 +178,11 @@ export function otherSuite(): void {
                     .toBe("perl -ne \"$. <= 10 and print\" MyFile.txt");
             });
 
+            it("= 符号不产生额外转义", async () => {
+                expect(await fmt("==mark==", config))
+                    .toBe("==mark==");
+            });
+
             it("& 符号不产生额外转义", async () => {
                 expect(await fmt("- echo 1&echo 2&echo 3", config))
                     .toBe("- echo 1&echo 2&echo 3");
