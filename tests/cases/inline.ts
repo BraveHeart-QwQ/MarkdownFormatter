@@ -105,6 +105,11 @@ export function inlineSuite(): void {
             expect(await fmt("保留`%rate%`内容", cfg)).toBe("保留%rate%内容");
         });
 
+        it("handleInlineCode allEnglishWord 纯符号片段包裹", async () => {
+            const cfg = makeConfig({ handleInlineCode: "allEnglishWord" });
+            expect(await fmt("- %_co-de_% 应变化", cfg)).toBe("- `%_co-de_%` 应变化");
+        });
+
         // ── handleInlineStrong = 'removeAll' ──────────────────────────────
 
         it("handleInlineStrong removeAll 移除加粗标记，保留内容", async () => {
@@ -137,7 +142,7 @@ export function inlineSuite(): void {
 
         it("handleInlineStrong allEnglishWord 纯符号片段包裹", async () => {
             const cfg = makeConfig({ handleInlineStrong: "allEnglishWord" });
-            expect(await fmt("仅符号 %%% 应变化", cfg)).toBe("仅符号 **%%%** 应变化");
+            expect(await fmt("- %_co-de_% 应变化", cfg)).toBe("- **%_co-de_%** 应变化");
         });
 
         it("handleInlineStrong allEnglishWord 复杂情况", async () => {
@@ -194,5 +199,11 @@ export function inlineSuite(): void {
             const cfg = makeConfig({ handleInlineMath: "removeAll" });
             expect(await fmt("保留$%rate%$内容", cfg)).toBe("保留%rate%内容");
         });
+
+        it("handleInlineMath allEnglishWord 纯符号片段包裹", async () => {
+            const cfg = makeConfig({ handleInlineMath: "allEnglishWord" });
+            expect(await fmt("- %_co-de_% 应变化", cfg)).toBe("- $%_co-de_%$ 应变化");
+        });
+
     });
 }
