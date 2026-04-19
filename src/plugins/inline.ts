@@ -3,9 +3,16 @@ import type { FormatterConfig } from "../config.js";
 import type { InlineMath, VisitorRegistry } from "./registry.js";
 
 /** 将字符串按连续英文字母序列拆分为 {isWord, value} 片段数组。 */
-function splitByEnglishWords(text: string): Array<{ isWord: boolean; value: string }> {
+function splitByEnglishWords(
+    text: string,
+    mode: "token" | "mathSegment" = "token",
+): Array<{ isWord: boolean; value: string }> {
     const result: Array<{ isWord: boolean; value: string }> = [];
-    const re = /([A-Za-z]+)/g;
+    const asciiToken = "[!\"#$%&'()*+,\\-./:;<=>?@[\\\\\\]^_`{|}~A-Za-z0-9]+";
+    const pattern = mode === "mathSegment"
+        ? `(${asciiToken}(?:[^\\S\\r\\n]+${asciiToken})*)`
+        : `(${asciiToken})`;
+    const re = new RegExp(pattern, "g");
     let lastIndex = 0;
     let match: RegExpExecArray | null;
     while ((match = re.exec(text)) !== null) {
@@ -28,11 +35,14 @@ function splitByEnglishWords(text: string): Array<{ isWord: boolean; value: stri
 function wrapWordsInParagraph(
     node: Paragraph,
     wrapWord: (word: string) => PhrasingContent,
+    mode: "token" | "mathSegment" = "token",
+    normalizeBoundarySpaces = false,
+    wrappedNodeType?: PhrasingContent["type"],
 ): void {
     const newChildren: PhrasingContent[] = [];
     for (const child of node.children) {
         if (child.type === "text") {
-            for (const part of splitByEnglishWords((child as Text).value)) {
+            for (const part of splitByEnglishWords((child as Text).value, mode)) {
                 if (part.isWord) {
                     newChildren.push(wrapWord(part.value));
                 } else if (part.value) {
@@ -43,6 +53,26 @@ function wrapWordsInParagraph(
             newChildren.push(child);
         }
     }
+
+    if (normalizeBoundarySpaces) {
+        for (let i = 0; i < newChildren.length; i++) {
+            const child = newChildren[i];
+            if (child.type !== "text") continue;
+
+            const prev = i > 0 ? newChildren[i - 1] : undefined;
+            const next = i + 1 < newChildren.length ? newChildren[i + 1] : undefined;
+            let value = (child as Text).value;
+
+            if (wrappedNodeType !== undefined && prev?.type === wrappedNodeType) {
+                value = value.replace(/^[^\S\r\n]+/, " ");
+            }
+            if (wrappedNodeType !== undefined && next?.type === wrappedNodeType) {
+                value = value.replace(/[^\S\r\n]+$/, " ");
+            }
+            (child as Text).value = value;
+        }
+    }
+
     node.children = newChildren as typeof node.children;
 }
 
@@ -92,7 +122,13 @@ export function registerInlineFormatting(registry: VisitorRegistry, config: Form
         });
     } else if (handleInlineCode === "allEnglishWord") {
         registry.paragraph.push((node: Paragraph) => {
-            wrapWordsInParagraph(node, (word) => ({ type: "inlineCode", value: word }) as InlineCode);
+            wrapWordsInParagraph(
+                node,
+                (word) => ({ type: "inlineCode", value: word }) as InlineCode,
+                "mathSegment",
+                true,
+                "inlineCode",
+            );
         });
     }
 
@@ -107,7 +143,13 @@ export function registerInlineFormatting(registry: VisitorRegistry, config: Form
         });
     } else if (handleInlineMath === "allEnglishWord") {
         registry.paragraph.push((node: Paragraph) => {
-            wrapWordsInParagraph(node, (word) => ({ type: "inlineMath", value: word }) as InlineMath);
+            wrapWordsInParagraph(
+                node,
+                (word) => ({ type: "inlineMath", value: word }) as InlineMath,
+                "mathSegment",
+                true,
+                "inlineMath",
+            );
         });
     }
 
@@ -126,10 +168,16 @@ export function registerInlineFormatting(registry: VisitorRegistry, config: Form
         });
     } else if (handleInlineStrong === "allEnglishWord") {
         registry.paragraph.push((node: Paragraph) => {
-            wrapWordsInParagraph(node, (word) => ({
-                type: "strong",
-                children: [{ type: "text", value: word } as Text],
-            }) as Strong);
+            wrapWordsInParagraph(
+                node,
+                (word) => ({
+                    type: "strong",
+                    children: [{ type: "text", value: word } as Text],
+                }) as Strong,
+                "mathSegment",
+                true,
+                "strong",
+            );
         });
     }
 }

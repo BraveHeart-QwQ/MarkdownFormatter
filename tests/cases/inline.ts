@@ -70,9 +70,39 @@ export function inlineSuite(): void {
             expect(await fmt("foo 和 bar", cfg)).toBe("`foo` 和 `bar`");
         });
 
+        it("allEnglishWord 识别包含英文符号（如 %）", async () => {
+            const cfg = makeConfig({ handleInlineCode: "allEnglishWord" });
+            expect(await fmt("折扣 %rate% 可用", cfg)).toBe("折扣 `%rate%` 可用");
+        });
+
+        it("allEnglishWord 识别不同英文符号边界（C++ 与 #tag）", async () => {
+            const cfg = makeConfig({ handleInlineCode: "allEnglishWord" });
+            expect(await fmt("使用 C++ 与 #tag", cfg)).toBe("使用 `C++` 与 `#tag`");
+        });
+
+        it("allEnglishWord 纯符号片段也包裹", async () => {
+            const cfg = makeConfig({ handleInlineCode: "allEnglishWord" });
+            expect(await fmt("仅符号 %%% 应变化", cfg)).toBe("仅符号 `%%%` 应变化");
+        });
+
         it("allEnglishWord 已有 inlineCode 节点不重复包裹", async () => {
             const cfg = makeConfig({ handleInlineCode: "allEnglishWord" });
             expect(await fmt("使用`code`示例", cfg)).toBe("使用`code`示例");
+        });
+
+        it("handleInlineCode allEnglishWord 复杂情况", async () => {
+            const cfg = makeConfig({ handleInlineCode: "allEnglishWord" });
+            expect(await fmt("测试  a +  b 的变化", cfg)).toBe("测试 `a +  b` 的变化");
+        });
+
+        it("handleInlineCode normal 不自动包裹英文符号组合", async () => {
+            const cfg = makeConfig({ handleInlineCode: "normal" });
+            expect(await fmt("折扣 %rate% 可用", cfg)).toBe("折扣 %rate% 可用");
+        });
+
+        it("handleInlineCode removeAll 保留带符号内容", async () => {
+            const cfg = makeConfig({ handleInlineCode: "removeAll" });
+            expect(await fmt("保留`%rate%`内容", cfg)).toBe("保留%rate%内容");
         });
 
         // ── handleInlineStrong = 'removeAll' ──────────────────────────────
@@ -95,6 +125,36 @@ export function inlineSuite(): void {
             expect(await fmt("使用 hello 示例", cfg)).toBe("使用 **hello** 示例");
         });
 
+        it("handleInlineStrong allEnglishWord 识别包含英文符号（如 %）", async () => {
+            const cfg = makeConfig({ handleInlineStrong: "allEnglishWord" });
+            expect(await fmt("折扣 %rate% 可用", cfg)).toBe("折扣 **%rate%** 可用");
+        });
+
+        it("handleInlineStrong allEnglishWord 识别不同英文符号边界（C++ 与 #tag）", async () => {
+            const cfg = makeConfig({ handleInlineStrong: "allEnglishWord" });
+            expect(await fmt("使用 C++ 与 #tag", cfg)).toBe("使用 **C++** 与 **#tag**");
+        });
+
+        it("handleInlineStrong allEnglishWord 纯符号片段包裹", async () => {
+            const cfg = makeConfig({ handleInlineStrong: "allEnglishWord" });
+            expect(await fmt("仅符号 %%% 应变化", cfg)).toBe("仅符号 **%%%** 应变化");
+        });
+
+        it("handleInlineStrong allEnglishWord 复杂情况", async () => {
+            const cfg = makeConfig({ handleInlineStrong: "allEnglishWord" });
+            expect(await fmt("测试  a  + b \n的变化", cfg)).toBe("测试 **a  + b**\n的变化");
+        });
+
+        it("handleInlineStrong normal 不自动包裹英文符号组合", async () => {
+            const cfg = makeConfig({ handleInlineStrong: "normal" });
+            expect(await fmt("折扣 %rate% 可用", cfg)).toBe("折扣 %rate% 可用");
+        });
+
+        it("handleInlineStrong removeAll 保留带符号内容", async () => {
+            const cfg = makeConfig({ handleInlineStrong: "removeAll" });
+            expect(await fmt("这是**rate%off**内容", cfg)).toBe("这是rate%off内容");
+        });
+
         // ── handleInlineMath = 'removeAll' ────────────────────────────────
 
         it("handleInlineMath removeAll 移除行内公式标记，保留内容", async () => {
@@ -107,7 +167,32 @@ export function inlineSuite(): void {
         it("handleInlineMath allEnglishWord 将英文单词包裹为行内公式", async () => {
             const cfg = makeConfig({ handleInlineMath: "allEnglishWord" });
             // + 是符号不是英文字母，alpha 和 beta 分别包裹为独立公式
-            expect(await fmt("设 alpha + beta 为例", cfg)).toBe("设 $alpha$ + $beta$ 为例");
+            expect(await fmt("设   alpha +  beta  为例", cfg)).toBe("设 $alpha +  beta$ 为例");
+        });
+
+        it("handleInlineMath allEnglishWord 识别包含英文符号（如 %）", async () => {
+            const cfg = makeConfig({ handleInlineMath: "allEnglishWord" });
+            expect(await fmt("折扣 %rate% 可用", cfg)).toBe("折扣 $%rate%$ 可用");
+        });
+
+        it("handleInlineMath allEnglishWord 识别不同英文符号边界（C++ 与 #tag）", async () => {
+            const cfg = makeConfig({ handleInlineMath: "allEnglishWord" });
+            expect(await fmt("使用 C++ 与 #tag", cfg)).toBe("使用 $C++$ 与 $#tag$");
+        });
+
+        it("handleInlineMath allEnglishWord 纯符号片段不包裹", async () => {
+            const cfg = makeConfig({ handleInlineMath: "allEnglishWord" });
+            expect(await fmt("仅符号 %%% 不应变化", cfg)).toBe("仅符号 $%%%$ 不应变化");
+        });
+
+        it("handleInlineMath normal 不自动包裹英文符号组合", async () => {
+            const cfg = makeConfig({ handleInlineMath: "normal" });
+            expect(await fmt("折扣 %rate% 可用", cfg)).toBe("折扣 %rate% 可用");
+        });
+
+        it("handleInlineMath removeAll 保留带符号内容", async () => {
+            const cfg = makeConfig({ handleInlineMath: "removeAll" });
+            expect(await fmt("保留$%rate%$内容", cfg)).toBe("保留%rate%内容");
         });
     });
 }
