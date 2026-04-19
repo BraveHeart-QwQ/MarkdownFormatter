@@ -1,6 +1,6 @@
 import * as vscode from "vscode";
 import { loadFormatterConfig, workspaceRootFor } from "./configLoader.js";
-import { applyFormatToDocument, applyFormatToRange } from "./formattingProvider.js";
+import { applyFormatToDocument, applyFormatToRanges } from "./formattingProvider.js";
 import { pickProfile } from "./profile.js";
 import { withSelectionDefaultConfig } from "./utils.js";
 
@@ -25,7 +25,8 @@ export async function cmdFormatDocumentWithProfile(editor: vscode.TextEditor): P
 
 export async function cmdFormatSelectionWithProfile(editor: vscode.TextEditor): Promise<void> {
     if (editor.document.languageId !== "markdown") return;
-    if (editor.selection.isEmpty) {
+    const selections = editor.selections.filter((selection) => !selection.isEmpty);
+    if (selections.length === 0) {
         vscode.window.showInformationMessage("Markdown Formatter: No text selected.");
         return;
     }
@@ -38,5 +39,6 @@ export async function cmdFormatSelectionWithProfile(editor: vscode.TextEditor): 
         vscode.window.showErrorMessage(`Markdown Formatter: ${(err as Error).message}`);
         return;
     }
-    await applyFormatToRange(editor.document, editor.selection, withSelectionDefaultConfig(config));
+    const selectionConfig = withSelectionDefaultConfig(config);
+    await applyFormatToRanges(editor.document, selections, selectionConfig);
 }

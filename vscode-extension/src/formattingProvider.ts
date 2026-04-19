@@ -48,6 +48,40 @@ export async function applyFormatToRange(
     await vscode.workspace.applyEdit(edit);
 }
 
+export async function applyFormatToRanges(
+    document: vscode.TextDocument,
+    ranges: vscode.Range[],
+    config: FormatterConfig,
+): Promise<void> {
+    if (ranges.length === 0) return;
+
+    const sortedRanges = [...ranges].sort((a, b) => {
+        const aOffset = document.offsetAt(a.start);
+        const bOffset = document.offsetAt(b.start);
+        return bOffset - aOffset;
+    });
+
+    const edit = new vscode.WorkspaceEdit();
+    let hasChange = false;
+    for (const range of sortedRanges) {
+        const original = document.getText(range);
+        let formatted: string;
+        try {
+            formatted = await format(original, config);
+        } catch (err) {
+            vscode.window.showErrorMessage(`Markdown Formatter: formatting failed — ${(err as Error).message}`);
+            return;
+        }
+        formatted = preserveSelectionBlankLines(original, formatted);
+        if (formatted === original) continue;
+        hasChange = true;
+        edit.replace(document.uri, range, formatted);
+    }
+
+    if (!hasChange) return;
+    await vscode.workspace.applyEdit(edit);
+}
+
 export class MarkdownFormattingProvider
     implements vscode.DocumentFormattingEditProvider, vscode.DocumentRangeFormattingEditProvider {
 
