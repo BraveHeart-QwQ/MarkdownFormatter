@@ -35,7 +35,17 @@ export function loadFormatterConfig(workspaceRoot: string, extraEntries: Profile
     // base files are all strings; profile entries may be strings or inline objects
     const allEntries: ProfileEntry[] = [...baseFiles, ...extraEntries];
 
+    // 读取 baseConfig（优先级低于 configFiles，用于全局基础配置）
+    const baseInlineConfig: PartialFormatterConfig | undefined = vsConfig.get("baseConfig");
     const overrides: PartialFormatterConfig[] = [];
+    if (baseInlineConfig && typeof baseInlineConfig === "object") {
+        const errors = validatePartialConfig(baseInlineConfig);
+        if (errors.length > 0) {
+            throw new Error(`Invalid inline config in "markdownFormatter.baseConfig" setting:\n${errors.join("\n")}`);
+        }
+        overrides.push(baseInlineConfig);
+    }
+
     for (const entry of allEntries) {
         if (typeof entry === "string") {
             const absPath = path.isAbsolute(entry) ? entry : path.join(workspaceRoot, entry);

@@ -2,7 +2,7 @@
   "name": "markdown-formatter",
   "displayName": "Markdown Formatter",
   "description": "Format Markdown files with CJK-aware word-spacing, list, table, and heading rules",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "publisher": "BraveHeart",
   "engines": {
     "vscode": "^1.90.0"
@@ -32,6 +32,38 @@
     "configuration": {
       "title": "Markdown Formatter",
       "properties": {
+        "markdownFormatter.baseConfig": {
+          "type": "object",
+          "default": {},
+          "markdownDescription": "全局基础配置对象，结构与 `#markdownFormatter.config#` 相同，但叠加顺序更靠前（在 `#markdownFormatter.configFiles#` 之前）。适合在用户设置中存放全局通用配置，由项目的 `config` 或 `configFiles` 覆盖。",
+          "properties": {
+            "textCorrection": {
+              "type": "object"
+            },
+            "blockIndent": {
+              "type": "object"
+            },
+            "lineSpacing": {
+              "type": "object"
+            },
+            "wordSpacing": {
+              "type": "object"
+            },
+            "list": {
+              "type": "object"
+            },
+            "table": {
+              "type": "object"
+            },
+            "inline": {
+              "type": "object"
+            },
+            "other": {
+              "type": "object"
+            }
+          },
+          "additionalProperties": false
+        },
         "markdownFormatter.configFiles": {
           "type": "array",
           "items": {
