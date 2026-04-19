@@ -67,6 +67,18 @@ function compactTableJoin(left: Nodes, right: Nodes): number | undefined {
 }
 
 /**
+ * 允许紧凑的代码块
+ */
+function compactCodeBlockJoin(left: Nodes, right: Nodes): number | undefined {
+    if (right.type !== "code") return undefined;
+    const leftEnd = left.position?.end?.line;
+    const rightStart = right.position?.start?.line;
+    if (leftEnd !== undefined && rightStart !== undefined && leftEnd + 1 === rightStart)
+        return 0;
+    return undefined;
+}
+
+/**
  * 当公式块与前一节点紧凑时（原文无空行），保持紧凑排版
  */
 function compactMathJoin(left: Nodes, right: Nodes): number | undefined {
@@ -142,7 +154,7 @@ function inlineMathHandler(node: { value: string; data?: { marker?: string } }):
  * 构建传给 remark-stringify 的 join 函数数组。
  */
 export function buildJoinFunctions(_config: FormatterConfig): JoinFn[] {
-    return [headingLineSpacingJoin, compactListJoin, compactMathJoin, compactTableJoin, listSpreadJoin];
+    return [headingLineSpacingJoin, compactListJoin, compactMathJoin, compactCodeBlockJoin, compactTableJoin, listSpreadJoin];
 }
 
 /**

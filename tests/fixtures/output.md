@@ -159,6 +159,16 @@ a                           | b    | c    | d
 随机森林(Random Forest)     | 高   | 慢   | 中等
 神经网络(Neural Network)    | 很高 | 很慢 | 低
 
+代码块：
+```cpp
+#include <iostream>
+
+int main() {
+    std::cout << "Hello, World!" << std::endl;
+    return 0;
+}
+```
+
 
 
 ## Python 代码示例
