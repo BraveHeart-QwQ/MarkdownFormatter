@@ -39,6 +39,7 @@ export interface LineSpacingConfig {
     blankLinesAfterH3: number; // H3 标题后空行数
     blankLinesBeforeH4: number; // H4 标题前空行数
     blankLinesAfterH4: number; // H4 标题后空行数
+    customSpacingRules: Array<{ pattern: string; blankLinesBefore: number; blankLinesAfter: number }>;
 }
 
 /* 词间距处理 */
@@ -82,6 +83,7 @@ export interface OtherConfig {
     removeHeaderNumber: boolean; // 移除标题中的序号（如 `1.`、`2.3`、`一、`），这在 AI 产生的 MD 中比较常见
     singleCharTableHead: boolean; // 将表格 Header 行格式化为 a | b | c... 这样的单字符，因为大部分 Table 是不显示 Header 行
     trimTrailingWhitespace: boolean; // 删除每行行尾的多余空格
+    /* CustomEnding */
     enableCustomEnding: boolean, // 是否启用添加固定结尾，默认为 true，但如果某些 profile 不想开启这个，可以主动设为 false（例如格式化选择内容）
     spacingLineBeforeCustomEnding: number; // 在 customEnding 之前添加的空行数
     customEnding: string | null; // 在文档末尾添加一个固定的结尾（如 `---End---`），如果不需要则设为 null
@@ -164,6 +166,7 @@ export const k_defaultFormatterConfig: FormatterConfig = {
         blankLinesAfterH3: 1,
         blankLinesBeforeH4: 1,
         blankLinesAfterH4: 0,
+        customSpacingRules: [],
     },
 
     /* 词间距处理 */
