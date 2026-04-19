@@ -13,22 +13,6 @@ export async function cmdFormatDocument(editor: vscode.TextEditor): Promise<void
     await vscode.commands.executeCommand("editor.action.formatDocument");
 }
 
-export async function cmdFormatSelection(editor: vscode.TextEditor): Promise<void> {
-    if (editor.document.languageId !== "markdown") return;
-    if (editor.selection.isEmpty) {
-        vscode.window.showInformationMessage("Markdown Formatter: No text selected.");
-        return;
-    }
-    let config;
-    try {
-        config = loadFormatterConfig(workspaceRootFor(editor.document.uri));
-    } catch (err) {
-        vscode.window.showErrorMessage(`Markdown Formatter: ${(err as Error).message}`);
-        return;
-    }
-    await applyFormatToRange(editor.document, editor.selection, withSelectionDefaultConfig(config));
-}
-
 export async function cmdFormatDocumentWithProfile(editor: vscode.TextEditor): Promise<void> {
     if (editor.document.languageId !== "markdown") return;
     const extraFiles = await pickProfile();

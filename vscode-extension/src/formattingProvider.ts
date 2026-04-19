@@ -1,7 +1,7 @@
 import * as vscode from "vscode";
 import { type FormatterConfig } from "../../src/config.js";
 import { format } from "../../src/pipeline.js";
-import { loadFormatterConfig, workspaceRootFor } from "./configLoader.js";
+import { loadFormatterConfig, mergeConfig, workspaceRootFor } from "./configLoader.js";
 
 export async function applyFormatToDocument(
     document: vscode.TextDocument,
@@ -91,6 +91,8 @@ export class MarkdownFormattingProvider
             vscode.window.showErrorMessage(`Markdown Formatter: ${(err as Error).message}`);
             return [];
         }
+        // For selection formatting, do not append fixed endings by default.
+        config = mergeConfig(config, { other: { enableCustomEnding: false } });
         const original = document.getText(range);
         let formatted: string;
         try {

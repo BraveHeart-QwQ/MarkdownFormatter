@@ -21,10 +21,6 @@
         "title": "Markdown Formatter: Format Document"
       },
       {
-        "command": "markdownFormatter.formatSelection",
-        "title": "Markdown Formatter: Format Selection"
-      },
-      {
         "command": "markdownFormatter.formatDocumentWithProfile",
         "title": "Markdown Formatter: Format Document with Profile"
       },

@@ -2,7 +2,6 @@ import * as vscode from "vscode";
 import {
     cmdFormatDocument,
     cmdFormatDocumentWithProfile,
-    cmdFormatSelection,
     cmdFormatSelectionWithProfile,
 } from "./commands.js";
 import { MarkdownFormattingProvider } from "./formattingProvider.js";
@@ -23,7 +22,6 @@ export function activate(context: vscode.ExtensionContext): void {
         vscode.languages.registerDocumentFormattingEditProvider(k_markdownSelector, provider),
         vscode.languages.registerDocumentRangeFormattingEditProvider(k_markdownSelector, provider),
         vscode.commands.registerTextEditorCommand("markdownFormatter.formatDocument", cmdFormatDocument),
-        vscode.commands.registerTextEditorCommand("markdownFormatter.formatSelection", cmdFormatSelection),
         vscode.commands.registerTextEditorCommand("markdownFormatter.formatDocumentWithProfile", cmdFormatDocumentWithProfile),
         vscode.commands.registerTextEditorCommand("markdownFormatter.formatSelectionWithProfile", cmdFormatSelectionWithProfile),
     );
