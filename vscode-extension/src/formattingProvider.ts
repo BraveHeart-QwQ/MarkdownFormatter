@@ -1,7 +1,8 @@
 import * as vscode from "vscode";
 import { type FormatterConfig } from "../../src/config.js";
 import { format } from "../../src/pipeline.js";
-import { loadFormatterConfig, mergeConfig, workspaceRootFor } from "./configLoader.js";
+import { loadFormatterConfig, workspaceRootFor } from "./configLoader.js";
+import { preserveSelectionBlankLines, withSelectionDefaultConfig } from "./utils.js";
 
 export async function applyFormatToDocument(
     document: vscode.TextDocument,
@@ -39,6 +40,7 @@ export async function applyFormatToRange(
         vscode.window.showErrorMessage(`Markdown Formatter: formatting failed — ${(err as Error).message}`);
         return;
     }
+    formatted = preserveSelectionBlankLines(original, formatted);
     if (formatted === original) return;
 
     const edit = new vscode.WorkspaceEdit();
@@ -91,8 +93,7 @@ export class MarkdownFormattingProvider
             vscode.window.showErrorMessage(`Markdown Formatter: ${(err as Error).message}`);
             return [];
         }
-        // For selection formatting, do not append fixed endings by default.
-        config = mergeConfig(config, { other: { enableCustomEnding: false } });
+        config = withSelectionDefaultConfig(config);
         const original = document.getText(range);
         let formatted: string;
         try {
@@ -101,6 +102,7 @@ export class MarkdownFormattingProvider
             vscode.window.showErrorMessage(`Markdown Formatter: formatting failed — ${(err as Error).message}`);
             return [];
         }
+        formatted = preserveSelectionBlankLines(original, formatted);
         if (formatted === original) return [];
         return [vscode.TextEdit.replace(range, formatted)];
     }

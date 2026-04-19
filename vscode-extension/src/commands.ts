@@ -1,12 +1,8 @@
 import * as vscode from "vscode";
-import { loadFormatterConfig, mergeConfig, workspaceRootFor } from "./configLoader.js";
+import { loadFormatterConfig, workspaceRootFor } from "./configLoader.js";
 import { applyFormatToDocument, applyFormatToRange } from "./formattingProvider.js";
 import { pickProfile } from "./profile.js";
-
-function withSelectionDefaultConfig(config: ReturnType<typeof loadFormatterConfig>) {
-    // Selection formatting should not append fixed endings by default.
-    return mergeConfig(config, { other: { enableCustomEnding: false } });
-}
+import { withSelectionDefaultConfig } from "./utils.js";
 
 export async function cmdFormatDocument(editor: vscode.TextEditor): Promise<void> {
     if (editor.document.languageId !== "markdown") return;
