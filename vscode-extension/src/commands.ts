@@ -43,21 +43,6 @@ export async function cmdFormatSelectionWithProfile(editor: vscode.TextEditor): 
     await applyFormatToRanges(editor.document, selections, selectionConfig);
 }
 
-export function cmdFormatDocumentWithBuiltinProfile(profileName: string): (editor: vscode.TextEditor) => Promise<void> {
-    return async (editor: vscode.TextEditor): Promise<void> => {
-        if (editor.document.languageId !== "markdown") return;
-        const extraFiles: ProfileEntry[] = k_builtinProfiles[profileName] ?? [];
-        let config;
-        try {
-            config = loadFormatterConfig(workspaceRootFor(editor.document.uri), extraFiles);
-        } catch (err) {
-            vscode.window.showErrorMessage(`Markdown Formatter: ${(err as Error).message}`);
-            return;
-        }
-        await applyFormatToDocument(editor.document, config);
-    };
-}
-
 export function cmdFormatSelectionWithBuiltinProfile(profileName: string): (editor: vscode.TextEditor) => Promise<void> {
     return async (editor: vscode.TextEditor): Promise<void> => {
         if (editor.document.languageId !== "markdown") return;

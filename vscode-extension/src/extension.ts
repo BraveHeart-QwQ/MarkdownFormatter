@@ -3,7 +3,6 @@ import {
     cmdFormatDocument,
     cmdFormatDocumentWithProfile,
     cmdFormatSelectionWithProfile,
-    cmdFormatDocumentWithBuiltinProfile,
     cmdFormatSelectionWithBuiltinProfile,
 } from "./commands.js";
 import { MarkdownFormattingProvider } from "./formattingProvider.js";
@@ -37,7 +36,6 @@ export function activate(context: vscode.ExtensionContext): void {
     ];
     for (const { name, id } of k_builtinProfileCommands) {
         context.subscriptions.push(
-            vscode.commands.registerTextEditorCommand(`markdownFormatter.profile.${id}`, cmdFormatDocumentWithBuiltinProfile(name)),
             vscode.commands.registerTextEditorCommand(`markdownFormatter.profile.${id}.selection`, cmdFormatSelectionWithBuiltinProfile(name)),
         );
     }
