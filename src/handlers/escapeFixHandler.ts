@@ -456,9 +456,26 @@ function strongHandlerFunc(node: object, _: object | null, state: object, info: 
     return value;
 }
 
+/**
+ * Custom mark handler — serializes `mark` nodes as `==content==`.
+ */
+function markHandlerFunc(node: object, _: object | null, state: object, info: object): string {
+    const n = node as { children: object[] };
+    const s = state as ToMarkdownState;
+    const marker = "==";
+    const tracker = s.createTracker(info);
+    const exit = s.enter("mark");
+    let value = tracker.move(marker);
+    value += tracker.move(s.containerPhrasing(n, { before: marker, after: marker, ...tracker.current() }));
+    value += tracker.move(marker);
+    exit();
+    return value;
+}
+
 export const linkHandler: Handle = Object.assign(linkHandlerFunc, { peek: () => "[" });
 export const imageHandler: Handle = Object.assign(imageHandlerFunc, { peek: () => "!" });
 export const textHandler: Handle = textHandlerFunc as Handle;
 export const definitionHandler: Handle = definitionHandlerFunc as Handle;
 export const emphasisHandler: Handle = emphasisHandlerFunc as Handle;
 export const strongHandler: Handle = strongHandlerFunc as Handle;
+export const markHandler: Handle = markHandlerFunc as Handle;

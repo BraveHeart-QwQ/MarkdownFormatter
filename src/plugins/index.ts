@@ -4,7 +4,7 @@
 //
 //===----------------------------------------------------------------------===//
 
-import type { Root } from "mdast";
+import type { PhrasingContent, Root, Text } from "mdast";
 import type { FormatterConfig } from "../config.js";
 import { visit } from "unist-util-visit";
 import { createRegistry, runSinglePass } from "./registry.js";
@@ -59,6 +59,57 @@ function tagStandardAutolinks(tree: Root, source: string): void {
 // ── Main plugin ────────────────────────────────────────────────
 
 /**
+ * Parse `==text==` mark syntax in text nodes into `mark` AST nodes.
+ * Must run before the main registry pass so that wordSpacing can see them.
+ */
+function parseMarkSyntax(tree: Root): void {
+    const markPattern = /==([^=\n]+)==/g;
+
+    function splitTextForMark(children: PhrasingContent[]): PhrasingContent[] {
+        const result: PhrasingContent[] = [];
+        for (const child of children) {
+            if (child.type === 'text') {
+                const text = (child as Text).value;
+                markPattern.lastIndex = 0;
+                let lastIndex = 0;
+                let match: RegExpExecArray | null;
+                let anyMatch = false;
+                while ((match = markPattern.exec(text)) !== null) {
+                    anyMatch = true;
+                    if (match.index > lastIndex) {
+                        result.push({ type: 'text', value: text.slice(lastIndex, match.index) } as Text);
+                    }
+                    result.push({
+                        type: 'mark',
+                        children: [{ type: 'text', value: match[1] } as Text],
+                    } as unknown as PhrasingContent);
+                    lastIndex = match.index + match[0].length;
+                }
+                if (anyMatch && lastIndex < text.length) {
+                    result.push({ type: 'text', value: text.slice(lastIndex) } as Text);
+                } else if (!anyMatch) {
+                    result.push(child);
+                }
+            } else if ('children' in child) {
+                const nc = child as unknown as { children: PhrasingContent[] };
+                nc.children = splitTextForMark(nc.children);
+                result.push(child);
+            } else {
+                result.push(child);
+            }
+        }
+        return result;
+    }
+
+    visit(tree, (node) => {
+        if (node.type === 'paragraph' || node.type === 'heading' || node.type === 'tableCell') {
+            const n = node as unknown as { children: PhrasingContent[] };
+            n.children = splitTextForMark(n.children);
+        }
+    });
+}
+
+/**
  * 将所有格式化 AST 变换组合为一个 unified 插件。
  *
  * 用法：`.use(remarkFormatter, config)`
@@ -70,6 +121,7 @@ export function remarkFormatter(config: FormatterConfig): (tree: Root, file: { v
     return function (tree: Root, file: { value: string | Uint8Array }): void {
         tagEmphasisMarkers(tree, String(file.value));
         tagStandardAutolinks(tree, String(file.value));
+        parseMarkSyntax(tree);
 
         if (config.list.enabled) {
             mergeAdjacentUnorderedLists(tree);

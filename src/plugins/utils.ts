@@ -134,6 +134,10 @@ export function renderLiteralInline(node: PhrasingContent): string {
         const marker = ((node as { data?: { marker?: string } }).data?.marker ?? "*").repeat(2);
         return marker + node.children.map((child) => renderLiteralInline(child as PhrasingContent)).join("") + marker;
     }
+    if ((node as unknown as { type: string }).type === "mark") {
+        return "==" + (node as unknown as { children: PhrasingContent[] }).children
+            .map((child) => renderLiteralInline(child as PhrasingContent)).join("") + "==";
+    }
     return "";
 }
 

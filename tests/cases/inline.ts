@@ -18,6 +18,21 @@ function makeConfig(overrides: Partial<FormatterConfig["inline"]>): FormatterCon
     };
 }
 
+/** 为 mark+词间距组合测试使用的配置（仅开启指定的 wordSpacing 选项）*/
+function makeMarkSpacingConfig(wordSpacingOverrides: Partial<FormatterConfig["wordSpacing"]>): FormatterConfig {
+    return {
+        ...k_defaultFormatterConfig,
+        wordSpacing: {
+            spaceBetweenChineseAndEnglish: false,
+            spaceBetweenChineseAndNumber: false,
+            spaceBetweenWordAndInlineCode: false,
+            spaceBetweenWordAndInlineEquation: false,
+            spaceBetweenInlineElements: false,
+            ...wordSpacingOverrides,
+        },
+    };
+}
+
 export function inlineSuite(): void {
     describe("inline", () => {
 
@@ -203,6 +218,43 @@ export function inlineSuite(): void {
         it("handleInlineMath allEnglishWord 纯符号片段包裹", async () => {
             const cfg = makeConfig({ handleInlineMath: "allEnglishWord" });
             expect(await fmt("- %_co-de_% 应变化", cfg)).toBe("- $%_co-de_%$ 应变化");
+        });
+
+        // ── mark（== ==）────────────────────────────────────────────────
+
+        it("mark 基础：原样保留 ==text==", async () => {
+            const cfg = makeConfig({});
+            expect(await fmt("这是==高亮==内容", cfg)).toBe("这是==高亮==内容");
+        });
+
+        it("mark 基础：英文 mark 原样保留", async () => {
+            const cfg = makeConfig({});
+            expect(await fmt("this is ==important== text", cfg)).toBe("this is ==important== text");
+        });
+
+        it("mark spaceBetweenInlineElements：mark 英文与中文边界补充空格", async () => {
+            const cfg = makeMarkSpacingConfig({ spaceBetweenInlineElements: true, spaceBetweenChineseAndEnglish: true });
+            expect(await fmt("这是==important==内容", cfg)).toBe("这是 ==important== 内容");
+        });
+
+        it("mark spaceBetweenInlineElements：mark 内容两侧均为中文时不补充空格", async () => {
+            const cfg = makeMarkSpacingConfig({ spaceBetweenInlineElements: true, spaceBetweenChineseAndEnglish: true });
+            expect(await fmt("这是==高亮==内容", cfg)).toBe("这是==高亮==内容");
+        });
+
+        it("mark spaceBetweenInlineElements：mark 数字与中文边界补充空格", async () => {
+            const cfg = makeMarkSpacingConfig({ spaceBetweenInlineElements: true, spaceBetweenChineseAndNumber: true });
+            expect(await fmt("共==100==个", cfg)).toBe("共 ==100== 个");
+        });
+
+        it("mark spaceBetweenInlineElements：关闭时 mark 左右不插入空格", async () => {
+            const cfg = makeMarkSpacingConfig({ spaceBetweenInlineElements: false });
+            expect(await fmt("这是==important==内容", cfg)).toBe("这是==important==内容");
+        });
+
+        it("mark 段落中多个 mark 节点均处理", async () => {
+            const cfg = makeMarkSpacingConfig({ spaceBetweenInlineElements: true, spaceBetweenChineseAndEnglish: true });
+            expect(await fmt("==A==与==B==对比", cfg)).toBe("==A== 与 ==B== 对比");
         });
 
     });

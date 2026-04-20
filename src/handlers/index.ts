@@ -8,7 +8,7 @@ import type { List, ListItem, Nodes, Parents } from "mdast";
 import type { Handle } from "./tableHandler.js";
 import { tableHandler } from "./tableHandler.js";
 import { listItemHandler } from "./listItemHandler.js";
-import { linkHandler, imageHandler, textHandler, definitionHandler, emphasisHandler, strongHandler } from "./escapeFixHandler.js";
+import { linkHandler, imageHandler, textHandler, definitionHandler, emphasisHandler, strongHandler, markHandler } from "./escapeFixHandler.js";
 import type { FormatterConfig } from "../config.js";
 
 export type { Handle };
@@ -176,6 +176,7 @@ export function buildHandlers(config: FormatterConfig): Handlers {
     handlers["definition"] = definitionHandler;
     handlers["emphasis"] = emphasisHandler;
     handlers["strong"] = strongHandler;
+    handlers["mark"] = markHandler;
     handlers["math"] = mathHandler;
     handlers["inlineMath"] = inlineMathHandler as unknown as Handle;
 
