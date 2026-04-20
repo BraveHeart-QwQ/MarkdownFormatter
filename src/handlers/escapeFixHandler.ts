@@ -307,8 +307,8 @@ function textHandlerFunc(node: object, _: object | null, state: object, info: ob
         p.character !== "*" && p.character !== "`" && p.character !== "~" &&
         p.character !== "." && p.character !== "$" && p.character !== "&" &&
         p.character !== "<" && p.character !== ">" && p.character !== ":" &&
-        p.character !== "="
-    );
+        p.character !== "=" && p.character !== "(" && p.character !== ")"
+    )
     const safeInfo = info as { before?: string; after?: string };
     const result = s.safe(n.value, info);
     s.unsafe = original;

@@ -133,6 +133,11 @@ export function otherSuite(): void {
                     .toBe("OKOK\n\n$$\n\nEnd");
             });
 
+            it("列表中 ( 的转义测试", async () => {
+                expect(await fmt("1. [](()", config))
+                    .toBe("1. [](()");
+            });
+
             it("公式块复杂测试（一）", async () => {
                 expect(await fmt("$$\\begin{array}\nf(x)=ax+b\\\\\n\\end{array}$$", config))
                     .toBe("$$\\begin{array}\nf(x)=ax+b\\\\\n\\end{array}$$");
