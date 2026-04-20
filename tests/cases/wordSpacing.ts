@@ -26,6 +26,11 @@ export function wordSpacingSuite(): void {
             expect(await fmt("你好world", cfg)).toBe("你好 world");
         });
 
+        it("空格检测（一）", async () => {
+            const cfg = makeConfig({ spaceBetweenChineseAndEnglish: true });
+            expect(await fmt("1. 所以T(V_n)也是线性空间", cfg)).toBe("1. 所以 T(V_n) 也是线性空间");
+        });
+
         it("英文后接中文时插入空格", async () => {
             const cfg = makeConfig({ spaceBetweenChineseAndEnglish: true });
             expect(await fmt("hello世界", cfg)).toBe("hello 世界");

@@ -1,6 +1,11 @@
 # 1. 机器学习简介
    
+
 机器学习(Machine Learning)是人工_智能($AI$)的一个重要分支。它使_计算机系统_能够自动从数据中学习和改$2$进，无需进行明确的编程(Explicit Programming)。近年来，随着计算*能力的提升*和数据量的爆炸式增长，机器学习在各个领域$取得$了突破性进展。
+
+1. 所以 T(V_n)也是线性空间
+
+---
 
 - 点 $\boldsymbol{p}$ 与三角形共面
   在三角形情形中，重心坐标也叫==面积坐标==，因为 $\boldsymbol{P}$ 点关于 $\triangle ABC$ 的重心坐标和 $\triangle PBC$，$\triangle PCA$，$\triangle PAB$ 的（有向）面积成比例。

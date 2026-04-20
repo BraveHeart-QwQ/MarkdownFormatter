@@ -72,6 +72,8 @@ export function registerWordSpacing(registry: VisitorRegistry, config: Formatter
         if (cfg.spaceBetweenChineseAndEnglish) {
             patterns.push([new RegExp(`([${CJK}])([A-Za-z])`, 'gu'), '$1 $2']);
             patterns.push([new RegExp(`([A-Za-z])([${CJK}])`, 'gu'), '$1 $2']);
+            // Handle identifiers ending with ')' before CJK, e.g. T(V_n)也是 -> T(V_n) 也是
+            patterns.push([new RegExp(`([A-Za-z_][A-Za-z0-9_]*\\))([${CJK}])`, 'gu'), '$1 $2']);
         }
         if (cfg.spaceBetweenChineseAndNumber) {
             patterns.push([new RegExp(`([${CJK}])([0-9])`, 'gu'), '$1 $2']);
