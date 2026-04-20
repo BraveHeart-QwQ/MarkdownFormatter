@@ -112,5 +112,14 @@ export function lineSpacingSuite(): void {
             const result = await fmt("text\n\n## Special Section\n\nafter", cfg);
             expect(result).toBe("text\n\n\n\n## Special Section\n\nafter");
         });
+
+        it("customSpacingRules：复杂测试", async () => {
+            const cfg = makeConfig({
+                customSpacingRules: [{ pattern: ":::", blankLinesBefore: 1, blankLinesAfter: 1 }],
+            });
+            // Heading text matches pattern but customSpacingRules only applies to paragraphs
+            const result = await fmt("Content:\n::: details DetailTitle\nDetailContent\n:::\n\n- TestList\n\n  ::: details DetailsTitle\n  DetailsContent\n  :::", cfg);
+            expect(result).toBe("Content:\n::: details DetailTitle\n\nDetailContent\n\n:::\n\n- TestList\n\n  ::: details DetailsTitle\n\n  DetailsContent\n\n  :::");
+        });
     });
 }
