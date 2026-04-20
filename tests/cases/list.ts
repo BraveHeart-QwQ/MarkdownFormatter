@@ -165,7 +165,7 @@ export function listSuite(): void {
         it("列表缩进（四）", async () => {
             const input = "-   list\n  content\n\n  a   | b\n  ----|----\n  x   | y";
             const result = await fmt(input, makeConfig({ unorderedMarker: "-" }));
-            expect(result).toBe("- list\n\n  content\n\n  a   | b\n  ----|----\n  x   | y");
+            expect(result).toBe("- list\n\n  content\n  a   | b\n  ----|----\n  x   | y");
         });
 
         it("列表间隙（一）", async () => { // sub table, sub equation block, sub code block, sub blockquote... should follow the same lien spacing rule as f they are sub of list

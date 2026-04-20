@@ -95,6 +95,7 @@ function compactMathJoin(left: Nodes, right: Nodes): number | undefined {
  */
 function listSpreadJoin(left: Nodes, right: Nodes, parent: Parents): number | undefined {
     const isListNode = (t: string) => t === "list";
+    const isNestedBlockNode = (t: string) => ["list", "table", "math", "code", "blockquote"].includes(t); // compact in list
     const countNonListChildren = (item: ListItem) => item.children.filter(c => !isListNode(c.type)).length;
     if (parent.type === "list" && left.type === "listItem" && right.type === "listItem") {
         const leftItem = left as ListItem;
@@ -103,7 +104,7 @@ function listSpreadJoin(left: Nodes, right: Nodes, parent: Parents): number | un
         }
         return 0;
     }
-    if (parent.type === "listItem" && !isListNode(left.type) && right.type === "list") {
+    if (parent.type === "listItem" && !isListNode(left.type) && isNestedBlockNode(right.type)) {
         return 0;
     }
     if (parent.type === "listItem" && !isListNode(left.type) && !isListNode(right.type)) {

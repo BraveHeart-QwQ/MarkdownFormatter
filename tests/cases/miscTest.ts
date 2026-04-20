@@ -122,7 +122,7 @@ export function miscSuite(): void {
 
             it("公式块复杂测试（三）", async () => {
                 expect(await fmt("- Test List\n\n  $$\n  \\begin{array}\n  f(x)=ax+b\\\\\n  \\end{array}\n  $$", config))
-                    .toBe("- Test List\n\n  $$\n  \\begin{array}\n  f(x)=ax+b\\\\\n  \\end{array}\n  $$");
+                    .toBe("- Test List\n  $$\n  \\begin{array}\n  f(x)=ax+b\\\\\n  \\end{array}\n  $$");
             });
 
             it("公式块复杂测试（四）", async () => {
@@ -142,7 +142,7 @@ export function miscSuite(): void {
 
             it("公式块复杂测试（七）", async () => {
                 expect(await fmt("Test List:\n- 计算\n\n  $$f(x) = ax + \\\\\n  b$$\n\nAfter Content", config))
-                    .toBe("Test List:\n- 计算\n\n  $$f(x) = ax + \\\\\n  b$$\n\nAfter Content");
+                    .toBe("Test List:\n- 计算\n  $$f(x) = ax + \\\\\n  b$$\n\nAfter Content");
             });
 
             it("公式块不应该影响到后续内容的解析", async () => {
