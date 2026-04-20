@@ -31,7 +31,6 @@ export function preprocess(input: string, config: FormatterConfig): string {
 }
 
 // TODO preprocess 增加一个保护流程
-// BUG 列表 后紧跟 `*` 修一下
 /**
  * 规范化列表标记符后的空格：`-   text` → `- text`、`1.   text` → `1. text`。
  *
@@ -195,6 +194,22 @@ function remarkPreserveMathMarkers() {
             if (match) {
                 n.data = { ...(n.data ?? {}), rawMeta: match[1] };
             }
+        });
+
+        // Preserve whether each blockquote marker used `>` or `> ` in source,
+        // so stringify can keep edge-case spacing unchanged.
+        visit(tree as Parameters<typeof visit>[0], "blockquote", (node: unknown) => {
+            const n = node as { position?: { start: { line: number; column: number } }; data?: Record<string, unknown> };
+            if (!n.position) return;
+            const lineIdx = n.position.start.line - 1;
+            if (lineIdx < 0 || lineIdx >= lines.length) return;
+            const line = lines[lineIdx];
+            const markerIdx = n.position.start.column - 1;
+            if (markerIdx < 0 || markerIdx >= line.length) return;
+            if (line[markerIdx] !== ">") return;
+
+            const spaceAfterMarker = line[markerIdx + 1] === " ";
+            n.data = { ...(n.data ?? {}), blockquoteSpaceAfterMarker: spaceAfterMarker };
         });
 
     };

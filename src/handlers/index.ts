@@ -151,6 +151,25 @@ function inlineMathHandler(node: { value: string; data?: { marker?: string } }):
 }
 
 /**
+ * 自定义 blockquote handler：按源文本保留 marker 后空格（`>` / `> `）。
+ */
+function blockquoteHandler(node: { data?: { blockquoteSpaceAfterMarker?: boolean } }, _parent: object | null, state: any, info: object): string {
+    const exit = state.enter("blockquote");
+    const tracker = state.createTracker(info);
+    const marker = node.data?.blockquoteSpaceAfterMarker === true ? "> " : ">";
+    tracker.move(marker);
+    tracker.shift(marker.length);
+    const value = state.indentLines(
+        state.containerFlow(node, tracker.current()),
+        (line: string, _index: number, blank: boolean) => {
+            return blank ? ">" : marker + line;
+        },
+    );
+    exit();
+    return value;
+}
+
+/**
  * 构建传给 remark-stringify 的 join 函数数组。
  */
 export function buildJoinFunctions(_config: FormatterConfig): JoinFn[] {
@@ -177,6 +196,7 @@ export function buildHandlers(config: FormatterConfig): Handlers {
     handlers["emphasis"] = emphasisHandler;
     handlers["strong"] = strongHandler;
     handlers["mark"] = markHandler;
+    handlers["blockquote"] = blockquoteHandler as unknown as Handle;
     handlers["math"] = mathHandler;
     handlers["inlineMath"] = inlineMathHandler as unknown as Handle;
 
