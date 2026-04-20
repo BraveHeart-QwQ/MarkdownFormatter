@@ -105,6 +105,12 @@ function listSpreadJoin(left: Nodes, right: Nodes, parent: Parents): number | un
         return 0;
     }
     if (parent.type === "listItem" && !isListNode(left.type) && isNestedBlockNode(right.type)) {
+        const listItemParent = parent as ListItem;
+        // Keep one blank line only for first paragraph -> fenced code transitions.
+        if (right.type === "code") {
+            const leftIndex = listItemParent.children.indexOf(left as ListItem["children"][number]);
+            return leftIndex === 0 ? 1 : 0;
+        }
         return 0;
     }
     if (parent.type === "listItem" && !isListNode(left.type) && !isListNode(right.type)) {
