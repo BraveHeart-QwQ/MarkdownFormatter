@@ -103,6 +103,9 @@ function listSpreadJoin(left: Nodes, right: Nodes, parent: Parents): number | un
         }
         return 0;
     }
+    if (parent.type === "listItem" && !isListNode(left.type) && right.type === "list") {
+        return 0;
+    }
     if (parent.type === "listItem" && !isListNode(left.type) && !isListNode(right.type)) {
         return 1;
     }
