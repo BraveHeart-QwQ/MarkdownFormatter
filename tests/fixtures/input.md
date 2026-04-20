@@ -2,6 +2,24 @@
    
 机器学习(Machine Learning)是人工_智能($AI$)的一个重要分支。它使_计算机系统_能够自动从数据中学习和改$2$进，无需进行明确的编程(Explicit Programming)。近年来，随着计算*能力的提升*和数据量的爆炸式增长，机器学习在各个领域$取得$了突破性进展。
 
+- 点 $\boldsymbol{p}$ 与三角形共面
+  在三角形情形中，重心坐标也叫==面积坐标==，因为 $\boldsymbol{P}$ 点关于 $\triangle ABC$ 的重心坐标和 $\triangle PBC$，$\triangle PCA$，$\triangle PAB$ 的（有向）面积成比例。
+
+  假设 $\boldsymbol{P}$ 的正规化重心坐标为 $(\lambda_1,\lambda_2,\lambda_3)$，则 $\boldsymbol{P}$ 划分的三个三角形的面积比为 $\lambda_1:\lambda_2:\lambda_3$
+- 点 $\boldsymbol{p}$ 与三角形不共面
+  不共面的情况，面积之间没有比例性质。但体积之间有比例。这里说的体积是指点 $\boldsymbol{P}$ 朝三角形做垂线，然后选一个**斜面构成的四面体**。假设垂足为点 $O$，则有：
+  $$\lambda_1 = \frac{V_{OPAB}}{V_{PABC}},\quad\lambda_2 = \frac{V_{OPAC}}{V_{PABC}},\quad\lambda_3 = \frac{V_{OPBC}}{V_{PABC}}$$
+
+---
+
+- 点 $a$
+  content1。
+  
+  content2
+- item2
+
+---
+
 \[&\]
 [编辑](https://en.wikibooks.org/w/index.php?title=Windows_Batch_Scripting&veaction=edit&section=9 "Edit section: How a command is executed")
 

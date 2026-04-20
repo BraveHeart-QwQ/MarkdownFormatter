@@ -174,6 +174,12 @@ export function listSuite(): void {
             expect(result).toBe("- list\n\n  Content:\n  - sublistitem1\n  - sublistitem2");
         });
 
+        it("列表间隙（二）", async () => { // sub table, sub equation block, sub code block, sub blockquote... should follow the same lien spacing rule as f they are sub of list
+            const input = "- item with $equation$\n  Content\n\n  Content\n- item2";
+            const result = await fmt(input, makeConfig({ unorderedMarker: "-" }));
+            expect(result).toBe("- item with $equation$\n\n  Content\n\n  Content\n\n- item2");
+        });
+
         it("特殊列表结构（一）", async () => {
             const input = "- * (asterisk)\n\nOrdered List:\n\n1. * /";
             const result = await fmt(input, makeConfig({ unorderedMarker: "-" }));
