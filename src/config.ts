@@ -39,7 +39,6 @@ export interface LineSpacingConfig {
     blankLinesAfterH3: number; // H3 标题后空行数
     blankLinesBeforeH4: number; // H4 标题前空行数
     blankLinesAfterH4: number; // H4 标题后空行数
-    customSpacingRules: Array<{ pattern: string; blankLinesBefore: number; blankLinesAfter: number }>;
 }
 
 /* 词间距处理 */
@@ -166,7 +165,6 @@ export const k_defaultFormatterConfig: FormatterConfig = {
         blankLinesAfterH3: 1,
         blankLinesBeforeH4: 1,
         blankLinesAfterH4: 0,
-        customSpacingRules: [],
     },
 
     /* 词间距处理 */

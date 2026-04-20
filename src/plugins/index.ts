@@ -9,7 +9,7 @@ import type { FormatterConfig } from "../config.js";
 import { visit } from "unist-util-visit";
 import { createRegistry, runSinglePass } from "./registry.js";
 import { registerTextReplacement } from "./textCorrection.js";
-import { registerLineSpacing, applyCustomSpacingRules } from "./lineSpacing.js";
+import { registerLineSpacing } from "./lineSpacing.js";
 import { registerWordSpacing } from "./wordSpacing.js";
 import { mergeAdjacentUnorderedLists, nestIndentedListItems, splitIndentedContinuations, registerListFormatting } from "./list.js";
 import { registerTableFormatting } from "./table.js";
@@ -141,6 +141,5 @@ export function remarkFormatter(config: FormatterConfig): (tree: Root, file: { v
         registerOtherFormatting(registry, config);
 
         runSinglePass(tree, registry);
-        applyCustomSpacingRules(tree, config.lineSpacing);
     };
 }
