@@ -191,7 +191,7 @@ export const k_defaultFormatterConfig: FormatterConfig = {
         enabled: true,
         removeOuterBorders: true,
         trimTrailingChars: ["。"], // 默认移除中文句号
-        maxFormatColumnWidth: 80,
+        maxFormatColumnWidth: 60,
     },
 
     /* Inline 元素格式化 */

@@ -96,6 +96,12 @@ Other List:
 
 ## 测试表格
 
+a                                       | b
+----------------------------------------|----
+very well very well very well very well | wow
+very well very well very well very well very well very well | wow
+very well very well very well very well very well very well very well very well | wow
+
 a     | b
 ------|------
 ok    | 你好你好你好你好你好你好你好你好你好你好你好你好你好你好你好你好你好你好你好你好你好你好你好你好你好你好你好你好你好你好你好你好你好你好你好你好
@@ -177,7 +183,7 @@ x   | y
 相邻的符号，J 就**不需要**产生空格间隙 `J`。
 
 a                                      | b
----------------------------------------|---------------------------------
+---------------------------------------|----------------
 监督学习（Supervised Learning）        | 训练数据含有标签。训练数据含有标签。训练数据含有标签。训练数据含有标签
 无监督学习（Unsupervised Learning）    | 训练数据不含标签
 半监督学习（Semi-supervised Learning） | 仅有少量数据有标签
