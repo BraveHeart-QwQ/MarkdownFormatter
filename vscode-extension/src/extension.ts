@@ -3,6 +3,8 @@ import {
     cmdFormatDocument,
     cmdFormatDocumentWithProfile,
     cmdFormatSelectionWithProfile,
+    cmdFormatDocumentWithBuiltinProfile,
+    cmdFormatSelectionWithBuiltinProfile,
 } from "./commands.js";
 import { MarkdownFormattingProvider } from "./formattingProvider.js";
 
@@ -25,6 +27,20 @@ export function activate(context: vscode.ExtensionContext): void {
         vscode.commands.registerTextEditorCommand("markdownFormatter.formatDocumentWithProfile", cmdFormatDocumentWithProfile),
         vscode.commands.registerTextEditorCommand("markdownFormatter.formatSelectionWithProfile", cmdFormatSelectionWithProfile),
     );
+
+    const k_builtinProfileCommands: Array<{ name: string; id: string }> = [
+        { name: "ClearInlineCodeAndMath", id: "clearInlineCodeAndMath" },
+        { name: "ClearInlineCode", id: "clearInlineCode" },
+        { name: "ClearInlineMath", id: "clearInlineMath" },
+        { name: "FormatInlineToCode", id: "formatInlineToCode" },
+        { name: "FormatInlineToMath", id: "formatInlineToMath" },
+    ];
+    for (const { name, id } of k_builtinProfileCommands) {
+        context.subscriptions.push(
+            vscode.commands.registerTextEditorCommand(`markdownFormatter.profile.${id}`, cmdFormatDocumentWithBuiltinProfile(name)),
+            vscode.commands.registerTextEditorCommand(`markdownFormatter.profile.${id}.selection`, cmdFormatSelectionWithBuiltinProfile(name)),
+        );
+    }
 }
 
 export function deactivate(): void { }

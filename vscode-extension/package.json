@@ -27,6 +27,46 @@
       {
         "command": "markdownFormatter.formatSelectionWithProfile",
         "title": "Markdown Formatter: Format Selection with Profile"
+      },
+      {
+        "command": "markdownFormatter.profile.clearInlineCodeAndMath",
+        "title": "Markdown Formatter: Clear Inline Code and Math"
+      },
+      {
+        "command": "markdownFormatter.profile.clearInlineCodeAndMath.selection",
+        "title": "Markdown Formatter: Clear Inline Code and Math (Selection)"
+      },
+      {
+        "command": "markdownFormatter.profile.clearInlineCode",
+        "title": "Markdown Formatter: Clear Inline Code"
+      },
+      {
+        "command": "markdownFormatter.profile.clearInlineCode.selection",
+        "title": "Markdown Formatter: Clear Inline Code (Selection)"
+      },
+      {
+        "command": "markdownFormatter.profile.clearInlineMath",
+        "title": "Markdown Formatter: Clear Inline Math"
+      },
+      {
+        "command": "markdownFormatter.profile.clearInlineMath.selection",
+        "title": "Markdown Formatter: Clear Inline Math (Selection)"
+      },
+      {
+        "command": "markdownFormatter.profile.formatInlineToCode",
+        "title": "Markdown Formatter: Format Inline to Code"
+      },
+      {
+        "command": "markdownFormatter.profile.formatInlineToCode.selection",
+        "title": "Markdown Formatter: Format Inline to Code (Selection)"
+      },
+      {
+        "command": "markdownFormatter.profile.formatInlineToMath",
+        "title": "Markdown Formatter: Format Inline to Math"
+      },
+      {
+        "command": "markdownFormatter.profile.formatInlineToMath.selection",
+        "title": "Markdown Formatter: Format Inline to Math (Selection)"
       }
     ],
     "configuration": {

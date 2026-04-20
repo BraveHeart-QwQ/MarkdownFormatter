@@ -5,7 +5,7 @@ export type ProfileEntry = string | PartialFormatterConfig;
 
 // ── Built-in profiles ─────────────────────────────────────────────────────────
 
-const k_builtinProfiles: Record<string, ProfileEntry[]> = {
+export const k_builtinProfiles: Record<string, ProfileEntry[]> = {
     "ClearInlineCodeAndMath": [{ inline: { handleInlineCode: "removeAll", handleInlineMath: "removeAll" }, other: { enableCustomEnding: false } }],
     "ClearInlineCode": [{ inline: { handleInlineCode: "removeAll" }, other: { enableCustomEnding: false } }],
     "ClearInlineMath": [{ inline: { handleInlineMath: "removeAll" }, other: { enableCustomEnding: false } }],
