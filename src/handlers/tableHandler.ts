@@ -56,23 +56,45 @@ function padCell(content: string, targetWidth: number): string {
     return content + " ".repeat(Math.max(0, targetWidth - displayWidth(content)));
 }
 
-/** 计算格式化前某行的原始内容宽度（含分隔符开销），用于判断是否超限。 */
-function rawRowWidth(cells: string[], numCols: number, removeOuterBorders: boolean): number {
-    const contentSum = cells.reduce((acc, c) => acc + displayWidth(c), 0);
-    const gapTotal = 3 * (numCols - 1); // " | " between cells
+/**
+ * 计算前缀单元格（前 prefixCellCount 列）的原始内容宽度（含分隔符开销）。
+ * 用于判断这一前缀是否仍在 maxFormatColumnWidth 范围内。
+ */
+function rawPrefixWidth(cells: string[], prefixCellCount: number, removeOuterBorders: boolean): number {
+    if (prefixCellCount <= 0) return 0;
+
+    const m = Math.min(prefixCellCount, cells.length);
+    const contentSum = cells.slice(0, m).reduce((acc, c) => acc + displayWidth(c), 0);
+    const gapTotal = 3 * Math.max(0, m - 1); // " | " between prefix cells
     return removeOuterBorders
         ? contentSum + gapTotal
         : contentSum + gapTotal + 4; // leading "| " + trailing " |"
 }
 
-/** 将一行单元格渲染为 Markdown 表格行字符串。 */
-function renderRow(cells: string[], skip: boolean, colWidths: number[], removeOuterBorders: boolean): string {
-    if (skip) {
-        return removeOuterBorders
-            ? cells.join(" | ")
-            : "| " + cells.join(" | ") + " |";
+/**
+ * 计算某行可参与对齐的前缀列数：
+ * 找到最大的 m，使得前 m 列仍在 maxFormatColumnWidth 范围内。
+ */
+function alignedPrefixCellCount(
+    cells: string[],
+    numCols: number,
+    removeOuterBorders: boolean,
+    maxFormatColumnWidth: number,
+): number {
+    let count = 0;
+    for (let m = 1; m <= numCols; m++) {
+        if (rawPrefixWidth(cells, m, removeOuterBorders) <= maxFormatColumnWidth) {
+            count = m;
+        } else {
+            break;
+        }
     }
-    const padded = cells.map((cell, c) => padCell(cell, colWidths[c]));
+    return count;
+}
+
+/** 将一行单元格渲染为 Markdown 表格行字符串。 */
+function renderRow(cells: string[], alignPrefixCount: number, colWidths: number[], removeOuterBorders: boolean): string {
+    const padded = cells.map((cell, c) => (c < alignPrefixCount ? padCell(cell, colWidths[c]) : cell));
     return removeOuterBorders
         ? padded.join(" | ").trimEnd()
         : "| " + padded.join(" | ") + " |";
@@ -85,17 +107,22 @@ function renderSeparator(
     removeOuterBorders: boolean,
     maxFormatColumnWidth: number,
     numCols: number,
+    alignPrefixCols: number,
 ): string {
+    const sepCellWidths = colWidths.map((w, c) => (c < alignPrefixCols ? w : 3));
+
     // When removeOuterBorders, data rows use " | " (3 chars) between cells, so
     // overhead equals 3*(numCols-1). Without outer borders, separator format is
     // "|col0|col1|...|" whose overhead is numCols+1.
     const overhead = removeOuterBorders ? 3 * (numCols - 1) : numCols + 1;
-    const totalWidth = colWidths.reduce((a, b) => a + b, 0) + overhead;
+    const totalWidth = sepCellWidths.reduce((a, b) => a + b, 0) + overhead;
 
-    const lastColWidths = colWidths.slice();
+    const lastColWidths = sepCellWidths.slice();
     if (totalWidth > maxFormatColumnWidth) {
         const excess = totalWidth - maxFormatColumnWidth;
-        lastColWidths[numCols - 1] = Math.max(3, lastColWidths[numCols - 1] - excess);
+        // 优先压缩最后一个参与对齐的列；若没有对齐列，则退化到第 0 列。
+        const shrinkIndex = Math.max(0, Math.min(numCols - 1, alignPrefixCols - 1));
+        lastColWidths[shrinkIndex] = Math.max(3, lastColWidths[shrinkIndex] - excess);
     }
 
     const sepCells = lastColWidths.map((w, c) => {
@@ -114,6 +141,7 @@ function renderSeparator(
         : "|" + sepCells.join("|") + "|";
 }
 
+// TODO 优化一下对齐算法
 /**
  * 返回 Table 节点的 stringify handler。
  *
@@ -149,24 +177,29 @@ export function tableHandler(config: FormatterConfig): Handle {
             })
         );
 
-        // ── Step 2: 求每列最大显示宽度（≥3，以容纳最短分隔符 ---） ─────────────
+        // ── Step 2: 逐行计算“可参与对齐”的前缀列数 m ───────────────────────
+        const alignPrefixCounts: number[] = cellStrs.map(cells =>
+            alignedPrefixCellCount(cells, numCols, cfg.removeOuterBorders, cfg.maxFormatColumnWidth),
+        );
+
+        // ── Step 3: 仅基于“参与对齐”的单元格求每列最大显示宽度（≥3） ─────────
         const colWidths: number[] = Array.from({ length: numCols }, (_, c) => {
             let maxW = 3;
-            for (const row of cellStrs) {
-                maxW = Math.max(maxW, displayWidth(row[c] ?? ""));
+            for (let r = 0; r < cellStrs.length; r++) {
+                if (alignPrefixCounts[r] <= c) continue;
+                maxW = Math.max(maxW, displayWidth(cellStrs[r][c] ?? ""));
             }
             return maxW;
         });
 
-        // ── Step 3: 逐行检查原始内容宽度，超限则跳过列对齐 ───────────────────
-        const skipRows: boolean[] = cellStrs.map(cells => rawRowWidth(cells, numCols, cfg.removeOuterBorders) > cfg.maxFormatColumnWidth);
+        const alignPrefixCols = Math.max(0, ...alignPrefixCounts);
 
-        // ── Step 4: 生成各行字符串 ────────────────────────────────────────────
+        // ── Step 4: 生成各行字符串（每行只对齐前 m 列） ───────────────────────
         const lines: string[] = [];
-        lines.push(renderRow(cellStrs[0], skipRows[0], colWidths, cfg.removeOuterBorders));  // 表头行
-        lines.push(renderSeparator(colWidths, align, cfg.removeOuterBorders, cfg.maxFormatColumnWidth, numCols)); // 分隔行（始终对齐）
+        lines.push(renderRow(cellStrs[0], alignPrefixCounts[0], colWidths, cfg.removeOuterBorders));
+        lines.push(renderSeparator(colWidths, align, cfg.removeOuterBorders, cfg.maxFormatColumnWidth, numCols, alignPrefixCols));
         for (let r = 1; r < rows.length; r++) {
-            lines.push(renderRow(cellStrs[r], skipRows[r], colWidths, cfg.removeOuterBorders));
+            lines.push(renderRow(cellStrs[r], alignPrefixCounts[r], colWidths, cfg.removeOuterBorders));
         }
 
         return lines.join("\n");

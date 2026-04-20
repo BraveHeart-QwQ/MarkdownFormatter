@@ -65,7 +65,7 @@ export interface TableConfig {
     enabled: boolean; // 是否启用 Table 格式化
     removeOuterBorders: boolean; // 是否消除左右两端的竖线边框
     trimTrailingChars: Array<string>; // 行结尾要去除的字符列表，比如去除 `。`
-    maxFormatColumnWidth: number; // 当格式化后**某一行**的总宽度超过这个值时，该行不参与 Table 格式化列对齐（Table 其他行不受影响），而是直接转为纯粹的按 ` | ` 分隔的文本
+    maxFormatColumnWidth: number; // 每行仅在该宽度范围内对齐“前缀列”：找到最大的 m，使前 m 列在范围内并对齐；第 m+1 列及之后保持不对齐
 }
 
 /* Inline 元素格式化（辅助工具） */

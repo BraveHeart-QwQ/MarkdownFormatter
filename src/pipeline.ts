@@ -30,7 +30,6 @@ export function preprocess(input: string, config: FormatterConfig): string {
     return text;
 }
 
-// TODO preprocess 增加一个保护流程
 /**
  * 规范化列表标记符后的空格：`-   text` → `- text`、`1.   text` → `1. text`。
  *

@@ -64,24 +64,23 @@ export function tableSuite(): void {
             }
         });
 
-        it("某行原始内容宽度超过 maxFormatColumnWidth 时该行跳过列对齐", async () => {
-            // 构造一个有短行和超宽行的表格
-            const longCell = "x".repeat(70);
+        it("maxFormatColumnWidth 下仅对齐每行可容纳的前缀列", async () => {
+            const longCell = "x".repeat(30);
             const input = [
-                "| a | b |",
-                "| --- | --- |",
-                `| ${longCell} | y |`,
-                "| short | cell |",
+                "| h1 | h2 | h3 |",
+                "| --- | --- | --- |",
+                `| a | bb | ${longCell} |`,
+                "| aa | b | y |",
             ].join("\n");
-            const result = await fmt(input, makeConfig({ removeOuterBorders: false, maxFormatColumnWidth: 65 }));
+            const result = await fmt(input, makeConfig({ removeOuterBorders: false, maxFormatColumnWidth: 20 }));
             const lines = result.split("\n");
-            // 超宽行（index 2）应跳过列对齐，内容不带填充空格
-            expect(lines[2]).toContain(longCell);
-            // 短行（index 3）仍然参与列对齐（有填充空格）
-            // short 列宽 = max(1, 5, 70) = 70；但只有超宽行才跳过
-            // 实际上两个数据行都超宽（列宽 70 + 其他 = 总宽很大），所以都跳过
-            // 此 case 主要验证超宽行不会导致崩溃
-            expect(lines).toHaveLength(4);
+
+            // 第 3 列太长时，仅前两列参与该行对齐；后续列保持原样
+            expect(lines[0]).toBe("| h1  | h2  | h3  |");
+            expect(lines[1]).toBe("|---|---|---|");
+            expect(lines[2]).toBe(`| a   | bb  | ${longCell} |`);
+            // 短行仍可继续对齐到第 3 列，且不被超长列拉宽
+            expect(lines[3]).toBe("| aa  | b   | y   |");
         });
 
         it("trimTrailingChars 去除单元格行尾字符", async () => {
