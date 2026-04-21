@@ -130,7 +130,7 @@ export function registerInlineFormatting(registry: VisitorRegistry, config: Form
 
     // ── 基础行为：去除首尾空格 ─────────────────────────────────────────────
     registry.inlineCode.push((node: InlineCode) => {
-        node.value = node.value.trim();
+        // node.value = node.value.trim(); // 代码还是保留完整吧
     });
 
     registry.inlineMath.push((node: InlineMath) => {

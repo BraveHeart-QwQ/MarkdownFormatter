@@ -38,10 +38,9 @@ export function inlineSuite(): void {
 
         // ── 基础行为：去除 inline 元素首尾空格（写死）───────────────────────
 
-        it("去除 inlineCode 内首尾空格", async () => {
-            // CommonMark：单侧空格被 parser 抹去；双侧两个空格各剩一个，由 trim 处理
+        it("不去除 inlineCode 内首尾空格", async () => {
             const cfg = makeConfig({});
-            expect(await fmt("使用`  code  `示例", cfg)).toBe("使用`code`示例");
+            expect(await fmt("使用`  code  `示例", cfg)).toBe("使用`  code  `示例");
         });
 
         it("去除 inlineMath 内首尾空格", async () => {

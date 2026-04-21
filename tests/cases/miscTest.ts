@@ -22,6 +22,10 @@ export function miscSuite(): void {
             expect(await fmt("---", config)).toBe("---");
         });
 
+        it("Code 和 Equantion 保留空格", async () => {
+            expect(await fmt("你好 ` ` 啊 $ $ Chello", config)).toBe("你好 ` ` 啊 $$ Chello");
+        });
+
         /*====-------------- List --------------====*/
 
         // it("- * 不应该被格式化", async () => {
