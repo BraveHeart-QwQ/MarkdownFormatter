@@ -108,6 +108,7 @@ function renderSeparator(
     maxFormatColumnWidth: number,
     numCols: number,
     alignPrefixCols: number,
+    minLineWidth: number,
 ): string {
     const sepCellWidths = colWidths.map((w, c) => (c < alignPrefixCols ? w : 3));
 
@@ -125,20 +126,33 @@ function renderSeparator(
         lastColWidths[shrinkIndex] = Math.max(3, lastColWidths[shrinkIndex] - excess);
     }
 
-    const sepCells = lastColWidths.map((w, c) => {
-        // When removeOuterBorders, data rows surround each "|" with spaces (" | ").
-        // The separator joins with bare "|", so each cell must absorb those spaces
-        // as extra dashes: +1 for the first/last column (one adjacent space each),
-        // +2 for middle columns (one space on each side).
-        if (removeOuterBorders && numCols > 1) {
-            const extra = (c === 0 || c === numCols - 1) ? 1 : 2;
-            return makeSepCell(align[c], w + extra);
-        }
-        return makeSepCell(align[c], w);
-    });
-    return removeOuterBorders
-        ? sepCells.join("|")
-        : "|" + sepCells.join("|") + "|";
+    const buildSeparatorLine = (cellWidths: number[]): string => {
+        const sepCells = cellWidths.map((w, c) => {
+            // When removeOuterBorders, data rows surround each "|" with spaces (" | ").
+            // The separator joins with bare "|", so each cell must absorb those spaces
+            // as extra dashes: +1 for the first/last column (one adjacent space each),
+            // +2 for middle columns (one space on each side).
+            if (removeOuterBorders && numCols > 1) {
+                const extra = (c === 0 || c === numCols - 1) ? 1 : 2;
+                return makeSepCell(align[c], w + extra);
+            }
+            return makeSepCell(align[c], w);
+        });
+        return removeOuterBorders
+            ? sepCells.join("|")
+            : "|" + sepCells.join("|") + "|";
+    };
+
+    let separatorLine = buildSeparatorLine(lastColWidths);
+    const currentWidth = displayWidth(separatorLine);
+    // Try to keep separator length close to row width, but never exceed maxFormatColumnWidth.
+    const targetWidth = Math.min(minLineWidth, maxFormatColumnWidth);
+    if (currentWidth < targetWidth && numCols > 0) {
+        lastColWidths[numCols - 1] += (targetWidth - currentWidth);
+        separatorLine = buildSeparatorLine(lastColWidths);
+    }
+
+    return separatorLine;
 }
 
 // TODO 优化一下对齐算法
@@ -195,12 +209,25 @@ export function tableHandler(config: FormatterConfig): Handle {
         const alignPrefixCols = Math.max(0, ...alignPrefixCounts);
 
         // ── Step 4: 生成各行字符串（每行只对齐前 m 列） ───────────────────────
-        const lines: string[] = [];
-        lines.push(renderRow(cellStrs[0], alignPrefixCounts[0], colWidths, cfg.removeOuterBorders));
-        lines.push(renderSeparator(colWidths, align, cfg.removeOuterBorders, cfg.maxFormatColumnWidth, numCols, alignPrefixCols));
+        const renderedRows: string[] = [];
+        renderedRows.push(renderRow(cellStrs[0], alignPrefixCounts[0], colWidths, cfg.removeOuterBorders));
         for (let r = 1; r < rows.length; r++) {
-            lines.push(renderRow(cellStrs[r], alignPrefixCounts[r], colWidths, cfg.removeOuterBorders));
+            renderedRows.push(renderRow(cellStrs[r], alignPrefixCounts[r], colWidths, cfg.removeOuterBorders));
         }
+
+        const maxRenderedRowWidth = Math.max(...renderedRows.map(displayWidth));
+        const lines: string[] = [];
+        lines.push(renderedRows[0]);
+        lines.push(renderSeparator(
+            colWidths,
+            align,
+            cfg.removeOuterBorders,
+            cfg.maxFormatColumnWidth,
+            numCols,
+            alignPrefixCols,
+            maxRenderedRowWidth,
+        ));
+        lines.push(...renderedRows.slice(1));
 
         return lines.join("\n");
     };

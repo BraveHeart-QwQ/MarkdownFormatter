@@ -33,7 +33,9 @@ export function tableSuite(): void {
             const lines = result.split("\n");
             // 每行应有相同宽度（同一列对齐）
             expect(lines[0]).toBe("| a     | b                |");
-            expect(lines[1]).toBe("|-----|----------------|");
+            const maxRowLen = Math.max(lines[0].length, lines[2].length);
+            expect(lines[1].length).toBe(maxRowLen);
+            expect(lines[1]).toMatch(/^\|-+\|-+\|$/);
             expect(lines[2]).toBe("| short | a very long cell |");
         });
 
@@ -72,16 +74,53 @@ export function tableSuite(): void {
                 `| a | bb | ${longCell} |`,
                 "| aa | b | y |",
             ].join("\n");
-            const result = await fmt(input, makeConfig({ removeOuterBorders: false, maxFormatColumnWidth: 20 }));
+            const config = makeConfig({ removeOuterBorders: false, maxFormatColumnWidth: 20 })
+            const result = await fmt(input, config);
             const lines = result.split("\n");
 
             // 第 3 列太长时，仅前两列参与该行对齐；后续列保持原样
             expect(lines[0]).toBe("| h1  | h2  | h3  |");
-            expect(lines[1]).toBe("|---|---|---|");
+            expect(lines[1].length).toBe(config.table.maxFormatColumnWidth);
+            expect(lines[1]).toMatch(/^\|---\|---\|-+\|$/);
             expect(lines[2]).toBe(`| a   | bb  | ${longCell} |`);
             // 短行仍可继续对齐到第 3 列，且不被超长列拉宽
             expect(lines[3]).toBe("| aa  | b   | y   |");
         });
+
+        it("maxFormatColumnWidth 下仅对齐每行可容纳的前缀列（二）", async () => {
+            const longCell = "x".repeat(40);
+            const input = [
+                "| h1 | h2 | h3 |",
+                "| --- | --- | --- |",
+                `| a | bb | ${longCell} |`,
+                "| aa | b | y |",
+            ].join("\n");
+            const config = makeConfig({ removeOuterBorders: true, maxFormatColumnWidth: 20 })
+            const result = await fmt(input, config);
+            const lines = result.split("\n");
+
+            // 第 3 列太长时，仅前两列参与该行对齐；后续列保持原样
+            expect(lines[0]).toBe("h1  | h2  | h3");
+            expect(lines[1].length).toBe(config.table.maxFormatColumnWidth);
+            expect(lines[1]).toMatch(`----|-----|---------`);
+            expect(lines[2]).toBe(`a   | bb  | ${longCell}`);
+            // 短行仍可继续对齐到第 3 列，且不被超长列拉宽
+            expect(lines[3]).toBe("aa  | b   | y");
+        });
+
+        it("最小单元格宽度应为 4（一）", async () => {
+            const input = [
+                "a|b|c|d",
+                "-|-|-|-",
+                "x|y|z|w",
+            ].join("\n");
+            const result = await fmt(input, makeConfig({ removeOuterBorders: true, trimTrailingChars: ["。"] }));
+            const lines = result.split("\n");
+            expect(lines[0]).toContain("a   | b   | c   | d");
+            expect(lines[1]).toContain("----|-----|-----|--");
+            expect(lines[2]).toContain("x   | y   | z   | w");
+        });
+
 
         it("trimTrailingChars 去除单元格行尾字符", async () => {
             const input = [
@@ -139,7 +178,9 @@ export function tableSuite(): void {
             // "算法" 显示宽 4，"ab" 显示宽 2，第一列宽应为 4（等于"算法"宽）
             // "accuracy" 显示宽 8，"中文内容" 显示宽 8，第二列宽应为 8
             expect(lines[0]).toBe("| 算法 | accuracy |");
-            expect(lines[1]).toBe("|----|--------|");
+            const maxRowLen = Math.max(lines[0].length, lines[2].length);
+            expect(lines[1].length).toBeGreaterThanOrEqual(maxRowLen);
+            expect(lines[1]).toMatch(/^\|-+\|-+\|$/);
             expect(lines[2]).toBe("| ab   | 中文内容 |");
         });
 

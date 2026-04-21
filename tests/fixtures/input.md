@@ -100,6 +100,16 @@ very well very well very well very well |  wow
 very well very well very well very well very well very well |  wow
 very well very well very well very well very well very well very well very well | wow
 
+Single Long：
+a   | b
+----|----
+very well very well very well very well very well very well very well very well | wow
+
+Short：
+a   | b | c
+----|--|--
+x | y | z
+
 a   | b
 ----|----
 ok | 你好你好你好你好你好你好你好你好你好你好你好你好你好你好你好你好你好你好你好你好你好你好你好你好你好你好你好你好你好你好你好你好你好你好你好你好
