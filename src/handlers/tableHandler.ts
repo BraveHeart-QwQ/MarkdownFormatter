@@ -56,6 +56,28 @@ function padCell(content: string, targetWidth: number): string {
     return content + " ".repeat(Math.max(0, targetWidth - displayWidth(content)));
 }
 
+function escapeTableCellPipes(content: string): string {
+    let result = "";
+    let trailingBackslashes = 0;
+
+    for (const ch of content) {
+        if (ch === "|") {
+            if (trailingBackslashes % 2 === 0) {
+                result += "\\|";
+            } else {
+                result += "|";
+            }
+            trailingBackslashes = 0;
+            continue;
+        }
+
+        result += ch;
+        trailingBackslashes = ch === "\\" ? trailingBackslashes + 1 : 0;
+    }
+
+    return result;
+}
+
 /**
  * 计算前缀单元格（前 prefixCellCount 列）的原始内容宽度（含分隔符开销）。
  * 用于判断这一前缀是否仍在 maxFormatColumnWidth 范围内。
@@ -187,7 +209,7 @@ export function tableHandler(config: FormatterConfig): Handle {
                 if (!cell) return "";
                 const content = s.containerPhrasing(cell, { before: "|", after: "|" });
                 // containerPhrasing 可能添加首尾空格用于 markdown 安全起见；表格单元格不需要
-                return content.trim().replace(/\|/g, "\\|");
+                return escapeTableCellPipes(content.trim());
             })
         );
 

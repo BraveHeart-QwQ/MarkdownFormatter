@@ -100,6 +100,10 @@ very well very well very well very well |  wow
 very well very well very well very well very well very well |  wow
 very well very well very well very well very well very well very well very well | wow
 
+a   | b
+----|----
+ok | test $\|$ code `\|`
+
 Single Long：
 a   | b
 ----|----

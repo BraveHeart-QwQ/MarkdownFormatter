@@ -207,5 +207,20 @@ export function tableSuite(): void {
             const lines = result.split("\n");
             expect(lines.length).toBe(4); // no extra blank line before table
         });
+
+        it("转义表格单元格中的竖线且不重复转义", async () => {
+            const input = [
+                "| plain | code | math |",
+                "| --- | --- | --- |",
+                "| a\\|b | `x\\|y` | $m\\|n$ |",
+            ].join("\n");
+            const result = await fmt(input, makeConfig({ removeOuterBorders: false }));
+
+            expect(result).toContain("a\\|b");
+            expect(result).toContain("`x\\|y`");
+            expect(result).toContain("$m\\|n$");
+            expect(result).not.toContain("a\\\\|b");
+            expect(result).not.toContain("$m\\\\|n$");
+        });
     });
 }
