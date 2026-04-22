@@ -15,9 +15,9 @@
   cool
 
   content:
-  a   | b
-  ----|----
-  x   | v
+  | a   | b   |
+  |---|-------|
+  | x   | v   |
 
 - item3
 
@@ -96,37 +96,37 @@ Other List:
 
 ## 测试表格
 
-a                                                           | b
-------------------------------------------------------------|----
-very well very well very well very well                     | wow
-very well very well very well very well very well very well | wow
-very well very well very well very well very well very well very well very well | wow
+| a                                       | b   |
+|---------------------------------------|------------------|
+| very well very well very well very well | wow |
+| very well very well very well very well very well very well | wow |
+| very well very well very well very well very well very well very well very well | wow |
 
-a   | b
-----|--------------------
-ok  | test $\|$ code `\|`
+| a   | b                   |
+|---|-----------------------|
+| ok  | test $\|$ code `\|` |
 
 Single Long：
-a   | b
-----|-------------------------------------------------------
-very well very well very well very well very well very well very well very well | wow
+| a   | b   |
+|---|------------------------------------------------------|
+| very well very well very well very well very well very well very well very well | wow |
 
 Short：
-a   | b   | c
-----|-----|----
-x   | y   | z
+| a   | b   | c   |
+|---|---|---------|
+| x   | y   | z   |
 
-a     | b
-------|-----------------------------------------------------
-ok    | 你好你好你好你好你好你好你好你好你好你好你好你好你好你好你好你好你好你好你好你好你好你好你好你好你好你好你好你好你好你好你好你好你好你好你好你好
-hello | world
+| a     | b     |
+|-----|----------------------------------------------------|
+| ok    | 你好你好你好你好你好你好你好你好你好你好你好你好你好你好你好你好你好你好你好你好你好你好你好你好你好你好你好你好你好你好你好你好你好你好你好你好 |
+| hello | world |
 
 - 下一张表
-  a      | b     | c       | d
-  -------|-------|---------|----------------------------------
-  banana | apple | orange  | grape
-  ok     | good  | 你好你好你好你好你好你好你好你好你好你好你好你好你好你好你好你好你好你好你好你好你好你好你好你好你好你好你好你好你好你好你好你好你好你好你好你好 | hello
-  fine   | world | morning | evening
+  | a      | b     | c       | d       |
+  |------|-----|-------|-------------------------------------|
+  | banana | apple | orange  | grape   |
+  | ok     | good  | 你好你好你好你好你好你好你好你好你好你好你好你好你好你好你好你好你好你好你好你好你好你好你好你好你好你好你好你好你好你好你好你好你好你好你好你好 | hello |
+  | fine   | world | morning | evening |
 
 
 
@@ -151,24 +151,24 @@ $$\left \{
 
 ## 主要学习类型
 
-a   | b
-----|----
-x   | y
+| a   | b   |
+|---|-------|
+| x   | y   |
 
 - list
 
   content
-  a   | b
-  ----|----
-  x   | y
+  | a   | b   |
+  |---|-------|
+  | x   | y   |
   - second list
 
 set <NUL /p=Output of a command
 
 [table: title="标题"]
-a   | b
-----|----
-x   | y
+| a   | b   |
+|---|-------|
+| x   | y   |
 
 - OK
   - OK1
@@ -187,21 +187,21 @@ x   | y
   →测试替换→训练 X 数据含有标签。
 
 - 无监督学习（Unsupervised Learning）：训练数据不含标签
-  a           | b
-  ------------|-----------------
-  表格内替换→ | x 也必须可以执行
+  | a           | b                |
+  |-----------|--------------------|
+  | 表格内替换→ | x 也必须可以执行 |
 
 - 半监督学习（Semi-supervised Learning）：仅有少量数据有标签
 - 强化学习（Reinforcement Learning）：通过与环境交互获得奖励信号来学习
 
 相邻的符号，J 就**不需要**产生空格间隙 `J`。
 
-a                                      | b
----------------------------------------|--------------------
-监督学习（Supervised Learning）        | 训练数据含有标签。训练数据含有标签。训练数据含有标签。训练数据含有标签
-无监督学习（Unsupervised Learning）    | 训练数据不含标签
-半监督学习（Semi-supervised Learning） | 仅有少量数据有标签
-强化学习（Reinforcement Learning）     | 通过与环境交互获得奖励信号来学习
+| a                                      | b                |
+|--------------------------------------|-------------------|
+| 监督学习（Supervised Learning）        | 训练数据含有标签。训练数据含有标签。训练数据含有标签。训练数据含有标签 |
+| 无监督学习（Unsupervised Learning）    | 训练数据不含标签 |
+| 半监督学习（Semi-supervised Learning） | 仅有少量数据有标签 |
+| 强化学习（Reinforcement Learning）     | 通过与环境交互获得奖励信号来学习 |
 
 
 
@@ -216,12 +216,12 @@ a                                      | b
 
 ## 常见算法对比
 
-a                           | b    | c    | d
-----------------------------|------|------|-----
-线性回归(Linear Regression) | 中等 | 快速 | 高
-决策树(Decision Tree)       | 中等 | 中等 | 高
-随机森林(Random Forest)     | 高   | 慢   | 中等
-神经网络(Neural Network)    | 很高 | 很慢 | 低
+| a                           | b    | c    | d    |
+|---------------------------|----|----|------------|
+| 线性回归(Linear Regression) | 中等 | 快速 | 高   |
+| 决策树(Decision Tree)       | 中等 | 中等 | 高   |
+| 随机森林(Random Forest)     | 高   | 慢   | 中等 |
+| 神经网络(Neural Network)    | 很高 | 很慢 | 低   |
 
 代码块：
 ```cpp

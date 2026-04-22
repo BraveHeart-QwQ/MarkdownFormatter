@@ -46,7 +46,8 @@ function makeSepCell(alignType: string | null | undefined, width: number): strin
     switch (alignType) {
         case "center": return ":" + "-".repeat(w - 2) + ":";
         case "right": return "-".repeat(w - 1) + ":";
-        case "left": return ":" + "-".repeat(w - 1);
+        // Normalize explicit left alignment marker to default separator style.
+        case "left": return "-".repeat(w);
         default: return "-".repeat(w);
     }
 }
@@ -134,10 +135,12 @@ function renderSeparator(
 ): string {
     const sepCellWidths = colWidths.map((w, c) => (c < alignPrefixCols ? w : 3));
 
-    // When removeOuterBorders, data rows use " | " (3 chars) between cells, so
-    // overhead equals 3*(numCols-1). Without outer borders, separator format is
-    // "|col0|col1|...|" whose overhead is numCols+1.
-    const overhead = removeOuterBorders ? 3 * (numCols - 1) : numCols + 1;
+    // Width model must match rendered data rows.
+    // - removeOuterBorders=true rows look like "col0 | col1", overhead = 3*(n-1)
+    // - removeOuterBorders=false rows look like "| col0 | col1 |", each cell has
+    //   two surrounding spaces, so separator cells must absorb +2 dashes each.
+    //   Effective overhead therefore becomes 3*n + 1.
+    const overhead = removeOuterBorders ? 3 * (numCols - 1) : (3 * numCols + 1);
     const totalWidth = sepCellWidths.reduce((a, b) => a + b, 0) + overhead;
 
     const lastColWidths = sepCellWidths.slice();
@@ -157,6 +160,9 @@ function renderSeparator(
             if (removeOuterBorders && numCols > 1) {
                 const extra = (c === 0 || c === numCols - 1) ? 1 : 2;
                 return makeSepCell(align[c], w + extra);
+            }
+            if (!removeOuterBorders) {
+                return makeSepCell(align[c], w + 2);
             }
             return makeSepCell(align[c], w);
         });

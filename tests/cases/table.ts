@@ -81,7 +81,7 @@ export function tableSuite(): void {
             // 第 3 列太长时，仅前两列参与该行对齐；后续列保持原样
             expect(lines[0]).toBe("| h1  | h2  | h3  |");
             expect(lines[1].length).toBe(config.table.maxFormatColumnWidth);
-            expect(lines[1]).toMatch(/^\|---\|---\|-+\|$/);
+            expect(lines[1]).toMatch("|-----|-----|------|");
             expect(lines[2]).toBe(`| a   | bb  | ${longCell} |`);
             // 短行仍可继续对齐到第 3 列，且不被超长列拉宽
             expect(lines[3]).toBe("| aa  | b   | y   |");
@@ -194,6 +194,19 @@ export function tableSuite(): void {
             const lines = result.split("\n");
             // 分隔行中 "---..." 长度应匹配 colWidths
             expect(lines[1]).toMatch(/^\|-+\|-+\|$/);
+        });
+
+        it("分隔行中的左对齐标记会被移除", async () => {
+            const input = [
+                "| a | b |",
+                "| :-- | :--- |",
+                "| x | y |",
+            ].join("\n");
+            const result = await fmt(input, makeConfig({ removeOuterBorders: false }));
+            const lines = result.split("\n");
+
+            expect(lines[1]).toBe("|-----|-----|");
+            expect(lines[1]).not.toContain(":");
         });
 
         it("Table Spacing Line 测试", async () => {
