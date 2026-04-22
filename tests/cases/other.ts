@@ -118,5 +118,57 @@ export function otherSuite(): void {
                 expect(result).toBe("# Hello\n\n---End---\n");
             });
         });
+
+        describe("trimTrailingWhitespace（一）", () => {
+            it("保留 fenced code block 行尾空格，仅清理代码块外行尾空格", async () => {
+                const config = makeConfig({
+                    trimTrailingWhitespace: true,
+                    enableCustomEnding: false,
+                    customEnding: null,
+                });
+                const input = [
+                    "- outside  ",
+                    "",
+                    "  ```ts",
+                    "  const a = 1;  ",
+                    "  const b = 2;  ",
+                    "  ```",
+                    "",
+                    "tail  ",
+                ].join("\n");
+
+                const result = await format(input, config);
+
+                expect(result).toContain("  ```ts\n  const a = 1;  \n  const b = 2;  \n  ```");
+                expect(result).toContain("- outside\n\n  ```ts");
+                expect(result.endsWith("tail")).toBe(true);
+            });
+        });
+
+        describe("trimTrailingWhitespace（二）", () => {
+            it("保留 fenced code block 行尾空格，仅清理代码块外行尾空格", async () => {
+                const config = makeConfig({
+                    trimTrailingWhitespace: true,
+                    enableCustomEnding: false,
+                    customEnding: null,
+                });
+                const input = [
+                    "> outside  ",
+                    ">",
+                    "> ```ts",
+                    "> const a = 1;  ",
+                    "> const b = 2;  ",
+                    "> ```",
+                    "",
+                    "tail  ",
+                ].join("\n");
+
+                const result = await format(input, config);
+
+                expect(result).toContain("> ```ts\n> const a = 1;  \n> const b = 2;  \n> ```");
+                expect(result).toContain("> outside\n>\n> ```ts");
+                expect(result.endsWith("tail")).toBe(true);
+            });
+        });
     });
 }

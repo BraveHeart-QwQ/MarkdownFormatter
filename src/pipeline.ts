@@ -23,11 +23,56 @@ import { remarkFormatter } from "./plugins/index.js";
 export function preprocess(input: string, config: FormatterConfig): string {
     let text = input.replace(/\r\n/g, "\n").replace(/\r/g, "\n");
     if (config.other.trimTrailingWhitespace) {
-        text = text.replace(/[^\S\n]+$/gm, "");
+        text = trimTrailingWhitespaceOutsideCodeFences(text);
     }
     text = normalizeListMarkerSpacing(text);
     text = protectUnclosedMathFences(text);
     return text;
+}
+
+function stripLeadingBlockquoteMarkers(line: string): string {
+    let rest = line;
+    while (true) {
+        const marker = /^\s{0,3}> ?/.exec(rest);
+        if (!marker) break;
+        rest = rest.slice(marker[0].length);
+    }
+    return rest;
+}
+
+function getFenceMarker(line: string): { char: string; len: number } | null {
+    const normalized = stripLeadingBlockquoteMarkers(line);
+    const match = normalized.match(/^\s*(`{3,}|~{3,})/);
+    if (!match) return null;
+    return { char: match[1][0], len: match[1].length };
+}
+
+function trimTrailingWhitespaceOutsideCodeFences(text: string): string {
+    const lines = text.split("\n");
+    let fenceChar = "";
+    let fenceLen = 0;
+
+    for (let i = 0; i < lines.length; i++) {
+        const line = lines[i];
+        const fenceMarker = getFenceMarker(line);
+
+        if (fenceMarker) {
+            const { char, len } = fenceMarker;
+            if (!fenceChar) {
+                fenceChar = char;
+                fenceLen = len;
+            } else if (char === fenceChar && len >= fenceLen) {
+                fenceChar = "";
+                fenceLen = 0;
+            }
+            continue;
+        }
+
+        if (fenceChar) continue;
+        lines[i] = line.replace(/[^\S\n]+$/g, "");
+    }
+
+    return lines.join("\n");
 }
 
 /**
@@ -46,10 +91,9 @@ function normalizeListMarkerSpacing(text: string): string {
         const line = lines[i];
 
         // 跟踪 fenced code block（避免修改代码块内容）
-        const fenceMatch = line.match(/^\s*(`{3,}|~{3,})/);
-        if (fenceMatch) {
-            const char = fenceMatch[1][0];
-            const len = fenceMatch[1].length;
+        const fenceMarker = getFenceMarker(line);
+        if (fenceMarker) {
+            const { char, len } = fenceMarker;
             if (!fenceChar) {
                 fenceChar = char;
                 fenceLen = len;
@@ -88,10 +132,9 @@ function protectUnclosedMathFences(text: string): string {
         const trimmed = lines[i].trim();
 
         if (!inMathBlock) {
-            const fenceMatch = lines[i].match(/^\s*(`{3,}|~{3,})/);
-            if (fenceMatch) {
-                const char = fenceMatch[1][0];
-                const len = fenceMatch[1].length;
+            const fenceMarker = getFenceMarker(lines[i]);
+            if (fenceMarker) {
+                const { char, len } = fenceMarker;
                 if (!inCodeFence) {
                     inCodeFence = true;
                     codeFenceChar = char;
@@ -224,7 +267,7 @@ function remarkPreserveMathMarkers() {
 export function postprocess(output: string, config: FormatterConfig): string {
     let result = output;
     if (config.other.trimTrailingWhitespace) {
-        result = result.replace(/[^\S\n]+$/gm, "");
+        result = trimTrailingWhitespaceOutsideCodeFences(result);
     }
     result = result.trimEnd();
 
