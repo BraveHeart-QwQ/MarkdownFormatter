@@ -79,6 +79,39 @@ export function inlineSuite(): void {
             expect(await fmt("使用 hello 示例", cfg)).toBe("使用 `hello` 示例");
         });
 
+        it("allEnglishWord 在标题中生效", async () => {
+            const cfg = makeConfig({ handleInlineCode: "allEnglishWord" });
+            expect(await fmt("## 使用 hello 示例", cfg)).toBe("## 使用 `hello` 示例");
+        });
+
+        it("removeAll 在标题中生效", async () => {
+            const cfg = makeConfig({ handleInlineCode: "removeAll" });
+            expect(await fmt("## 使用`code`示例", cfg)).toBe("## 使用code示例");
+        });
+
+        it("allEnglishWord 在表格单元格中生效", async () => {
+            const cfg = makeConfig({ handleInlineCode: "allEnglishWord" });
+            const input = [
+                "| 列 |",
+                "| --- |",
+                "| 使用 hello 示例 |",
+            ].join("\n");
+            const result = await fmt(input, cfg);
+            expect(result).toContain("`hello`");
+        });
+
+        it("removeAll 在表格单元格中生效", async () => {
+            const cfg = makeConfig({ handleInlineCode: "removeAll" });
+            const input = [
+                "| 列 |",
+                "| --- |",
+                "| 使用`code`示例 |",
+            ].join("\n");
+            const result = await fmt(input, cfg);
+            expect(result).toContain("使用code示例");
+            expect(result).not.toContain("`code`");
+        });
+
         it("allEnglishWord 多个英文单词分别包裹", async () => {
             const cfg = makeConfig({ handleInlineCode: "allEnglishWord" });
             expect(await fmt("foo 和 bar", cfg)).toBe("`foo` 和 `bar`");
@@ -144,6 +177,11 @@ export function inlineSuite(): void {
             expect(await fmt("使用 hello 示例", cfg)).toBe("使用 **hello** 示例");
         });
 
+        it("handleInlineStrong allEnglishWord 在标题中生效", async () => {
+            const cfg = makeConfig({ handleInlineStrong: "allEnglishWord" });
+            expect(await fmt("## 使用 hello 示例", cfg)).toBe("## 使用 **hello** 示例");
+        });
+
         it("handleInlineStrong allEnglishWord 识别包含英文符号（如 %）", async () => {
             const cfg = makeConfig({ handleInlineStrong: "allEnglishWord" });
             expect(await fmt("折扣 %rate% 可用", cfg)).toBe("折扣 **%rate%** 可用");
@@ -179,6 +217,18 @@ export function inlineSuite(): void {
         it("handleInlineMath removeAll 移除行内公式标记，保留内容", async () => {
             const cfg = makeConfig({ handleInlineMath: "removeAll" });
             expect(await fmt("设$x^2$为例", cfg)).toBe("设x^2为例");
+        });
+
+        it("handleInlineMath removeAll 在表格单元格中生效", async () => {
+            const cfg = makeConfig({ handleInlineMath: "removeAll" });
+            const input = [
+                "| 列 |",
+                "| --- |",
+                "| 设$x^2$为例 |",
+            ].join("\n");
+            const result = await fmt(input, cfg);
+            expect(result).toContain("设x^2为例");
+            expect(result).not.toContain("$x^2$");
         });
 
         // ── handleInlineMath = 'allEnglishWord' ───────────────────────────

@@ -1,4 +1,4 @@
-import type { InlineCode, Paragraph, PhrasingContent, Strong, Text } from "mdast";
+import type { Heading, InlineCode, Paragraph, PhrasingContent, Strong, TableCell, Text } from "mdast";
 import type { FormatterConfig } from "../config.js";
 import type { InlineMath, VisitorRegistry } from "./registry.js";
 import {
@@ -14,13 +14,14 @@ import {
 } from "./utils.js";
 
 type InlineHandleMode = FormatterConfig["inline"]["handleInlineCode"];
+type InlineContainerNode = Paragraph | Heading | TableCell;
 
 interface InlineRunMergeSpec {
     wrappedNodeType: InlineNodeType;
     buildMergedNode: (run: PhrasingContent[]) => PhrasingContent;
 }
 
-function mergeGeneratedRunsInParagraph(node: Paragraph, spec: InlineRunMergeSpec): void {
+function mergeGeneratedRunsInContainer(node: InlineContainerNode, spec: InlineRunMergeSpec): void {
     const children = node.children as PhrasingContent[];
     const merged: PhrasingContent[] = [];
 
@@ -88,22 +89,31 @@ interface InlineParagraphHandlerSpec {
     wrappedNodeType: InlineNodeType;
     wrapWord: (word: string) => PhrasingContent;
     unwrapChild: (child: PhrasingContent) => PhrasingContent[];
-    postProcess?: (node: Paragraph) => void;
+    postProcess?: (node: InlineContainerNode) => void;
 }
 
-function registerInlineParagraphHandler(
+function registerContainerHandler(
+    registry: VisitorRegistry,
+    handler: (node: InlineContainerNode) => void,
+): void {
+    registry.paragraph.push((node: Paragraph) => handler(node));
+    registry.heading.push((node: Heading) => handler(node));
+    registry.tableCell.push((node: TableCell) => handler(node));
+}
+
+function registerInlineContainerHandler(
     registry: VisitorRegistry,
     spec: InlineParagraphHandlerSpec,
 ): void {
     if (spec.handleMode === "removeAll") {
-        registry.paragraph.push((node: Paragraph) => {
+        registerContainerHandler(registry, (node) => {
             replaceInlineNodesInParagraph(node, (child) => spec.unwrapChild(child));
         });
         return;
     }
 
     if (spec.handleMode === "allEnglishWord") {
-        registry.paragraph.push((node: Paragraph) => {
+        registerContainerHandler(registry, (node) => {
             wrapWordsInParagraph(node, spec.wrapWord, "mathSegment", true, spec.wrappedNodeType);
             spec.postProcess?.(node);
         });
@@ -118,12 +128,13 @@ function registerInlineParagraphHandler(
  *   - 去除 strong 第一 / 最后一个 Text 子节点的首尾空格
  *   - emphasis/strong 的 `_`/`*` 由原始文本定义，不强制转换
  *
- * handleInlineCode / handleInlineMath / handleInlineStrong（段落级别操作）：
+ * handleInlineCode / handleInlineMath / handleInlineStrong（短语容器级别操作）：
  *   - 'normal'     : 仅做基础处理
  *   - 'removeAll'  : 移除所有对应行内标记（保留文本内容）
- *   - 'allEnglishWord' : 将段落 Text 节点中的英文单词包裹为对应行内节点
+ *   - 'allEnglishWord' : 将容器内 Text 节点中的英文单词包裹为对应行内节点
  *
- * 注意：段落级操作注册在 registry.paragraph，应在 wordSpacing 之前执行（见 index.ts）。
+ * 注意：容器级操作注册在 registry.paragraph / registry.heading / registry.tableCell，
+ * 应在 wordSpacing 之前执行（见 index.ts）。
  */
 export function registerInlineFormatting(registry: VisitorRegistry, config: FormatterConfig): void {
     const { handleInlineCode, handleInlineMath, handleInlineStrong } = config.inline;
@@ -145,33 +156,33 @@ export function registerInlineFormatting(registry: VisitorRegistry, config: Form
         if (last.type === "text") (last as Text).value = (last as Text).value.trimEnd();
     });
 
-    registerInlineParagraphHandler(registry, {
+    registerInlineContainerHandler(registry, {
         handleMode: handleInlineCode,
         wrappedNodeType: "inlineCode",
         wrapWord: (word) => ({ type: "inlineCode", value: word, data: makeGeneratedData() }) as InlineCode,
         unwrapChild: (child) => child.type === "inlineCode"
             ? [{ type: "text", value: (child as InlineCode).value } as Text]
             : [child],
-        postProcess: (node) => mergeGeneratedRunsInParagraph(node, {
+        postProcess: (node) => mergeGeneratedRunsInContainer(node, {
             wrappedNodeType: "inlineCode",
             buildMergedNode: (run) => buildMergedLeafNode("inlineCode", run),
         }),
     });
 
-    registerInlineParagraphHandler(registry, {
+    registerInlineContainerHandler(registry, {
         handleMode: handleInlineMath,
         wrappedNodeType: "inlineMath",
         wrapWord: (word) => ({ type: "inlineMath", value: word, data: makeGeneratedData() }) as InlineMath,
         unwrapChild: (child) => child.type === "inlineMath"
             ? [{ type: "text", value: (child as InlineMath).value } as Text]
             : [child],
-        postProcess: (node) => mergeGeneratedRunsInParagraph(node, {
+        postProcess: (node) => mergeGeneratedRunsInContainer(node, {
             wrappedNodeType: "inlineMath",
             buildMergedNode: (run) => buildMergedLeafNode("inlineMath", run),
         }),
     });
 
-    registerInlineParagraphHandler(registry, {
+    registerInlineContainerHandler(registry, {
         handleMode: handleInlineStrong,
         wrappedNodeType: "strong",
         wrapWord: (word) => ({
@@ -182,7 +193,7 @@ export function registerInlineFormatting(registry: VisitorRegistry, config: Form
         unwrapChild: (child) => child.type === "strong"
             ? [...((child as Strong).children as PhrasingContent[])]
             : [child],
-        postProcess: (node) => mergeGeneratedRunsInParagraph(node, {
+        postProcess: (node) => mergeGeneratedRunsInContainer(node, {
             wrappedNodeType: "strong",
             buildMergedNode: (run) => buildMergedStrongNode(run),
         }),
