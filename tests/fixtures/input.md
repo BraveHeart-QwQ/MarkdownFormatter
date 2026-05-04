@@ -22,6 +22,20 @@
     test code
     ```
 
+---
+
+下面这张表可以更直观地对比第一次和第二次 build 的耗时：
+| Steps | Description | Time Taken (1st Run) | Time Taken (2nd Run) |
+| --- | --- | --- | --- |
+| 1 | `Load build definition from Dockerfile` | 0.0 seconds | 0.0 seconds |
+| 2 | `Load metadata for docker.io/library/node:22-alpine` | 2.7 seconds | 0.9 seconds |
+| 3 | `Load .dockerignore` | 0.0 seconds | 0.0 seconds |
+| 4 | `Load build context`（Context size: 4.60MB） | 0.1 seconds | 0.0 seconds |
+| 5 | `Set the working directory (WORKDIR)` | 0.1 seconds | 0.0 seconds |
+| 6 | `Copy the local code into the container` | 0.0 seconds | 0.0 seconds |
+| 7 | `Run yarn install --production` | 10.0 seconds | 0.0 seconds |
+| 8 | `Exporting layers` | 2.2 seconds | 0.0 seconds |
+| 9 | `Exporting the final image` | 3.0 seconds | 0.0 seconds |
 
 
 ## 测试
