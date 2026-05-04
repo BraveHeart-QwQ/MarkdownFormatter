@@ -201,6 +201,27 @@ function protectUnclosedMathFences(text: string): string {
 }
 
 /**
+ * Marks each `code` node with `data.originallyFenced: true/false` based on
+ * whether the source used backtick/tilde fences vs. 4-space indentation.
+ * Used by the custom code handler to preserve the original serialization style
+ * regardless of the global `fences` setting.
+ */
+function remarkTrackCodeFenced() {
+    return function (tree: unknown, file: { value: string | Uint8Array }) {
+        const src = String(file.value);
+        const lines = src.split("\n");
+        visit(tree as Parameters<typeof visit>[0], "code", (node: unknown) => {
+            const n = node as { position?: { start: { line: number } }; data?: Record<string, unknown> };
+            if (!n.position) return;
+            const lineIdx = n.position.start.line - 1;
+            if (lineIdx < 0 || lineIdx >= lines.length) return;
+            const isFenced = getFenceMarker(lines[lineIdx]) !== null;
+            n.data = { ...(n.data ?? {}), originallyFenced: isFenced };
+        });
+    };
+}
+
+/**
  * Records the original delimiter (`$` or `$$`) on each inlineMath node, and
  * the raw meta string on each math block node (before remark escape-processes it),
  * so handlers can reproduce the faithfully.
@@ -314,6 +335,7 @@ function buildProcessor(config: FormatterConfig) {
         .use(remarkGfm, { singleTilde: false }) // 允许 ~~strikethrough~~ 中的 ~ 被转义（不强制要求成对出现）
         .use(remarkMath)
         .use(remarkPreserveMathMarkers)
+        .use(remarkTrackCodeFenced)
         .use(remarkFormatter, config)
         .data("settings", settings);
 }

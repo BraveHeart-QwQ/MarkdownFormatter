@@ -151,7 +151,7 @@ export const k_defaultFormatterConfig: FormatterConfig = {
 
     /* 块缩进处理 */
     blockIndent: {
-        parseIndentAsCodeBlock: true,
+        parseIndentAsCodeBlock: false,
         unorderedListIndent: 2,
         orderedListIndent: 4,
     },

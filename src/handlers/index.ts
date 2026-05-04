@@ -187,6 +187,48 @@ export function buildJoinFunctions(_config: FormatterConfig): JoinFn[] {
 }
 
 /**
+ * 自定义 code handler：根据节点是否原本为围栏代码块，决定输出形式。
+ *
+ * - 原本为围栏（`originallyFenced: true`）或带 lang/meta：输出为围栏代码块。
+ * - 否则若 `parseIndentAsCodeBlock: true`：输出为围栏（与 remark 默认行为一致）。
+ * - 否则：输出为 4 空格缩进代码块，保留原始风格。
+ *
+ * remark-stringify 的全局 `fences` 设置会无差别影响所有 code 节点，无法
+ * 区分"原本就是围栏"和"原本是缩进"两种情况，因此自定义 handler 替换之。
+ */
+function buildCodeHandler(config: FormatterConfig): Handle {
+    return function (node: object): string {
+        const n = node as {
+            lang?: string | null;
+            meta?: string | null;
+            value?: string;
+            data?: { originallyFenced?: boolean };
+        };
+        const value = n.value ?? "";
+        const hasLangOrMeta = !!n.lang || !!n.meta;
+        const shouldFence =
+            n.data?.originallyFenced === true
+            || hasLangOrMeta
+            || config.blockIndent.parseIndentAsCodeBlock;
+
+        if (!shouldFence) {
+            // 4 空格缩进代码块：每行前加 4 空格（空行保持空）
+            return value.split("\n").map(line => (line.length > 0 ? "    " + line : "")).join("\n");
+        }
+
+        // 围栏：选择 ≥3 且超过内容中最长反引号序列的长度
+        const runs = value.match(/`+/g) ?? [];
+        const maxRun = runs.reduce((m, r) => Math.max(m, r.length), 0);
+        const fence = "`".repeat(Math.max(3, maxRun + 1));
+        const lang = n.lang ?? "";
+        const metaPart = n.meta ? " " + n.meta : "";
+        return value.length > 0
+            ? fence + lang + metaPart + "\n" + value + "\n" + fence
+            : fence + lang + metaPart + "\n" + fence;
+    };
+}
+
+/**
  * 根据配置构建 remark-stringify 使用的 handler map。
  */
 export function buildHandlers(config: FormatterConfig): Handlers {
@@ -209,6 +251,7 @@ export function buildHandlers(config: FormatterConfig): Handlers {
     handlers["blockquote"] = blockquoteHandler as unknown as Handle;
     handlers["math"] = mathHandler;
     handlers["inlineMath"] = inlineMathHandler as unknown as Handle;
+    handlers["code"] = buildCodeHandler(config);
 
     return handlers;
 }
