@@ -209,4 +209,18 @@ export function registerInlineFormatting(registry: VisitorRegistry, config: Form
             );
         });
     }
+
+    // capitalizeWords
+    if (config.inline.capitalizeWords) {
+        registerContainerHandler(registry, (node) => {
+            for (const child of node.children as PhrasingContent[]) {
+                if (child.type === "text") {
+                    (child as Text).value = (child as Text).value.replace(
+                        /[A-Za-z]+/g,
+                        (word) => word.charAt(0).toUpperCase() + word.slice(1),
+                    );
+                }
+            }
+        });
+    }
 }

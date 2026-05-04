@@ -345,5 +345,63 @@ export function inlineSuite(): void {
             expect(result).not.toContain("https://example.com");
         });
 
+        // ── capitalizeWords ────────────────────────────────────────────────
+
+        it("capitalizeWords 将普通段落中的英文单词首字母大写", async () => {
+            const cfg = makeConfig({ capitalizeWords: true });
+            expect(await fmt("hello world", cfg)).toBe("Hello World");
+        });
+
+        it("capitalizeWords 已大写的单词保持不变", async () => {
+            const cfg = makeConfig({ capitalizeWords: true });
+            expect(await fmt("Hello World", cfg)).toBe("Hello World");
+        });
+
+        it("capitalizeWords 混合中英文", async () => {
+            const cfg = makeConfig({ capitalizeWords: true });
+            expect(await fmt("使用 hello 示例", cfg)).toBe("使用 Hello 示例");
+        });
+
+        it("capitalizeWords 多个英文单词均大写首字母", async () => {
+            const cfg = makeConfig({ capitalizeWords: true });
+            expect(await fmt("the quick brown fox", cfg)).toBe("The Quick Brown Fox");
+        });
+
+        it("capitalizeWords 在标题中生效", async () => {
+            const cfg = makeConfig({ capitalizeWords: true });
+            expect(await fmt("## hello world", cfg)).toBe("## Hello World");
+        });
+
+        it("capitalizeWords 在表格单元格中生效", async () => {
+            const cfg = makeConfig({ capitalizeWords: true });
+            const input = [
+                "| col |",
+                "| --- |",
+                "| hello world |",
+            ].join("\n");
+            const result = await fmt(input, cfg);
+            expect(result).toContain("Hello World");
+        });
+
+        it("capitalizeWords 不影响 inlineCode 内容", async () => {
+            const cfg = makeConfig({ capitalizeWords: true });
+            expect(await fmt("使用`hello`示例", cfg)).toBe("使用`hello`示例");
+        });
+
+        it("capitalizeWords 不影响 inlineMath 内容", async () => {
+            const cfg = makeConfig({ capitalizeWords: true });
+            expect(await fmt("设$alpha$为例", cfg)).toBe("设$alpha$为例");
+        });
+
+        it("capitalizeWords 不影响 strong 内的子文本", async () => {
+            const cfg = makeConfig({ capitalizeWords: true });
+            expect(await fmt("这是**important**内容", cfg)).toBe("这是**important**内容");
+        });
+
+        it("capitalizeWords false 时不大写", async () => {
+            const cfg = makeConfig({ capitalizeWords: false });
+            expect(await fmt("hello World", cfg)).toBe("hello World");
+        });
+
     });
 }

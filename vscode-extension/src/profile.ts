@@ -14,6 +14,7 @@ export const k_builtinProfiles: Record<string, ProfileEntry[]> = {
     "ClearInlineMath": [{ inline: { handleInlineMath: "removeAll" }, other: { enableCustomEnding: false } }],
     "FormatInlineToCode": [{ inline: { handleInlineCode: "allEnglishWord" }, other: { enableCustomEnding: false } }],
     "FormatInlineToMath": [{ inline: { handleInlineMath: "allEnglishWord" }, other: { enableCustomEnding: false } }],
+    "CapitalizeWords": [{ inline: { capitalizeWords: true }, other: { enableCustomEnding: false } }],
 };
 
 /**

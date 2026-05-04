@@ -29,6 +29,7 @@ export function activate(context: vscode.ExtensionContext): void {
         { name: "ClearInlineMath", id: "clearInlineMath" },
         { name: "FormatInlineToCode", id: "formatInlineToCode" },
         { name: "FormatInlineToMath", id: "formatInlineToMath" },
+        { name: "CapitalizeWords", id: "capitalizeWords" },
     ];
     for (const { name, id } of k_builtinProfileCommands) {
         context.subscriptions.push(

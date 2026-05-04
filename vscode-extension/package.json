@@ -2,7 +2,7 @@
   "name": "markdown-formatter",
   "displayName": "Markdown Formatter",
   "description": "Format Markdown files with CJK-aware word-spacing, list, table, and heading rules",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "publisher": "BraveHeart",
   "engines": {
     "vscode": "^1.90.0"
@@ -59,6 +59,10 @@
       {
         "command": "markdownFormatter.profile.formatInlineToMath.selection",
         "title": "Markdown Formatter: Format Inline to Math (Selection)"
+      },
+      {
+        "command": "markdownFormatter.profile.capitalizeWords.selection",
+        "title": "Markdown Formatter: Capitalize Words (Selection)"
       }
     ],
     "configuration": {
