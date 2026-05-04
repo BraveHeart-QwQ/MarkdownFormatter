@@ -1,7 +1,8 @@
 # 1. 机器学习简介
 
-## 测试 26-5-4
+## 待修复错误 26-5-4
 
+1. 你可以在浏览器中访问 [http://localhost:8080](http://localhost:8080)，也可以直接执行
 1. 调整 `background-color` 属性，改成你喜欢的颜色。下面给出的示例是一种柔和的蓝色，用来呼应 Docker 的航海主题。
 
   如果你使用的是 IDE，可以直接用内置的 color picker；否则，也可以使用在线 [Color Picker](https://www.w3schools.com/colors/colors_picker.asp)。
