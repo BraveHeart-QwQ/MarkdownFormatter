@@ -37,6 +37,10 @@
         "title": "Markdown Formatter: Clear Inline Strong, Code and Math (Selection)"
       },
       {
+        "command": "markdownFormatter.profile.clearInlineStrong.selection",
+        "title": "Markdown Formatter: Clear Inline Strong (Selection)"
+      },
+      {
         "command": "markdownFormatter.profile.clearInlineCode.selection",
         "title": "Markdown Formatter: Clear Inline Code (Selection)"
       },
