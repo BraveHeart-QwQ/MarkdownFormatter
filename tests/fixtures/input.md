@@ -1,4 +1,30 @@
 # 1. 机器学习简介
+
+## 测试 26-5-4
+
+1. 调整 `background-color` 属性，改成你喜欢的颜色。下面给出的示例是一种柔和的蓝色，用来呼应 Docker 的航海主题。
+
+  如果你使用的是 IDE，可以直接用内置的 color picker；否则，也可以使用在线 [Color Picker](https://www.w3schools.com/colors/colors_picker.asp)。
+    ```css {linenos=table,hl_lines=2,linenostart=3}
+    body {
+      background-color: #99bbff;
+      margin-top: 50px;
+      font-family: "Lato";
+    }
+    ```
+
+    每次保存之后，你都应该能立刻在浏览器中看到变化。继续调整，直到效果符合你的预期。
+
+    ![Screenshot of the to-do app with a new placeholder and background color"](/get-started/introduction/develop-with-containers/images/develop-app-with-updated-client.webp)
+
+  1. 哈哈哈
+    ```
+    test code
+    ```
+
+
+
+## 测试
    
 
 机器学习(Machine Learning)是人工_智能($AI$)的一个重要分支。它使_计算机系统_能够自动从数据中学习和改$2$进，无需进行明确的编程(Explicit Programming)。近年来，随着计算*能力的提升*和数据量的爆炸式增长，机器学习在各个领域$取得$了突破性进展。

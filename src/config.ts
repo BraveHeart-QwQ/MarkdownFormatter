@@ -75,6 +75,7 @@ export interface InlineConfig {
     handleInlineCode: "normal" | "allEnglishWord" | "removeAll"; // 正常处理 | 所有相邻英文（包括英文符号）都格式化为 inline code | 移除所有 inline code
     handleInlineMath: "normal" | "allEnglishWord" | "removeAll"; // 正常处理 | 所有相邻英文（包括英文符号）都格式化为 inline math | 移除所有 inline math
     handleInlineStrong: "normal" | "allEnglishWord" | "removeAll"; // 正常处理 | 所有相邻英文（包括英文符号）单词都格式化为 inline strong | 移除所有 inline strong
+    removeLinks: boolean; // 移除所有链接标记，仅保留链接显示文本（如 `[text](url)` → `text`）
 }
 
 /* 特殊格式化需求 */
@@ -199,6 +200,7 @@ export const k_defaultFormatterConfig: FormatterConfig = {
         handleInlineCode: "normal",
         handleInlineMath: "normal",
         handleInlineStrong: "normal",
+        removeLinks: false,
     },
 
     /* 特殊格式化需求 */

@@ -306,5 +306,44 @@ export function inlineSuite(): void {
             expect(await fmt("==A==与==B==对比", cfg)).toBe("==A== 与 ==B== 对比");
         });
 
+        // ── removeLinks ────────────────────────────────────────────────────
+
+        it("removeLinks 移除链接标记，保留显示文本", async () => {
+            const cfg = makeConfig({ removeLinks: true });
+            expect(await fmt("[点击这里](https://example.com)", cfg)).toBe("点击这里");
+        });
+
+        it("removeLinks 保留链接内部行内格式", async () => {
+            const cfg = makeConfig({ removeLinks: true });
+            expect(await fmt("[**重点**内容](https://example.com)", cfg)).toBe("**重点**内容");
+        });
+
+        it("removeLinks 段落中多个链接均被移除", async () => {
+            const cfg = makeConfig({ removeLinks: true });
+            expect(await fmt("参见[文档](https://a.com)和[示例](https://b.com)", cfg)).toBe("参见文档和示例");
+        });
+
+        it("removeLinks false 时保留链接", async () => {
+            const cfg = makeConfig({ removeLinks: false });
+            expect(await fmt("[点击这里](https://example.com)", cfg)).toBe("[点击这里](https://example.com)");
+        });
+
+        it("removeLinks 标题中的链接被移除", async () => {
+            const cfg = makeConfig({ removeLinks: true });
+            expect(await fmt("## 参见[文档](https://example.com)", cfg)).toBe("## 参见文档");
+        });
+
+        it("removeLinks 表格单元格中的链接被移除", async () => {
+            const cfg = makeConfig({ removeLinks: true });
+            const input = [
+                "| 链接 |",
+                "| --- |",
+                "| [示例](https://example.com) |",
+            ].join("\n");
+            const result = await fmt(input, cfg);
+            expect(result).toContain("示例");
+            expect(result).not.toContain("https://example.com");
+        });
+
     });
 }

@@ -1,4 +1,4 @@
-import type { Heading, InlineCode, Paragraph, PhrasingContent, Strong, TableCell, Text } from "mdast";
+import type { Heading, InlineCode, Link, Paragraph, PhrasingContent, Strong, TableCell, Text } from "mdast";
 import type { FormatterConfig } from "../config.js";
 import type { InlineMath, VisitorRegistry } from "./registry.js";
 import {
@@ -198,4 +198,15 @@ export function registerInlineFormatting(registry: VisitorRegistry, config: Form
             buildMergedNode: (run) => buildMergedStrongNode(run),
         }),
     });
+
+    // removeLinks
+    if (config.inline.removeLinks) {
+        registerContainerHandler(registry, (node) => {
+            replaceInlineNodesInParagraph(node, (child) =>
+                child.type === "link"
+                    ? [...((child as Link).children as PhrasingContent[])]
+                    : [child],
+            );
+        });
+    }
 }

@@ -21,6 +21,7 @@ export function activate(context: vscode.ExtensionContext): void {
     );
 
     const k_builtinProfileCommands: Array<{ name: string; id: string }> = [
+        { name: "ClearLinks", id: "clearLinks" },
         { name: "ClearInlineStrong", id: "clearInlineStrong" },
         { name: "ClearInlineStrongCodeAndMath", id: "clearInlineStrongCodeAndMath" },
         { name: "ClearInlineCodeAndMath", id: "clearInlineCodeAndMath" },
