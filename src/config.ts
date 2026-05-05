@@ -82,6 +82,7 @@ export interface InlineConfig {
 /* 特殊格式化需求 */
 export interface OtherConfig {
     removeHeaderNumber: boolean; // 移除标题中的序号（如 `1.`、`2.3`、`一、`），这在 AI 产生的 MD 中比较常见
+    stripInlineFromHeadings: boolean; // 清除标题中的所有 inline 格式标记（代码、加粗、公式、斜体、链接等），仅保留纯文本
     singleCharTableHead: boolean; // 将表格 Header 行格式化为 a | b | c... 这样的单字符，因为大部分 Table 是不显示 Header 行
     trimTrailingWhitespace: boolean; // 删除每行行尾的多余空格
     /* CustomEnding */
@@ -208,6 +209,7 @@ export const k_defaultFormatterConfig: FormatterConfig = {
     /* 特殊格式化需求 */
     other: {
         removeHeaderNumber: true,
+        stripInlineFromHeadings: true,
         singleCharTableHead: false,
         trimTrailingWhitespace: true,
         enableCustomEnding: true,

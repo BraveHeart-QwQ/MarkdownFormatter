@@ -170,5 +170,47 @@ export function otherSuite(): void {
                 expect(result.endsWith("tail")).toBe(true);
             });
         });
+
+        describe("stripInlineFromHeadings", () => {
+            const config = makeConfig({ stripInlineFromHeadings: true });
+
+            it("移除行内代码标记，保留代码文本", async () => {
+                expect(await fmt("# 含有 `code` 的标题", config)).toBe("# 含有 code 的标题");
+            });
+
+            it("移除加粗标记，保留文本", async () => {
+                expect(await fmt("# **加粗标题**", config)).toBe("# 加粗标题");
+            });
+
+            it("移除斜体标记，保留文本", async () => {
+                expect(await fmt("# *斜体标题*", config)).toBe("# 斜体标题");
+            });
+
+            it("移除行内公式标记，保留公式文本", async () => {
+                expect(await fmt("# 公式 $E=mc^2$", config)).toBe("# 公式 E=mc^2");
+            });
+
+            it("移除链接标记，保留显示文本", async () => {
+                expect(await fmt("# [链接文字](https://example.com)", config)).toBe("# 链接文字");
+            });
+
+            it("同时含多种 inline 元素时全部去除并拼接", async () => {
+                expect(await fmt("# **加粗** 与 `code`", config)).toBe("# 加粗 与 code");
+            });
+
+            it("纯文本标题不受影响", async () => {
+                expect(await fmt("# 普通标题", config)).toBe("# 普通标题");
+            });
+
+            it("stripInlineFromHeadings 为 false 时保留 inline 标记", async () => {
+                const offConfig = makeConfig({ stripInlineFromHeadings: false });
+                expect(await fmt("# **加粗标题**", offConfig)).toBe("# **加粗标题**");
+            });
+
+            it("各级标题均生效", async () => {
+                expect(await fmt("## **二级** 标题", config)).toBe("## 二级 标题");
+                expect(await fmt("### `三级` 标题", config)).toBe("### 三级 标题");
+            });
+        });
     });
 }

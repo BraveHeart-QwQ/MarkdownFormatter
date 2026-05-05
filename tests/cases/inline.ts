@@ -15,6 +15,7 @@ function makeConfig(overrides: Partial<FormatterConfig["inline"]>): FormatterCon
             spaceBetweenInlineElements: false,
         },
         inline: { ...k_defaultFormatterConfig.inline, ...overrides },
+        other: { ...k_defaultFormatterConfig.other, stripInlineFromHeadings: false },
     };
 }
 
