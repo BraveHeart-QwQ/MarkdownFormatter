@@ -38,7 +38,8 @@ export function listItemHandler(config: FormatterConfig): Handle {
         // 有序列表：将序号前置到 bullet
         if (listParent && listParent.type === "list" && (listParent as List).ordered) {
             const orderedList = listParent as List;
-            const start = typeof orderedList.start === "number" && orderedList.start > -1
+            const start = s.options.incrementListMarker !== false
+                && typeof orderedList.start === "number" && orderedList.start > -1
                 ? orderedList.start : 1;
             const itemIndex = s.options.incrementListMarker === false
                 ? 0 : orderedList.children.indexOf(item);
