@@ -88,5 +88,44 @@ export function blockIndentSuite(): void {
             // 第 10 项内容行应存在
             expect(result).toContain("item10");
         });
+
+        // ── removeTab ────────────────────────────────────────────────────────
+
+        it("默认将 Tab 替换为 2 个空格（普通文本）", async () => {
+            const result = await fmt("hello\tworld", makeConfig({}));
+            expect(result).toBe("hello  world");
+        });
+
+        it("tabSize=4 时将 Tab 替换为 4 个空格", async () => {
+            const result = await fmt("a\tb", makeConfig({ tabSize: 4 }));
+            expect(result).toBe("a    b");
+        });
+
+        it("removeTab=false 时保留 Tab 字符", async () => {
+            const result = await fmt("a\tb", makeConfig({ removeTab: false }));
+            expect(result).toBe("a\tb");
+        });
+
+        it("行内代码中的 Tab 字符不受影响", async () => {
+            const result = await fmt("`a\tb`", makeConfig({}));
+            expect(result).toBe("`a\tb`");
+        });
+
+        it("fenced 代码块中的 Tab 字符不受影响", async () => {
+            const input = "```\na\tb\n```";
+            const result = await fmt(input, makeConfig({}));
+            expect(result).toContain("a\tb");
+        });
+
+        it("行内公式特殊处理，Tab 强制转为一个空格", async () => {
+            const result = await fmt("$a\tb$", makeConfig({}));
+            expect(result).toBe("$a b$");
+        });
+
+        it("公式块特殊处理，Tab 强制转为一个字符", async () => {
+            const input = "$$$\na\tb\n$$$";
+            const result = await fmt(input, makeConfig({}));
+            expect(result).toContain("a b");
+        });
     });
 }

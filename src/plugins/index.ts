@@ -8,7 +8,7 @@ import type { PhrasingContent, Root, Text } from "mdast";
 import type { FormatterConfig } from "../config.js";
 import { visit } from "unist-util-visit";
 import { createRegistry, runSinglePass } from "./registry.js";
-import { registerTextReplacement } from "./textCorrection.js";
+import { registerTextReplacement, registerTabReplacement } from "./textCorrection.js";
 import { registerLineSpacing } from "./lineSpacing.js";
 import { registerWordSpacing } from "./wordSpacing.js";
 import { mergeAdjacentUnorderedLists, nestIndentedListItems, splitIndentedContinuations, registerListFormatting } from "./list.js";
@@ -133,6 +133,7 @@ export function remarkFormatter(config: FormatterConfig): (tree: Root, file: { v
 
         // 这里的顺序很重要
         registerTextReplacement(registry, config);
+        registerTabReplacement(registry, config);
         registerLineSpacing(registry, config);
         registerInlineFormatting(registry, config); // inline 应在 wordSpacing 之前执行
         registerWordSpacing(registry, config);

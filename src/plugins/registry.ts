@@ -10,6 +10,9 @@ import { visit } from "unist-util-visit";
 /** remark-math 注入 AST 的行内公式节点（mdast-util-math 的局部声明） */
 export interface InlineMath { type: "inlineMath"; value: string; }
 
+/** remark-math 注入 AST 的块级公式节点 */
+export interface MathBlock { type: "math"; value: string; meta?: string | null; }
+
 /**
  * 各 sub-transform 向此 registry 注册回调，而不是各自调用 visit()。
  * runSinglePass 在唯一一次 DFS 里按节点类型分发给所有已注册的回调。
@@ -25,6 +28,7 @@ export interface VisitorRegistry {
     tableCell: Array<(node: TableCell) => void>;
     inlineCode: Array<(node: InlineCode) => void>;
     inlineMath: Array<(node: InlineMath) => void>;
+    math: Array<(node: MathBlock) => void>;
     strong: Array<(node: Strong) => void>;
 }
 
@@ -40,6 +44,7 @@ export function createRegistry(): VisitorRegistry {
         tableCell: [],
         inlineCode: [],
         inlineMath: [],
+        math: [],
         strong: [],
     };
 }
@@ -60,6 +65,7 @@ export function runSinglePass(tree: Root, registry: VisitorRegistry): void {
             case "tableCell": for (const h of registry.tableCell) h(node as TableCell); break;
             case "inlineCode": for (const h of registry.inlineCode) h(node as InlineCode); break;
             case "inlineMath": for (const h of registry.inlineMath) h(node as InlineMath); break;
+            case "math": for (const h of registry.math) h(node as unknown as MathBlock); break;
             case "strong": for (const h of registry.strong) h(node as Strong); break;
         }
     });

@@ -26,6 +26,8 @@ export interface BlockIndentConfig {
     parseIndentAsCodeBlock: boolean; // 普通缩进（4 空格/Tab）当作代码块处理（会退缩进，并用代码块 fence 包裹）
     unorderedListIndent: number; // 无序列表块缩进空格数
     orderedListIndent: number; // 有序列表块缩进空格数
+    removeTab: boolean; // 是否将 Tab 字符替换为空格
+    tabSize: number; // Tab 替换为空格时的空格数
 }
 
 /* 行间距处理 */
@@ -156,6 +158,8 @@ export const k_defaultFormatterConfig: FormatterConfig = {
         parseIndentAsCodeBlock: false,
         unorderedListIndent: 2,
         orderedListIndent: 4,
+        removeTab: true,
+        tabSize: 2,
     },
 
     /* 行间距处理 */
