@@ -178,6 +178,60 @@ export function wordSpacingSuite(): void {
             expect(await fmt("这是**重点**内容", cfg)).toBe("这是**重点**内容");
         });
 
+        it("行内元素右侧多余空格被消除（全角括号结尾，后接中文）", async () => {
+            const cfg = makeConfig({ spaceBetweenInlineElements: true, spaceBetweenChineseAndEnglish: true });
+            expect(await fmt("这种 **Ephemeral（朝生暮死）**     特性有", cfg)).toBe("这种 **Ephemeral（朝生暮死）**特性有");
+        });
+
+        it("加粗内容以 ASCII ')' 结尾后接中文时补充空格", async () => {
+            const cfg = makeConfig({ spaceBetweenInlineElements: true, spaceBetweenChineseAndEnglish: true });
+            expect(await fmt("但当需要**持久化(Persist)**数据时", cfg)).toBe("但当需要**持久化 (Persist)** 数据时");
+        });
+
+        // ── CJK_PUNC_RE：全角标点与中英文均不产生空格 ────────────────────────
+
+        it("全角右括号后接中文不插入空格（CJK_PUNC）", async () => {
+            const cfg = makeConfig({ spaceBetweenChineseAndEnglish: true });
+            expect(await fmt("中文。（测试）  中文", cfg)).toBe("中文。（测试）中文");
+        });
+
+        it("中文后接全角左括号不插入空格（CJK_PUNC）", async () => {
+            const cfg = makeConfig({ spaceBetweenChineseAndEnglish: true });
+            expect(await fmt("中文  （测试）OK", cfg)).toBe("中文（测试）OK");
+        });
+
+        it("全角右括号后接英文不插入空格（CJK_PUNC）", async () => {
+            const cfg = makeConfig({ spaceBetweenChineseAndEnglish: true });
+            expect(await fmt("（test）world", cfg)).toBe("（test）world");
+        });
+
+        it("行内加粗以全角 '）' 结尾后接中文时不补充空格（CJK_PUNC 边界）", async () => {
+            const cfg = makeConfig({ spaceBetweenInlineElements: true, spaceBetweenChineseAndEnglish: true });
+            expect(await fmt("**func（）**方法", cfg)).toBe("**func（）**方法");
+        });
+
+        // ── LAT_PUNC_RE：ASCII 括号类与中文产生空格 ──────────────────────────
+
+        it("ASCII 右括号后接中文时插入空格（LAT_PUNC）", async () => {
+            const cfg = makeConfig({ spaceBetweenChineseAndEnglish: true });
+            expect(await fmt("woo(test)中文", cfg)).toBe("woo(test) 中文");
+        });
+
+        it("中文后接 ASCII 左括号时插入空格（LAT_PUNC）", async () => {
+            const cfg = makeConfig({ spaceBetweenChineseAndEnglish: true });
+            expect(await fmt("中文(test)中文", cfg)).toBe("中文 (test) 中文");
+        });
+
+        it("行内加粗以 ASCII ')' 结尾后接中文时补充空格（LAT_PUNC 边界）", async () => {
+            const cfg = makeConfig({ spaceBetweenInlineElements: true, spaceBetweenChineseAndEnglish: true });
+            expect(await fmt("需要**持久化(Persist)**数据时", cfg)).toBe("需要**持久化 (Persist)** 数据时");
+        });
+
+        it("关闭 spaceBetweenChineseAndEnglish 时 LAT_PUNC 不产生空格", async () => {
+            const cfg = makeConfig({ spaceBetweenChineseAndEnglish: false });
+            expect(await fmt("(test)中文", cfg)).toBe("(test)中文");
+        });
+
         // ── 不修改代码块内容 ─────────────────────────────────────────────────
 
         it("不修改围栏代码块内的中英文文本", async () => {

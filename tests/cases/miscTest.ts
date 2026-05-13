@@ -15,7 +15,7 @@ function makeConfig(overrides: any): FormatterConfig {
 }
 
 export function miscSuite(): void {
-    describe("other", () => {
+    describe("misc", () => {
         const config = makeConfig({});
 
         it("保持分隔符", async () => {
@@ -24,6 +24,11 @@ export function miscSuite(): void {
 
         it("Code 和 Equantion 保留空格", async () => {
             expect(await fmt("你好 ` ` 啊 $ $ Chello", config)).toBe("你好 ` ` 啊 $$ Chello");
+        });
+
+        it("复杂空格测试", async () => {
+            expect(await fmt("Container 的这种 **Ephemeral（朝生暮死）**     特性有其优势，但当(a)需要==持久化(Persist)==数据时，它就会**变成one**问题。", config))
+                .toBe("Container 的这种 **Ephemeral（朝生暮死）**特性有其优势，但当 (a) 需要==持久化 (Persist)== 数据时，它就会**变成 one** 问题。");
         });
 
         /*====-------------- List --------------====*/

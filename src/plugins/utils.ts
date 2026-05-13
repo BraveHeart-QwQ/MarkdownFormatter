@@ -1,6 +1,23 @@
 import type { InlineCode, PhrasingContent, Text } from "mdast";
 import type { InlineMath } from "./registry.js";
 
+// CJK 字符范围（BMP）：常用汉字、扩展A区、兼容区
+export const CJK = '\u4e00-\u9fff\u3400-\u4dbf\uf900-\ufaff';
+
+/**
+ * CJK 标点符号（全角标点、中文标号等）。
+ * 此类字符与中文或英文相邻时均不产生词间距。
+ * 覆盖范围：CJK 符号和标点（U+3000-303F）、全角标点（U+FF01-FF0F, FF1A-FF1F）、
+ * 破折号（U+2014）、省略号（U+2026）。
+ */
+export const CJK_PUNC_RE = /[\u3000-\u303f\uff01-\uff0f\uff1a-\uff1f\u2014\u2026]/;
+
+/**
+ * 拉丁标点符号（ASCII 括号类：`()[]{}`）。
+ * 此类字符与中文相邻时产生词间距（归属于 spaceBetweenChineseAndEnglish 规则）。
+ */
+export const LAT_PUNC_RE = /[()[\]{}]/;
+
 /** 循环去除 value 末尾出现的任意指定字符串（可重复去除，直到无变化为止）。 */
 export function trimTrailingChars(value: string, chars: string[]): string {
     let changed = true;
@@ -154,3 +171,13 @@ export function replaceInlineNodesInParagraph(
 ): void {
     node.children = (node.children as PhrasingContent[]).flatMap(replaceChild) as typeof node.children;
 }
+
+export function firstNonWhitespaceChar(value: string): string {
+    return value.match(/\S/u)?.[0] ?? '';
+}
+
+export function lastNonWhitespaceChar(value: string): string {
+    const chars = Array.from(value.trimEnd());
+    return chars[chars.length - 1] ?? '';
+}
+
