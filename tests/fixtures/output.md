@@ -1,6 +1,74 @@
 # 机器学习简介
 
-机器学习(Machine Learning) 是人工_智能($AI$)的一个重要分支。它使_计算机系统_能够自动从数据中学习和改 $2$ 进，无需进行明确的编程(Explicit Programming)。近年来，随着计算*能力的提升*和数据量的爆炸式增长，机器学习在各个领域 $取得$ 了突破性进展。
+
+
+## 待修复错误 26-5-4
+
+1. Image Layer 到底是什么
+1. 每条会改变文件系统的 Dockerfile 指令（如 RUN、COPY、ADD）通常会生成一层
+1. 每层本质是一个"差异包"（diff），记录新增/修改/删除了哪些文件
+1. 多层叠加后形成容器看到的完整根文件系统
+1. 层是只读的，且可复用：多个镜像、多个容器可以共享同一层
+
+可以把它想成：
+- 底层：基础系统层（例如 Debian/Alpine）
+- 中间：安装依赖层
+- 顶层：应用代码层
+- 运行容器时再叠加：可写层
+
+---
+
+1. 为什么要分层
+1. 复用与节省空间：相同基础层只存一份
+1. 拉取更快：只需要拉本地没有的层
+1. 构建缓存：上层没变就复用旧层，构建速度快
+1. 分发高效：镜像推送/拉取按层去重
+
+---
+
+Container 的这种 **Ephemeral（朝生暮死）**特性有其优势，但当 (a) 需要**持久化 (Persist)** 数据时，它就会**变成 one** 问题。
+
+1. 你可以在浏览器中访问 http://localhost:8080，也可以直接执行
+1. 调整 `background-color` 属性，改成你喜欢的颜色。下面给出的示例是一种柔和的蓝色，用来呼应 Docker 的航海主题
+
+如果你使用的是 IDE，可以直接用内置的 color picker；否则，也可以使用在线 [Color Picker](https://www.w3schools.com/colors/colors_picker.asp)。
+`css {linenos=table,hl_lines=2,linenostart=3}
+    body {
+      background-color: #99bbff;
+      margin-top: 50px;
+      font-family: "Lato";
+    }
+    `
+
+    每次保存之后，你都应该能立刻在浏览器中看到变化。继续调整，直到效果符合你的预期。
+
+    ![Screenshot of the to-do app with a new placeholder and background color"](/get-started/introduction/develop-with-containers/images/develop-app-with-updated-client.webp)
+
+1. 哈哈哈
+
+    `     test code
+        `
+
+---
+
+下面这张表可以更直观地对比第一次和第二次 build 的耗时：
+a   | b                                                    | c            | d
+----|------------------------------------------------------|--------------|----
+1   | `Load build definition from Dockerfile`              | 0.0 seconds  | 0.0 seconds
+2   | `Load metadata for docker.io/library/node:22-alpine` | 2.7 seconds | 0.9 seconds
+3   | `Load .dockerignore`                                 | 0.0 seconds  | 0.0 seconds
+4   | `Load build context`（Context size: 4.60MB）         | 0.1 seconds | 0.0 seconds
+5   | `Set the working directory (WORKDIR)`                | 0.1 seconds  | 0.0 seconds
+6   | `Copy the local code into the container`             | 0.0 seconds  | 0.0 seconds
+7   | `Run yarn install --production`                      | 10.0 seconds | 0.0 seconds
+8   | `Exporting layers`                                   | 2.2 seconds  | 0.0 seconds
+9   | `Exporting the final image`                          | 3.0 seconds  | 0.0 seconds
+
+
+
+## 测试
+
+机器学习 (Machine Learning) 是人工_智能 ($AI$) 的一个重要分支。它使_计算机系统_能够自动从数据中学习和改 $2$ 进，无需进行明确的编程 (Explicit Programming)。近年来，随着计算*能力的提升*和数据量的爆炸式增长，机器学习在各个领域 $取得$ 了突破性进展。
 
 1. 所以 T(V_n) 也是线性空间
 
@@ -15,9 +83,9 @@
   cool
 
   content:
-  | a   | b   |
-  |---|-------|
-  | x   | v   |
+  a   | b
+  ----|----
+  x   | v
 
 - item3
 
@@ -96,37 +164,37 @@ Other List:
 
 ## 测试表格
 
-| a                                       | b   |
-|---------------------------------------|------------------|
-| very well very well very well very well | wow |
-| very well very well very well very well very well very well | wow |
-| very well very well very well very well very well very well very well very well | wow |
+a                                                           | b
+------------------------------------------------------------|----
+very well very well very well very well                     | wow
+very well very well very well very well very well very well | wow
+very well very well very well very well very well very well very well very well | wow
 
-| a   | b                   |
-|---|-----------------------|
-| ok  | test $\|$ code `\|` |
+a   | b
+----|--------------------
+ok  | test $\|$ code `\|`
 
 Single Long：
-| a   | b   |
-|---|------------------------------------------------------|
-| very well very well very well very well very well very well very well very well | wow |
+a   | b
+----|-------------------------------------------------------
+very well very well very well very well very well very well very well very well | wow
 
 Short：
-| a   | b   | c   |
-|---|---|---------|
-| x   | y   | z   |
+a   | b   | c
+----|-----|----
+x   | y   | z
 
-| a     | b     |
-|-----|----------------------------------------------------|
-| ok    | 你好你好你好你好你好你好你好你好你好你好你好你好你好你好你好你好你好你好你好你好你好你好你好你好你好你好你好你好你好你好你好你好你好你好你好你好 |
-| hello | world |
+a     | b
+------|-----------------------------------------------------
+ok    | 你好你好你好你好你好你好你好你好你好你好你好你好你好你好你好你好你好你好你好你好你好你好你好你好你好你好你好你好你好你好你好你好你好你好你好你好
+hello | world
 
 - 下一张表
-  | a      | b     | c       | d       |
-  |------|-----|-------|-------------------------------------|
-  | banana | apple | orange  | grape   |
-  | ok     | good  | 你好你好你好你好你好你好你好你好你好你好你好你好你好你好你好你好你好你好你好你好你好你好你好你好你好你好你好你好你好你好你好你好你好你好你好你好 | hello |
-  | fine   | world | morning | evening |
+  a      | b     | c       | d
+  -------|-------|---------|----------------------------------
+  banana | apple | orange  | grape
+  ok     | good  | 你好你好你好你好你好你好你好你好你好你好你好你好你好你好你好你好你好你好你好你好你好你好你好你好你好你好你好你好你好你好你好你好你好你好你好你好 | hello
+  fine   | world | morning | evening
 
 
 
@@ -151,24 +219,24 @@ $$\left \{
 
 ## 主要学习类型
 
-| a   | b   |
-|---|-------|
-| x   | y   |
+a   | b
+----|----
+x   | y
 
 - list
 
   content
-  | a   | b   |
-  |---|-------|
-  | x   | y   |
+  a   | b
+  ----|----
+  x   | y
   - second list
 
 set <NUL /p=Output of a command
 
 [table: title="标题"]
-| a   | b   |
-|---|-------|
-| x   | y   |
+a   | b
+----|----
+x   | y
 
 - OK
   - OK1
@@ -187,21 +255,21 @@ set <NUL /p=Output of a command
   →测试替换→训练 X 数据含有标签。
 
 - 无监督学习（Unsupervised Learning）：训练数据不含标签
-  | a           | b                |
-  |-----------|--------------------|
-  | 表格内替换→ | x 也必须可以执行 |
+  a           | b
+  ------------|-----------------
+  表格内替换→ | x 也必须可以执行
 
 - 半监督学习（Semi-supervised Learning）：仅有少量数据有标签
 - 强化学习（Reinforcement Learning）：通过与环境交互获得奖励信号来学习
 
 相邻的符号，J 就**不需要**产生空格间隙 `J`。
 
-| a                                      | b                |
-|--------------------------------------|-------------------|
-| 监督学习（Supervised Learning）        | 训练数据含有标签。训练数据含有标签。训练数据含有标签。训练数据含有标签 |
-| 无监督学习（Unsupervised Learning）    | 训练数据不含标签 |
-| 半监督学习（Semi-supervised Learning） | 仅有少量数据有标签 |
-| 强化学习（Reinforcement Learning）     | 通过与环境交互获得奖励信号来学习 |
+a                                      | b
+---------------------------------------|--------------------
+监督学习（Supervised Learning）        | 训练数据含有标签。训练数据含有标签。训练数据含有标签。训练数据含有标签
+无监督学习（Unsupervised Learning）    | 训练数据不含标签
+半监督学习（Semi-supervised Learning） | 仅有少量数据有标签
+强化学习（Reinforcement Learning）     | 通过与环境交互获得奖励信号来学习
 
 
 
@@ -216,12 +284,12 @@ set <NUL /p=Output of a command
 
 ## 常见算法对比
 
-| a                           | b    | c    | d    |
-|---------------------------|----|----|------------|
-| 线性回归(Linear Regression) | 中等 | 快速 | 高   |
-| 决策树(Decision Tree)       | 中等 | 中等 | 高   |
-| 随机森林(Random Forest)     | 高   | 慢   | 中等 |
-| 神经网络(Neural Network)    | 很高 | 很慢 | 低   |
+a                            | b    | c    | d
+-----------------------------|------|------|-----
+线性回归 (Linear Regression) | 中等 | 快速 | 高
+决策树 (Decision Tree)       | 中等 | 中等 | 高
+随机森林 (Random Forest)     | 高   | 慢   | 中等
+神经网络 (Neural Network)    | 很高 | 很慢 | 低
 
 代码块：
 ```cpp
@@ -239,17 +307,15 @@ int main() {
 
 下面展示如何使用 sklearn 库训练一个线性回归模型：
 
-```
-import numpy as np
-from sklearn.linear_model import LinearRegression
+    import numpy as np
+    from sklearn.linear_model import LinearRegression
 
-X_train = np.array([[1], [2], [3], [4], [5]])
-y_train = np.array([2, 4, 6, 8, 10])
+    X_train = np.array([[1], [2], [3], [4], [5]])
+    y_train = np.array([2, 4, 6, 8, 10])
 
-model = LinearRegression()
-model.fit(X_train, y_train)
-print(model.predict([[6]]))
-```
+    model = LinearRegression()
+    model.fit(X_train, y_train)
+    print(model.predict([[6]]))
 
 注意: 运行前需要安装依赖：`pip install scikit-learn numpy`。
 
