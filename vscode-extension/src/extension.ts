@@ -7,7 +7,10 @@ import {
 } from "./commands.js";
 import { MarkdownFormattingProvider } from "./formattingProvider.js";
 
-const k_markdownSelector: vscode.DocumentSelector = { language: "markdown", scheme: "file" };
+const k_markdownSelector: vscode.DocumentSelector = [
+    { language: "markdown", scheme: "file" },
+    { language: "markdown", scheme: "untitled" },
+];
 
 export function activate(context: vscode.ExtensionContext): void {
     const provider = new MarkdownFormattingProvider();

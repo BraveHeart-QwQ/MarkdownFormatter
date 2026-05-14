@@ -194,7 +194,7 @@ async function main(): Promise<void> {
             process.exit(1);
         }
     } else {
-        process.stdout.write(result);
+        process.stdout.write(Buffer.from(result, "utf-8"));
     }
 }
 

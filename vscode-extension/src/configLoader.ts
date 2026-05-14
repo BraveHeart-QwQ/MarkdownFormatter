@@ -85,5 +85,9 @@ export function loadFormatterConfig(workspaceRoot: string, extraEntries: Profile
 }
 
 export function workspaceRootFor(uri: vscode.Uri): string {
-    return vscode.workspace.getWorkspaceFolder(uri)?.uri.fsPath ?? path.dirname(uri.fsPath);
+    return (
+        vscode.workspace.getWorkspaceFolder(uri)?.uri.fsPath
+        ?? vscode.workspace.workspaceFolders?.[0]?.uri.fsPath
+        ?? (uri.scheme === "file" ? path.dirname(uri.fsPath) : process.cwd())
+    );
 }
