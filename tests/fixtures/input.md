@@ -1,6 +1,46 @@
 # 1. 机器学习简介
 
-## 待修复错误 26-5-4
+## 待修复 26-5-15
+
+中文和(英文括号)一起使用该怎么(格式化)。
+
+列表测试（跨列表空行被删除）：
+- 可靠传输、不可靠传输
+
+  - 可靠传输：包含“确认”和“重传”，接收方收到后，发送一个信息告诉发送方：收到的数据正确还是错误。如果错误，就重传
+
+    效果：发送方发送什么数据，接收方就收到什么数据。
+
+  - 不可靠传输：只要缺失“确认”和“重传”其中一个，就是不可靠传输
+
+    效果：发送方发送的数据，接收方不保证完整正确的收到。
+
+- 差错控制
+
+---
+
+1. 你可以在浏览器中访问 [http://localhost:8080](http://localhost:8080)，也可以直接执行
+1. 调整 `background-color` 属性，改成你喜欢的颜色。下面给出的示例是一种柔和的蓝色，用来呼应 Docker 的航海主题。
+
+  如果你使用的是 IDE，可以直接用内置的 color picker；否则，也可以使用在线 [Color Picker](https://www.w3schools.com/colors/colors_picker.asp)。
+    ```css {linenos=table,hl_lines=2,linenostart=3}
+    body {
+      background-color: #99bbff;
+      margin-top: 50px;
+      font-family: "Lato";
+    }
+    ```
+
+    每次保存之后，你都应该能立刻在浏览器中看到变化。继续调整，直到效果符合你的预期。
+
+    ![Screenshot of the to-do app with a new placeholder and background color"](/get-started/introduction/develop-with-containers/images/develop-app-with-updated-client.webp)
+
+  1. 哈哈哈
+    ```
+    test code
+    ```
+
+## 26-5-4
 
 1. Image Layer 到底是什么
 1. 每条会改变文件系统的 Dockerfile 指令（如 RUN、COPY、ADD）通常会生成一层
@@ -25,27 +65,6 @@
 ---
 
 Container 的这种 **Ephemeral（朝生暮死）**     特性有其优势，但当(a)需要**持久化(Persist)**数据时，它就会**变成one**问题。
-
-1. 你可以在浏览器中访问 [http://localhost:8080](http://localhost:8080)，也可以直接执行
-1. 调整 `background-color` 属性，改成你喜欢的颜色。下面给出的示例是一种柔和的蓝色，用来呼应 Docker 的航海主题。
-
-  如果你使用的是 IDE，可以直接用内置的 color picker；否则，也可以使用在线 [Color Picker](https://www.w3schools.com/colors/colors_picker.asp)。
-    ```css {linenos=table,hl_lines=2,linenostart=3}
-    body {
-      background-color: #99bbff;
-      margin-top: 50px;
-      font-family: "Lato";
-    }
-    ```
-
-    每次保存之后，你都应该能立刻在浏览器中看到变化。继续调整，直到效果符合你的预期。
-
-    ![Screenshot of the to-do app with a new placeholder and background color"](/get-started/introduction/develop-with-containers/images/develop-app-with-updated-client.webp)
-
-  1. 哈哈哈
-    ```
-    test code
-    ```
 
 ---
 
