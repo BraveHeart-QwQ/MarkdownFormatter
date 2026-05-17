@@ -8,24 +8,9 @@ import { existsSync, readFileSync, writeFileSync } from "fs";
 import { join } from "path";
 import { format } from "./pipeline.js";
 import { k_defaultFormatterConfig, FormatterConfig, validatePartialConfig } from "./config.js";
+import { mergeConfig, type PartialFormatterConfig as PartialConfig } from "./configMerge.js";
 
 // ── Config merging ────────────────────────────────────────────────────────────
-
-type PartialConfig = {
-    [K in keyof FormatterConfig]?: Partial<FormatterConfig[K]>;
-};
-
-function mergeConfig(base: FormatterConfig, ...overrides: PartialConfig[]): FormatterConfig {
-    let result = { ...base };
-    for (const override of overrides) {
-        for (const key of Object.keys(override) as Array<keyof FormatterConfig>) {
-            if (override[key] !== undefined) {
-                result = { ...result, [key]: { ...result[key], ...(override[key] as object) } };
-            }
-        }
-    }
-    return result;
-}
 
 // ── Arg parsing ───────────────────────────────────────────────────────────────
 

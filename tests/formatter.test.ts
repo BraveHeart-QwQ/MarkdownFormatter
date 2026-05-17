@@ -3,6 +3,7 @@ import { blockIndentSuite } from "./cases/blockIndent.js";
 import { inlineSuite } from "./cases/inline.js";
 import { lineSpacingSuite } from "./cases/lineSpacing.js";
 import { listSuite } from "./cases/list.js";
+import { configMergeSuite } from "./cases/configMerge.js";
 import { otherSuite } from "./cases/other.js";
 import { tableSuite } from "./cases/table.js";
 import { textCorrectionSuite } from "./cases/textCorrection.js";
@@ -10,6 +11,7 @@ import { wordSpacingSuite } from "./cases/wordSpacing.js";
 import { miscSuite } from "./cases/miscTest.js";
 
 // ── 注册所有测试 ──────────────────────────────────────────────────────────────
+configMergeSuite();
 textCorrectionSuite();
 blockIndentSuite();
 lineSpacingSuite();

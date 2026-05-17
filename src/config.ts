@@ -189,7 +189,7 @@ export const k_defaultFormatterConfig: FormatterConfig = {
         enabled: true,
         unorderedMarker: "-",
         orderedStyle: "notSequential",
-        trimTrailingChars: ["。"], // 默认移除中文句号
+        trimTrailingChars: ["。", "；", "，"], // 默认移除中文句号
     },
 
     /* Table 格式化 */
@@ -197,7 +197,7 @@ export const k_defaultFormatterConfig: FormatterConfig = {
         // 列表默认靠左对齐，自动插入空格对齐列
         enabled: true,
         removeOuterBorders: true,
-        trimTrailingChars: ["。"], // 默认移除中文句号
+        trimTrailingChars: ["。", "；", "，"], // 默认移除中文句号
         maxFormatColumnWidth: 60,
     },
 

@@ -2,22 +2,7 @@ import * as fs from "fs";
 import * as path from "path";
 import * as vscode from "vscode";
 import { k_defaultFormatterConfig, type FormatterConfig, validatePartialConfig } from "../../src/config.js";
-
-export type PartialFormatterConfig = {
-    [K in keyof FormatterConfig]?: Partial<FormatterConfig[K]>;
-};
-
-export function mergeConfig(base: FormatterConfig, ...overrides: PartialFormatterConfig[]): FormatterConfig {
-    let result = { ...base };
-    for (const override of overrides) {
-        for (const key of Object.keys(override) as Array<keyof FormatterConfig>) {
-            if (override[key] !== undefined) {
-                result = { ...result, [key]: { ...result[key], ...(override[key] as object) } };
-            }
-        }
-    }
-    return result;
-}
+import { mergeConfig, type PartialFormatterConfig } from "../../src/configMerge.js";
 
 import { ProfileEntry } from "./profile.js";
 
