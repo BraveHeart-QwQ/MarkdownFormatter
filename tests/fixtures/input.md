@@ -4,6 +4,8 @@
 
 访问 [http://localhost:8080](http://localhost:8080)，也可以直接执行
 
+通常也会被称为"garbage collection"。
+
 ---
 
 中文和(英文括号)一起使用该怎么(格式化)。
