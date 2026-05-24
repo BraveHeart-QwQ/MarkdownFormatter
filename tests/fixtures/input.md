@@ -4,6 +4,8 @@
 
 访问 [http://localhost:8080](http://localhost:8080)，也可以直接执行
 
+测试 [`code` link](http://localhost:8080)。
+
 通常也会被称为"garbage collection"。
 
 ---
