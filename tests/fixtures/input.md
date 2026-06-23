@@ -2,6 +2,14 @@
 
 ## 待修复 26-5-15
 
+Map-Reduce 是一种用于大规模数据并行处理的计算模型，典型代表是 Google MapReduce、Hadoop MapReduce、Spark 的某些操作模式。它把计算分成两个核心阶段：
+1. Map：把输入数据拆成很多小块，每块独立处理，生成中间键值对。
+1. Reduce：把相同 key 的中间结果聚合起来，得到最终结果。
+
+```
+Input -> Map -> Shuffle -> Reduce -> Output
+```
+
 访问 [http://localhost:8080](http://localhost:8080)，也可以直接执行
 
 测试 [`code` link](http://localhost:8080)。
