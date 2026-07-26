@@ -212,7 +212,7 @@ export const k_defaultFormatterConfig: FormatterConfig = {
 
     /* 特殊格式化需求 */
     other: {
-        removeHeaderNumber: true,
+        removeHeaderNumber: false,
         stripInlineFromHeadings: true,
         singleCharTableHead: false,
         trimTrailingWhitespace: true,

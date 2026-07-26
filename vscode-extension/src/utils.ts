@@ -1,5 +1,5 @@
 import { type FormatterConfig } from "../../src/config.js";
-import { mergeConfig } from "./configLoader.js";
+import { mergeConfig } from "../../src/configMerge.js";
 
 function isBlankLine(line: string): boolean {
     return line.trim().length === 0;

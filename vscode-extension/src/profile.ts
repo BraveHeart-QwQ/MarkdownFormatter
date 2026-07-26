@@ -1,5 +1,5 @@
 import * as vscode from "vscode";
-import { type PartialFormatterConfig } from "./configLoader.js";
+import { type PartialFormatterConfig } from "../../src/configMerge.js";
 
 export type ProfileEntry = string | PartialFormatterConfig;
 
