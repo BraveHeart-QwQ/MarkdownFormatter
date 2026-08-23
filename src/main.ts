@@ -122,19 +122,19 @@ async function main(): Promise<void> {
             raw = readFileSync(configPath, "utf-8");
         } catch (err) {
             console.error(`Error: cannot read config "${configPath}": ${(err as Error).message}`);
-            process.exit(1);
+            process.exit(2);
         }
         let partialCfg: PartialConfig;
         try {
             partialCfg = JSON.parse(raw) as PartialConfig;
         } catch (err) {
             console.error(`Error: invalid JSON in config "${configPath}": ${(err as Error).message}`);
-            process.exit(1);
+            process.exit(2);
         }
         const fileErrors = validatePartialConfig(partialCfg);
         if (fileErrors.length > 0) {
             for (const e of fileErrors) console.error(`Error in config "${configPath}": ${e}`);
-            process.exit(1);
+            process.exit(2);
         }
         overrides.push(partialCfg);
     }
@@ -187,4 +187,3 @@ main().catch((err: unknown) => {
     console.error("Unexpected error:", err);
     process.exit(1);
 });
-
