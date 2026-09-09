@@ -4,6 +4,8 @@ import {
     cmdFormatDocumentWithProfile,
     cmdFormatSelectionWithProfile,
     cmdFormatSelectionWithBuiltinProfile,
+    cmdIndentSelectedHeadings,
+    cmdOutdentSelectedHeadings,
 } from "./commands.js";
 import { MarkdownFormattingProvider } from "./formattingProvider.js";
 
@@ -21,6 +23,8 @@ export function activate(context: vscode.ExtensionContext): void {
         vscode.commands.registerTextEditorCommand("markdownFormatter.formatDocument", cmdFormatDocument),
         vscode.commands.registerTextEditorCommand("markdownFormatter.formatDocumentWithProfile", cmdFormatDocumentWithProfile),
         vscode.commands.registerTextEditorCommand("markdownFormatter.formatSelectionWithProfile", cmdFormatSelectionWithProfile),
+        vscode.commands.registerTextEditorCommand("markdownFormatter.heading.indent.selection", cmdIndentSelectedHeadings),
+        vscode.commands.registerTextEditorCommand("markdownFormatter.heading.outdent.selection", cmdOutdentSelectedHeadings),
     );
 
     const k_builtinProfileCommands: Array<{ name: string; id: string }> = [

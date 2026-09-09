@@ -32,6 +32,14 @@
         "title": "Markdown Formatter: Format Selection with Profile"
       },
       {
+        "command": "markdownFormatter.heading.indent.selection",
+        "title": "Markdown Formatter: Indent Headings (Selection)"
+      },
+      {
+        "command": "markdownFormatter.heading.outdent.selection",
+        "title": "Markdown Formatter: Outdent Headings (Selection)"
+      },
+      {
         "command": "markdownFormatter.profile.clearInlineCodeAndMath.selection",
         "title": "Markdown Formatter: Clear Inline Code and Math (Selection)"
       },

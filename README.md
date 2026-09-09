@@ -14,6 +14,7 @@ This project includes:
 - Text correction with custom regex replacements
 - Block-indent handling (including indent-to-fenced-code conversion)
 - Heading line-spacing normalization
+- Independent batch heading indent/outdent operations
 - CJK-aware word spacing rules
 - List normalization (unordered marker style, ordered style, trailing char trimming)
 - Table normalization (alignment, optional outer-border removal, max-width fallback)
@@ -112,6 +113,13 @@ The extension source is in [vscode-extension](vscode-extension).
 - `Markdown Formatter: Format Selection`
 - `Markdown Formatter: Format Document with Profile`
 - `Markdown Formatter: Format Selection with Profile`
+- `Markdown Formatter: Indent Headings (Selection)`
+- `Markdown Formatter: Outdent Headings (Selection)`
+
+The heading commands adjust every Markdown heading on the selected lines by one
+level. Indent changes H1 to H2 (up to H6), while outdent changes H2 to H1. They
+parse the complete document for context but only edit heading markers, so other
+formatting in the selection is preserved.
 
 ### Settings
 

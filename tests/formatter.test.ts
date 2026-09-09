@@ -9,6 +9,7 @@ import { tableSuite } from "./cases/table.js";
 import { textCorrectionSuite } from "./cases/textCorrection.js";
 import { wordSpacingSuite } from "./cases/wordSpacing.js";
 import { miscSuite } from "./cases/miscTest.js";
+import { headingLevelSuite } from "./cases/headingLevel.js";
 
 // ── 注册所有测试 ──────────────────────────────────────────────────────────────
 configMergeSuite();
@@ -21,3 +22,4 @@ tableSuite();
 inlineSuite();
 otherSuite();
 miscSuite();
+headingLevelSuite();
