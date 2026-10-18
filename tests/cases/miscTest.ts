@@ -119,6 +119,20 @@ export function miscSuite(): void {
                     .toBe("1. [](()");
             });
 
+            it.each([
+                ["$$\ny = a + b\n$$", "$$y = a + b$$"],
+                ["$$y = a + b$$", "$$y = a + b$$"],
+                ["- Test List\n\n  $$\n  y = a + b\n  $$", "- Test List\n  $$y = a + b$$"],
+                ["- Test List\n  $$y = a + b$$", "- Test List\n  $$y = a + b$$"],
+                ["1. Test List\n\n   $$\n   y = a + b\n   $$", "1. Test List\n    $$y = a + b$$"],
+                ["> $$\n> y = a + b\n> $$", "> $$y = a + b$$"],
+                ["$$\ny = a +\nb\n$$", "$$\ny = a +\nb\n$$"],
+            ])("单行公式块将两侧标记放在同一行：%s", async (input, expected) => {
+                const result = await fmt(input, config);
+                expect(result).toBe(expected);
+                expect(await fmt(result, config)).toBe(expected);
+            });
+
             it("公式块复杂测试（一）", async () => {
                 expect(await fmt("$$\\begin{array}\nf(x)=ax+b\\\\\n\\end{array}$$", config))
                     .toBe("$$\\begin{array}\nf(x)=ax+b\\\\\n\\end{array}$$");
@@ -263,7 +277,7 @@ export function miscSuite(): void {
                 });
 
                 it("块级数学公式中的 ] 不被转义", async () => {
-                    expect(await fmt("$$\na ] b\n$$", config)).toBe("$$\na ] b\n$$");
+                    expect(await fmt("$$\na ] b\n$$", config)).toBe("$$a ] b$$");
                 });
 
                 it("链接标签内的 \\] 保持转义形式", async () => {
@@ -356,7 +370,7 @@ export function miscSuite(): void {
                 });
 
                 it("块级数学公式中的 & 不被转义", async () => {
-                    expect(await fmt("$$\na & b\n$$", config)).toBe("$$\na & b\n$$");
+                    expect(await fmt("$$\na & b\n$$", config)).toBe("$$a & b$$");
                 });
 
                 it("链接 title 中的 & 不被转义", async () => {

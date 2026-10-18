@@ -78,11 +78,19 @@ function compactCodeBlockJoin(left: Nodes, right: Nodes): number | undefined {
     return undefined;
 }
 
+function isMathBlock(node: Nodes): boolean {
+    if (node.type === "math") return true;
+    // Compact $$...$$ blocks are parsed as paragraphs containing inline math.
+    if (node.type !== "paragraph" || node.children.length !== 1) return false;
+    const child = node.children[0];
+    return child.type === "inlineMath" && (child.data as { marker?: string } | undefined)?.marker === "$$";
+}
+
 /**
  * 当公式块与前一节点紧凑时（原文无空行），保持紧凑排版
  */
 function compactMathJoin(left: Nodes, right: Nodes): number | undefined {
-    if (right.type !== "math") return undefined;
+    if (!isMathBlock(right)) return undefined;
     const leftEnd = left.position?.end?.line;
     const rightStart = right.position?.start?.line;
     if (leftEnd !== undefined && rightStart !== undefined && leftEnd + 1 === rightStart)
@@ -95,7 +103,7 @@ function compactMathJoin(left: Nodes, right: Nodes): number | undefined {
  */
 function listSpreadJoin(left: Nodes, right: Nodes, parent: Parents): number | undefined {
     const isListNode = (t: string) => t === "list";
-    const isNestedBlockNode = (t: string) => ["list", "table", "math", "code", "blockquote"].includes(t); // compact in list
+    const isNestedBlockNode = (node: Nodes) => ["list", "table", "code", "blockquote"].includes(node.type) || isMathBlock(node); // compact in list
     const countNonListChildren = (item: ListItem) => item.children.filter(c => !isListNode(c.type)).length;
     if (parent.type === "list" && left.type === "listItem" && right.type === "listItem") {
         const leftItem = left as ListItem;
@@ -104,7 +112,7 @@ function listSpreadJoin(left: Nodes, right: Nodes, parent: Parents): number | un
         }
         return 0;
     }
-    if (parent.type === "listItem" && !isListNode(left.type) && isNestedBlockNode(right.type)) {
+    if (parent.type === "listItem" && !isListNode(left.type) && isNestedBlockNode(right)) {
         const listItemParent = parent as ListItem;
         // Keep one blank line only for first paragraph -> fenced code transitions.
         if (right.type === "code") {
@@ -148,6 +156,9 @@ function mathHandler(node: { value?: string; meta?: string | null; data?: { rawM
     if (meta) {
         // $$meta opener with standalone closing -> reconstruct as inline closing style
         return seq + meta + "\n" + raw + seq;
+    }
+    if (!raw.includes("\n")) {
+        return seq + raw + seq;
     }
     let result = seq + "\n";
     if (raw) result += raw + "\n";
